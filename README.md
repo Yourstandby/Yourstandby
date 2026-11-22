@@ -63,6 +63,15 @@
 </p>
 
 <p align="center">
+<a href="https://yourstandby.github.io/Yourstandby/#trials">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/trials-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/trials-light.svg" alt="十关赛程：法师从雪原走到水底，战士从水底走到雪原，在中央会合" width="760" />
+</picture>
+</a>
+</p>
+
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-dark.svg" />
   <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-light.svg" alt="角色存档：YOURSTANDBY · FULL-STACK BUILDER · LV.03 · EXP 620/900 · 属性 CODE 8 / DESIGN 7 / SYSTEMS 6 / CURIOUS 9" width="760" />

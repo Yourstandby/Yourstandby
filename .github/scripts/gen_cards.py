@@ -267,6 +267,35 @@ def draw_sprite(sprite, palette, x0, y0, unit=None):
     return "".join(out)
 
 
+TRIAL_ENV = [
+    ("SNOW", "#B8D8E8"), ("SEA", "#1F5C7A"), ("WOOD", "#2E5C43"),
+    ("ROCK", "#5A5F66"), ("DUNE", "#C98F3D"), ("DUNE", "#C98F3D"),
+    ("ROCK", "#5A5F66"), ("WOOD", "#2E5C43"), ("SEA", "#1F5C7A"), ("SNOW", "#B8D8E8"),
+]
+
+
+def render_trials(_data, t):
+    """十关赛程图：法师左五关、战士右五关，环境互为倒序。"""
+    sp = load_sprites()
+    pal = sp["palette"]
+    body = [tag(20, 26, "THE TEN TRIALS", t, 13),
+            f'<rect x="58" y="91" width="644" height="2" fill="{t["line"]}"/>']
+    for i, (label, color) in enumerate(TRIAL_ENV):
+        x = 70 + i * 62
+        body.append(f'<rect x="{x}" y="84" width="14" height="14" fill="{color}" '
+                    f'stroke="{t["line"]}" stroke-width="2"/>')
+        body.append(tag(x - 1, 118, label, t, 9, t["ash"]))
+    body.append(f'<rect x="12" y="52" width="38" height="38" fill="{t["surface"]}" '
+                f'stroke="{t["line"]}" stroke-width="2"/>')
+    body.append(draw_sprite(sp["sprites"][0], pal, 15, 55, unit=1))
+    body.append(f'<rect x="{760 - 50}" y="52" width="38" height="38" fill="{t["surface"]}" '
+                f'stroke="{t["line"]}" stroke-width="2"/>')
+    body.append(draw_sprite(sp["sprites"][1], pal, 760 - 47, 55, unit=1))
+    body.append(f'<rect x="{760 // 2 - 1}" y="66" width="2" height="44" fill="{t["ember"]}"/>')
+    return shell(760, 136, t, "".join(body), "十关赛程",
+                 "法师：雪原→水底，战士：水底→雪原，第 10 关后在中央会合")
+
+
 def render_party(_data, t):
     sp = load_sprites()
     pal = sp["palette"]
@@ -540,7 +569,7 @@ def main():
                "stack": render_stack, "player": render_player,
                "quests": render_quests, "inventory": render_inventory,
                "gear": render_gear, "log": render_log, "comms": render_contact,
-               "party": render_party}
+               "party": render_party, "trials": render_trials}
     pins = []
     for repo_name in PIN_REPOS:
         repo = gql(token, PIN_QUERY, {"owner": login, "name": repo_name}).get("repository")
