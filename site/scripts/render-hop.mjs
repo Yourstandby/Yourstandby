@@ -101,21 +101,21 @@ const LAND = 0.84;     // 触地时刻
 
 function poseAt(p) {
   // 返回 { squash, height }
+  // 形变上限压到 ±10%，角色造型不会被压走样；力度靠平台下沉和尘土表达
   if (p < CROUCH) {
     const q = p / CROUCH;
-    return { squash: 1 - 0.30 * Math.sin(q * Math.PI * 0.5), height: 0 };  // 蹲下蓄力
+    return { squash: 1 - 0.09 * Math.sin(q * Math.PI * 0.5), height: 0, crouch: q };
   }
   if (p > LAND) {
     const q = Math.min(1, (p - LAND) / (1 - LAND));
-    // 落地压缩 0.72 → 回弹 1.06 → 稳定 1
-    const squash = q < 0.45 ? 0.72 + (1.06 - 0.72) * (q / 0.45)
-                            : 1.06 - 0.06 * ((q - 0.45) / 0.55);
-    return { squash, height: 0 };
+    const squash = q < 0.5 ? 0.91 + (1.01 - 0.91) * (q / 0.5)
+                           : 1.01 - 0.01 * ((q - 0.5) / 0.5);
+    return { squash, height: 0, land: q };
   }
   const q = (p - CROUCH) / (LAND - CROUCH);   // 0..1 飞行段
   // sin^0.62 让顶部更平 → 明显的滞空
   const arc = Math.pow(Math.sin(Math.PI * q), 0.62);
-  return { squash: q < 0.12 ? 0.72 + 0.28 * (q / 0.12) : 1, height: arc };
+  return { squash: q < 0.12 ? 0.91 + 0.09 * (q / 0.12) : 1, height: arc };
 }
 
 /* ---------- 精灵 ---------- */
@@ -224,14 +224,30 @@ function renderHop(ctx, t) {
   const mX = GX + m.col * (CELL + GAP);
   const kX = GX + k.col * (CELL + GAP) - 32;
 
-  // 角色脚底跟着平台一起下沉
-  const mSink = Math.round(mPress * 3);
-  const kSink = Math.round(kPress * 3);
+  // 角色脚底跟着平台一起下沉；落地再多沉 1px，制造受力感
+  const mLand = m.pose.land ? Math.round((1 - m.pose.land) * 2) : 0;
+  const kLand = k.pose.land ? Math.round((1 - k.pose.land) * 2) : 0;
+  const mSink = Math.round(mPress * 3) + mLand;
+  const kSink = Math.round(kPress * 3) + kLand;
   drawShadow(ctx, mX, mRowY + mSink, m.pose.height / 18);
   drawHero(ctx, 'mage', mX, mRowY - 32 + mSink - m.pose.height, m.pose.squash);
 
   drawShadow(ctx, kX, kRowY + kSink, k.pose.height / 18);
   drawHero(ctx, 'knight', kX, kRowY - 32 + kSink - k.pose.height, k.pose.squash);
+
+  // 落地尘土：代替被压扁的角色本体
+  if (mPress > 0.2) {
+    for (let i = 0; i < 3; i++) {
+      ctx.fillStyle = i % 2 ? C.lvl2 : C.lvl1;
+      ctx.fillRect(mX + 4 + i * 9, mRowY + 4 + (i % 2) * 2, 2, 2);
+    }
+  }
+  if (kPress > 0.2) {
+    for (let i = 0; i < 3; i++) {
+      ctx.fillStyle = i % 2 ? C.lvl2 : C.lvl1;
+      ctx.fillRect(kX + 6 + i * 9, kRowY + 4 + (i % 2) * 2, 2, 2);
+    }
+  }
 
   // 底部进度条
   const barY = H - 20;
