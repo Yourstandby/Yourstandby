@@ -54,7 +54,11 @@ import { site, base } from '../data/site.ts';
           <div class="stack-row">
             <span class="gauge__label">{s.label}</span>
             <Gauge value={s.pct} max={s.max} cells={14} tone="cyan" label={`${s.label} ${s.pct}/${s.max}`} />
-            <span class="stack-row__val">{s.detail}</span>
+            <span class="stack-tiles">
+              {s.items.map((it) => (
+                <span class="stack-tile" style={`--c:${it.color}`} title={it.name}>{it.tag}</span>
+              ))}
+            </span>
           </div>
         ))}
       </div>
@@ -98,5 +102,16 @@ import { site, base } from '../data/site.ts';
   @media (min-width: 768px) {
     .stack-row { grid-template-columns: 110px auto 1fr; align-items: center; }
   }
-  .stack-row__val { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--ink-dim); }
+  /* 技术徽章：品牌色底 + 像素字母，替代文字描述 */
+  .stack-tiles { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stack-tile {
+    display: inline-grid; place-items: center;
+    width: 30px; height: 30px; flex: none;
+    background: var(--c); color: #fff;
+    border: 2px solid var(--line);
+    font-family: var(--font-mono); font-size: 11px; line-height: 1;
+    letter-spacing: 0; text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.45);
+    transition: transform var(--dur-press) var(--ease-step);
+  }
+  .stack-tile:hover { transform: translateY(-2px); }
 </style>

@@ -513,6 +513,53 @@ def render_contact(_data, t):
                  "、".join(link["label"] for link in p["links"]))
 
 
+
+# 5x7 点阵字模，用于技术徽章（像素字体不走 @font-face，SVG 里直接画方块）
+GLYPHS = {
+    "T": ("11111", "00100", "00100", "00100", "00100", "00100", "00100"),
+    "S": ("01111", "10000", "10000", "01110", "00001", "00001", "11110"),
+    "P": ("11110", "10001", "10001", "11110", "10000", "10000", "10000"),
+    "Y": ("10001", "01010", "00100", "00100", "00100", "00100", "00100"),
+    "R": ("11110", "10001", "10001", "11110", "10100", "10010", "10001"),
+    "C": ("01111", "10000", "10000", "10000", "10000", "10000", "01111"),
+    "#": ("01010", "01010", "11111", "01010", "11111", "01010", "01010"),
+    "G": ("01111", "10000", "10000", "10111", "10001", "10001", "01111"),
+    "O": ("01110", "10001", "10001", "10001", "10001", "10001", "01110"),
+    "E": ("11111", "10000", "10000", "11110", "10000", "10000", "11111"),
+    "A": ("01110", "10001", "10001", "11111", "10001", "10001", "10001"),
+    "N": ("10001", "11001", "10101", "10011", "10001", "10001", "10001"),
+    "D": ("11110", "10001", "10001", "10001", "10001", "10001", "11110"),
+    "F": ("11111", "10000", "10000", "11110", "10000", "10000", "10000"),
+    "K": ("10001", "10010", "10100", "11000", "10100", "10010", "10001"),
+    "H": ("10001", "10001", "10001", "11111", "10001", "10001", "10001"),
+    "V": ("10001", "10001", "10001", "10001", "10001", "01010", "00100"),
+    "M": ("10001", "11011", "10101", "10101", "10001", "10001", "10001"),
+    "X": ("10001", "01010", "00100", "00100", "00100", "01010", "10001"),
+}
+
+
+def tech_tile(item, t, x, y, scale=2):
+    """16x16 像素徽章：品牌色底 + 5x7 点阵字母 + 1px 黑描边。"""
+    size = 16 * scale
+    out = [f'<rect x="{x}" y="{y}" width="{size}" height="{size}" fill="{t["line"]}"/>',
+           f'<rect x="{x + scale}" y="{y + scale}" width="{size - 2 * scale}" '
+           f'height="{size - 2 * scale}" fill="{item["color"]}"/>']
+    tag = item["tag"]
+    text_w = len(tag) * 5 + (len(tag) - 1)
+    gx = x + ((16 - text_w) // 2) * scale
+    gy = y + 4 * scale
+    for ci, ch in enumerate(tag):
+        rows = GLYPHS.get(ch)
+        if not rows:
+            continue
+        for ry, row in enumerate(rows):
+            for rx, bit in enumerate(row):
+                if bit == "1":
+                    out.append(f'<rect x="{gx + (ci * 6 + rx) * scale}" y="{gy + ry * scale}" '
+                               f'width="{scale}" height="{scale}" fill="#FFFFFF"/>')
+    return "".join(out)
+
+
 def load_stack():
     path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "stack.json")
     with open(path, encoding="utf-8") as fh:
@@ -524,13 +571,15 @@ def render_stack(_data, t):
     items = load_stack()
     body = [tag(20, 28, "STACK", t, 13)]
     for i, it in enumerate(items):
-        y = 64 + i * 40
+        y = 68 + i * 44
         body.append(tag(20, y, it["label"], t, 13, t["ink"]))
-        body.append(gauge(176, y - 11, it["pct"] / it["max"], t, cells=14, cw=18, ch=11, gap=6, color="cyan"))
-        body.append(tag(540, y, it["detail"], t, 12, t["dim"]))
-    height = 64 + len(items) * 40 + 8
+        body.append(gauge(150, y - 11, it["pct"] / it["max"], t,
+                          cells=10, cw=16, ch=10, gap=5, color="cyan"))
+        for j, item in enumerate(it.get("items", [])):
+            body.append(tech_tile(item, t, 356 + j * 40, y - 18))
+    height = 72 + len(items) * 44 + 8
     return shell(760, height, t, "".join(body), "技术栈",
-                 "、".join(it["label"] for it in items))
+                 "、".join(item["name"] for it in items for item in it.get("items", [])))
 
 
 def render_pin(repo, t):

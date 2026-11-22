@@ -1,32 +1,122 @@
 [
   {
     "label": "LANGUAGES",
-    "detail": "TypeScript / Python / Go",
-    "pct": 14,
-    "max": 18
+    "pct": 16,
+    "max": 20,
+    "items": [
+      {
+        "tag": "TS",
+        "name": "TypeScript",
+        "color": "#3178C6"
+      },
+      {
+        "tag": "PY",
+        "name": "Python",
+        "color": "#3776AB"
+      },
+      {
+        "tag": "RS",
+        "name": "Rust",
+        "color": "#CE422B"
+      },
+      {
+        "tag": "C#",
+        "name": "C#",
+        "color": "#68217A"
+      },
+      {
+        "tag": "GO",
+        "name": "Go",
+        "color": "#00ADD8"
+      }
+    ]
   },
   {
     "label": "FRONTEND",
-    "detail": "React / Astro / 原生 CSS",
     "pct": 12,
-    "max": 18
+    "max": 20,
+    "items": [
+      {
+        "tag": "RE",
+        "name": "React",
+        "color": "#61DAFB"
+      },
+      {
+        "tag": "AS",
+        "name": "Astro",
+        "color": "#FF5D01"
+      },
+      {
+        "tag": "CS",
+        "name": "CSS",
+        "color": "#1572B6"
+      }
+    ]
   },
   {
     "label": "BACKEND",
-    "detail": "Node / FastAPI / Postgres",
     "pct": 10,
-    "max": 18
+    "max": 20,
+    "items": [
+      {
+        "tag": "ND",
+        "name": "Node",
+        "color": "#5FA04E"
+      },
+      {
+        "tag": "FA",
+        "name": "FastAPI",
+        "color": "#05998B"
+      },
+      {
+        "tag": "PG",
+        "name": "Postgres",
+        "color": "#4169E1"
+      }
+    ]
   },
   {
     "label": "TOOLING",
-    "detail": "Git / Docker / Actions",
     "pct": 13,
-    "max": 18
+    "max": 20,
+    "items": [
+      {
+        "tag": "GT",
+        "name": "Git",
+        "color": "#F05032"
+      },
+      {
+        "tag": "DK",
+        "name": "Docker",
+        "color": "#2496ED"
+      },
+      {
+        "tag": "GH",
+        "name": "Actions",
+        "color": "#2088FF"
+      }
+    ]
   },
   {
     "label": "DESIGN",
-    "detail": "像素风 / SVG / 动效",
     "pct": 14,
-    "max": 18
+    "max": 20,
+    "items": [
+      {
+        "tag": "SV",
+        "name": "SVG",
+        "color": "#FFB13B"
+      },
+      {
+        "tag": "PX",
+        "name": "像素风",
+        "color": "#FF3B1F"
+      },
+      {
+        "tag": "MT",
+        "name": "动效",
+        "color": "#7B61FF"
+      }
+    ]
   }
 ]
