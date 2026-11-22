@@ -21,10 +21,11 @@ const { Content } = await render(note);
 </Base>
 
 <style>
-  .note { max-width: 760px; padding-top: var(--space-7); }
+  /* 正文 24px，960px 才有约 40 字/行；760px 在 24px 下只剩 30 字，读起来憋 */
+  .note { max-width: 960px; padding-top: var(--space-7); }
   .note h1 {
-    font-family: var(--font-display); font-size: clamp(20px, 4vw, 32px);
-    line-height: 1.4; margin: var(--space-3) 0 var(--space-5); color: var(--ink);
+    font-family: var(--font-display); font-size: var(--fs-lg);
+    line-height: 1.2; margin: var(--space-3) 0 var(--space-5); color: var(--ink);
   }
   .note h2 {
     font-family: var(--font-display); font-size: var(--fs-sm);
@@ -33,6 +34,6 @@ const { Content } = await render(note);
   .note p, .note li { color: var(--ink-dim); }
   .note code {
     font-family: var(--font-mono); background: var(--surface-2);
-    border: 2px solid var(--line); padding: 1px 4px; color: var(--ink);
+    border: var(--px-hair) solid var(--line); padding: 2px 8px; color: var(--ink);
   }
 </style>

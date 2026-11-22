@@ -93,7 +93,7 @@ a:focus-visible, button:focus-visible {
 
 /* ---------- 像素进度条 ---------- */
 /* 格子整数尺寸即可锐利；24×16 让 8~10 格在 span-5 面板里不顶破栅格 */
-.gauge { display: flex; gap: 6px; align-items: center; }
+.gauge { display: flex; gap: 4px; align-items: center; }
 .gauge i { width: 24px; height: 16px; background: var(--line); display: block; }
 /* 语义分工：火红=热/血，青=数据，绿=已通关，金=进行中 */
 .gauge i.on { background: var(--ember); }
