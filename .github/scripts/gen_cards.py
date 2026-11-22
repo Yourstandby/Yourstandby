@@ -129,20 +129,22 @@ def render_stats(data, t):
     for r in repos["nodes"]:
         for e in r["languages"]["edges"]:
             langs[e["node"]["name"]] = langs.get(e["node"]["name"], 0) + e["size"]
+    # 2×2 而不是 1×4：README 里按 480px 显示，字号必须按 1:1 设计才不会被缩小成 6px
     items = [
         ("REPOS", repos["totalCount"], 0.5),
         ("STARS", stars, 0.7),
         ("COMMITS", contrib["totalCommitContributions"], 0.8),
         ("LANGS", len(langs), 0.4),
     ]
-    body = [tag(24, 34, "PROFILE SIGNALS", t, 13)]
+    body = [tag(20, 28, "PROFILE SIGNALS", t, 13)]
     for i, (name, value, ratio) in enumerate(items):
-        x = 24 + i * 232
-        body.append(tag(x, 62, name, t, 12))
-        body.append(f'<text x="{x}" y="106" font-family="{MONO}" font-size="40" '
-                    f'font-weight="700" letter-spacing="2" fill="{t["ink"]}">{value}</text>')
-        body.append(gauge(x, 122, ratio, t, cells=10, cw=14, ch=8))
-    return shell(952, 160, t, "".join(body), "GitHub 概况",
+        cx = 20 + (i % 2) * 228
+        cy = 58 + (i // 2) * 70
+        body.append(tag(cx, cy, name, t, 13))
+        body.append(f'<text x="{cx}" y="{cy + 34}" font-family="{MONO}" font-size="30" '
+                    f'font-weight="700" letter-spacing="1" fill="{t["ink"]}">{value}</text>')
+        body.append(gauge(cx, cy + 44, ratio, t, cells=7, cw=16, ch=8, gap=6))
+    return shell(476, 200, t, "".join(body), "GitHub 概况",
                  f"仓库 {repos['totalCount']} 个、Stars {stars}、提交 {contrib['totalCommitContributions']} 次、语言 {len(langs)} 种")
 
 
@@ -153,14 +155,14 @@ def render_langs(data, t):
             langs[e["node"]["name"]] = langs.get(e["node"]["name"], 0) + e["size"]
     top = sorted(langs.items(), key=lambda kv: -kv[1])[:6]
     total = sum(v for _, v in top) or 1
-    body = [tag(24, 34, "TOP LANGUAGES", t, 13)]
+    body = [tag(20, 28, "TOP LANGUAGES", t, 13)]
     for i, (name, size) in enumerate(top):
-        y = 62 + i * 26
+        y = 60 + i * 26
         ratio = size / total
-        body.append(tag(24, y, name.upper()[:14], t, 13, t["ink"]))
-        body.append(gauge(190, y - 10, ratio, t, cells=14, cw=14, ch=9))
-        body.append(tag(500, y, f"{ratio * 100:.0f}%", t, 12))
-    return shell(560, 216, t, "".join(body), "常用语言",
+        body.append(tag(20, y, name.upper()[:13], t, 13, t["ink"]))
+        body.append(gauge(158, y - 10, ratio, t, cells=12, cw=13, ch=9, gap=4))
+        body.append(tag(412, y, f"{ratio * 100:.0f}%", t, 12))
+    return shell(476, 208, t, "".join(body), "常用语言",
                  "、".join(n for n, _ in top))
 
 

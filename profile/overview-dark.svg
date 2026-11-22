@@ -14,8 +14,8 @@
     <g>
     <rect x="10" y="16" width="280" height="144" fill="#22100F" stroke="#3D1B16" stroke-width="2"/>
     <rect x="10" y="16" width="8" height="8" fill="#FF3B1F"/>
-    <text x="30" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="14" letter-spacing="2" fill="#8A6A64">PUBLIC REPOS</text>
-    <text x="30" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="48" font-weight="700" letter-spacing="2" fill="#FFE9D6">18</text>
+    <text x="30" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="17" letter-spacing="2" fill="#8A6A64">PUBLIC REPOS</text>
+    <text x="30" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="56" font-weight="700" letter-spacing="2" fill="#FFE9D6">18</text>
     <rect x="30" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.00s"/>
     <rect x="60" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.18s"/>
     <rect x="90" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.36s"/>
@@ -28,8 +28,8 @@
   <g>
     <rect x="310" y="16" width="280" height="144" fill="#22100F" stroke="#3D1B16" stroke-width="2"/>
     <rect x="310" y="16" width="8" height="8" fill="#FF3B1F"/>
-    <text x="330" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="14" letter-spacing="2" fill="#8A6A64">STARS EARNED</text>
-    <text x="330" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="48" font-weight="700" letter-spacing="2" fill="#FFE9D6">42</text>
+    <text x="330" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="17" letter-spacing="2" fill="#8A6A64">STARS EARNED</text>
+    <text x="330" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="56" font-weight="700" letter-spacing="2" fill="#FFE9D6">42</text>
     <rect x="330" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.00s"/>
     <rect x="360" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.18s"/>
     <rect x="390" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.36s"/>
@@ -42,8 +42,8 @@
   <g>
     <rect x="610" y="16" width="280" height="144" fill="#22100F" stroke="#3D1B16" stroke-width="2"/>
     <rect x="610" y="16" width="8" height="8" fill="#FF3B1F"/>
-    <text x="630" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="14" letter-spacing="2" fill="#8A6A64">MAIN LANGS</text>
-    <text x="630" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="48" font-weight="700" letter-spacing="2" fill="#FFE9D6">6</text>
+    <text x="630" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="17" letter-spacing="2" fill="#8A6A64">MAIN LANGS</text>
+    <text x="630" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="56" font-weight="700" letter-spacing="2" fill="#FFE9D6">6</text>
     <rect x="630" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.00s"/>
     <rect x="660" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.18s"/>
     <rect x="690" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.36s"/>
@@ -56,8 +56,8 @@
   <g>
     <rect x="910" y="16" width="280" height="144" fill="#22100F" stroke="#3D1B16" stroke-width="2"/>
     <rect x="910" y="16" width="8" height="8" fill="#FF3B1F"/>
-    <text x="930" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="14" letter-spacing="2" fill="#8A6A64">COMMITS / YEAR</text>
-    <text x="930" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="48" font-weight="700" letter-spacing="2" fill="#FFE9D6">1280</text>
+    <text x="930" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="17" letter-spacing="2" fill="#8A6A64">COMMITS / YEAR</text>
+    <text x="930" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="56" font-weight="700" letter-spacing="2" fill="#FFE9D6">1280</text>
     <rect x="930" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.00s"/>
     <rect x="960" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.18s"/>
     <rect x="990" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.36s"/>
