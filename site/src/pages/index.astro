@@ -37,11 +37,11 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
       <div class="dash">
         <div class="slot slot--party"><PartyPanel /></div>
         <div class="slot slot--player"><PlayerPanel /></div>
-        <div class="slot slot--quests"><QuestLog /></div>
-        <div class="slot slot--inv"><Inventory /></div>
         <div class="slot slot--comms"><CommsPanel /></div>
       </div>
       <div class="dash-tail">
+        <QuestLog />
+        <Inventory />
         <LogPanel />
         <ContribPanel />
       </div>
@@ -143,9 +143,7 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
   @media (min-width: 900px) {
     .slot--party { grid-column: span 12; }
     .slot--player { grid-column: span 7; }
-    .slot--quests { grid-column: span 5; }
-    .slot--inv { grid-column: span 5; }
-    .slot--comms { grid-column: span 7; }
+    .slot--comms { grid-column: span 5; }
   }
 
   @media (min-width: 1344px) {
@@ -157,14 +155,15 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
       grid-template-rows: repeat(22, 32px);
     }
     /* 第一带 384px：角色存档 + 双人队伍；第二带 320px：任务 / 装备 / 通讯 */
+    /* 左半屏放双人对阵（256px 精灵），右半屏纵向叠角色存档 + 通讯。
+       高度是按内容实测分配的：party 670 / player 432 / comms 196，总计不超 704。 */
     .slot { grid-column: auto; overflow: hidden; }
-    .slot--party { grid-area: 1 / 17 / 13 / 41; }
-    .slot--player { grid-area: 1 / 1 / 13 / 17; }
-    .slot--quests { grid-area: 13 / 1 / 23 / 15; }
-    .slot--inv { grid-area: 13 / 15 / 23 / 27; }
-    .slot--comms { grid-area: 13 / 27 / 23 / 41; }
-    /* 画布内收紧内边距、撑满 slot，并关掉 hover 位移（位移会越出自己的 tile 格） */
-    .slot :global(.panel) { padding: 16px; height: 100%; }
+    .slot--party { grid-area: 1 / 1 / 23 / 21; }
+    .slot--player { grid-area: 1 / 21 / 15 / 41; }
+    .slot--comms { grid-area: 15 / 21 / 23 / 41; }
+    /* 画布内收紧内边距与行高（24×1.5=36、12×1.5=18 仍是整数基线），
+       并关掉 hover 位移——位移会让面板越出自己的 tile 格 */
+    .slot :global(.panel) { padding: 16px; height: 100%; line-height: 1.5; }
     .slot :global(.panel:hover) { transform: none; box-shadow: var(--px-shadow); }
   }
 </style>

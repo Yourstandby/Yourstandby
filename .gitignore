@@ -9,3 +9,7 @@ site/src/styles/_tokens.generated.css
 .DS_Store
 design/preview-sprites.png
 .tmp-probe.mjs
+
+# python 缓存（gen_cards.py 被 import 时会生成）
+__pycache__/
+*.pyc
