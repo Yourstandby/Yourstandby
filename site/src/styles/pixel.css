@@ -15,12 +15,13 @@ body {
   margin: 0;
   min-height: 100vh;
   background: var(--bg);
-  background-image: radial-gradient(var(--line) 1px, transparent 1px);
-  background-size: 32px 32px;
+  /* 点阵：2px 点 + 32px tile（1280 宽正好 40 格），1px 点在 2x 屏上会灰掉 */
+  background-image: radial-gradient(var(--line) 2px, transparent 2px);
+  background-size: var(--px-tile) var(--px-tile);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--fs-md);
-  line-height: 1.7;
+  line-height: 2; /* 24 × 2 = 48，整数基线 */
   -webkit-font-smoothing: none;
   font-smooth: never;
 }
@@ -48,18 +49,19 @@ a:focus-visible, button:focus-visible {
   padding: var(--space-3) 0;
 }
 .brand {
-  font-family: var(--font-display); font-size: var(--fs-xs); letter-spacing: 1px;
+  /* 纯拉丁 display 标题：16px = Press Start 2P 的 2×8 原生尺度 */
+  font-family: var(--font-display); font-size: 16px; letter-spacing: 1px;
   color: var(--ink); border: 0;
 }
 .brand span { color: var(--ember); }
 .nav__links { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 .nav__links a {
-  font-size: var(--fs-sm); letter-spacing: 2px; text-transform: uppercase;
-  color: var(--ink-dim); border-bottom: 2px solid transparent; padding-bottom: 2px;
+  font-size: var(--fs-xs); letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink-dim); border-bottom: 4px solid transparent; padding-bottom: 4px;
 }
 .nav__links a:hover, .nav__links a[aria-current="page"] { color: var(--ember); border-bottom-color: var(--ember); }
 .live {
-  display: inline-block; width: 8px; height: 8px; background: var(--ember);
+  display: inline-block; width: 16px; height: 16px; background: var(--ember);
   animation: px-blink var(--dur-blink) var(--ease-step) infinite;
 }
 
@@ -68,13 +70,13 @@ a:focus-visible, button:focus-visible {
 .sec__head { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-5); }
 .sec__no {
   font-family: var(--font-mono); font-size: var(--fs-sm); letter-spacing: 2px;
-  color: var(--bg); background: var(--ember); padding: 4px 8px; line-height: 1;
+  color: var(--bg); background: var(--ember); padding: 8px 16px; line-height: 1;
 }
 .sec__title {
   font-family: var(--font-display); font-size: var(--fs-lg); letter-spacing: 1px;
   margin: 0; color: var(--ink);
 }
-.sec__rule { flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 16px); }
+.sec__rule { flex: 1; height: 4px; background: repeating-linear-gradient(90deg, var(--line) 0 16px, transparent 16px 32px); }
 
 /* ---------- 卡片 ---------- */
 .card {
@@ -82,7 +84,7 @@ a:focus-visible, button:focus-visible {
   padding: var(--space-4); box-shadow: var(--px-shadow);
   transition: transform var(--dur-press) var(--ease-step), box-shadow var(--dur-press) var(--ease-step);
 }
-.card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--line); }
+.card:hover { transform: translate(-4px, -4px); box-shadow: var(--px-shadow-hover); }
 .card__kicker { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 2px; color: var(--ash); }
 .card__title { font-family: var(--font-display); font-size: var(--fs-sm); margin: var(--space-2) 0; color: var(--ink); }
 .card__desc { margin: 0; font-size: var(--fs-sm); color: var(--ink-dim); }
@@ -90,8 +92,9 @@ a:focus-visible, button:focus-visible {
 @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
 
 /* ---------- 像素进度条 ---------- */
+/* 格子整数尺寸即可锐利；24×16 让 8~10 格在 span-5 面板里不顶破栅格 */
 .gauge { display: flex; gap: 6px; align-items: center; }
-.gauge i { width: 14px; height: 10px; background: var(--line); display: block; }
+.gauge i { width: 24px; height: 16px; background: var(--line); display: block; }
 /* 语义分工：火红=热/血，青=数据，绿=已通关，金=进行中 */
 .gauge i.on { background: var(--ember); }
 .gauge i.on.cyan { background: var(--cyan); }
@@ -111,19 +114,19 @@ a:focus-visible, button:focus-visible {
   box-shadow: var(--px-shadow); padding: var(--space-4);
   transition: transform var(--dur-press) var(--ease-step), box-shadow var(--dur-press) var(--ease-step);
 }
-.panel:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--line); }
+.panel:hover { transform: translate(-4px, -4px); box-shadow: var(--px-shadow-hover); }
 /* 栅格子项默认 min-width:auto，长 URL / 长标题会把栅格顶破，统一压掉 */
 .panel, .panel > *, .dash > * { min-width: 0; }
 .panel img, .panel svg { max-width: 100%; height: auto; }
 .panel__head {
-  border-bottom: 2px dashed var(--line); padding-bottom: 8px; margin-bottom: var(--space-3);
+  border-bottom: 4px dashed var(--line); padding-bottom: 16px; margin-bottom: var(--space-3);
 }
 .panel__tag {
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; color: var(--ash);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 3px; color: var(--ash);
   text-transform: uppercase;
 }
 .panel__foot {
-  margin: var(--space-3) 0 0; font-family: var(--font-mono); font-size: 11px;
+  margin: var(--space-3) 0 0; font-family: var(--font-mono); font-size: 12px;
   letter-spacing: 1px; color: var(--ash);
 }
 .panel__foot a { color: var(--ember); }
@@ -132,13 +135,13 @@ a:focus-visible, button:focus-visible {
 /* ---------- dither 揭示：像素风不做透明度渐变 ---------- */
 /* 渐进增强：默认完全可见，只有 JS 真的跑起来才会被遮罩。
    否则脚本 404 时整页内容会永久隐藏。 */
-.dither { -webkit-mask-repeat: repeat; mask-repeat: repeat; -webkit-mask-size: 8px 8px; mask-size: 8px 8px; }
+.dither { -webkit-mask-repeat: repeat; mask-repeat: repeat; -webkit-mask-size: 16px 16px; mask-size: 16px 16px; }
 
 /* ---------- 代码块 / 终端 ---------- */
 .term {
   background: var(--surface-2); border: var(--px-border) solid var(--line);
-  padding: var(--space-4); font-family: var(--font-mono); font-size: var(--fs-sm);
-  line-height: 1.9; color: var(--ink-dim); overflow-x: auto;
+  padding: var(--space-4); font-family: var(--font-mono); font-size: var(--fs-xs);
+  line-height: 2; color: var(--ink-dim); overflow-x: auto;
 }
 .term b { color: var(--ember); font-weight: 400; }
 

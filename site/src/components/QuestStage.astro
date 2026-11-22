@@ -45,10 +45,10 @@ const STAGES = [
 <style>
   .trial__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
   .trial__count { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--ash); }
-  .trial__count b { color: var(--ember); font-size: 15px; }
+  .trial__count b { color: var(--ember); font-size: 24px; }
   .stage {
-    border: 2px solid var(--line); background: #0B0C0E; line-height: 0;
-    max-width: 640px; margin: 0 auto;
+    border: var(--px-border) solid var(--line); background: #0B0C0E; line-height: 0;
+    max-width: 1280px; margin: 0 auto;
   }
   .stage canvas {
     width: 100%; height: auto; display: block;
@@ -56,21 +56,21 @@ const STAGES = [
   }
   .stage__cap {
     display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center;
-    gap: 6px var(--space-2); margin-top: var(--space-3); min-height: 22px;
+    gap: 8px var(--space-2); margin-top: var(--space-3); min-height: 24px;
   }
-  .stage__who { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; }
+  .stage__who { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; }
   .stage__who.is-mage { color: var(--cyan); }
   .stage__who.is-knight { color: var(--ink); }
   .stage__place { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--gold); }
   .stage__tech { flex-basis: 100%; text-align: center; font-size: 12px; color: var(--ink-dim); }
 
-  .trk { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .trk { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
   .trk__dot {
-    border: 2px solid var(--line); background: var(--bg); padding: 5px 2px;
-    text-align: center; font-family: var(--font-mono); font-size: 10px;
+    border: 2px solid var(--line); background: var(--bg); padding: 8px 4px;
+    text-align: center; font-family: var(--font-mono); font-size: 12px;
     color: var(--ash); transition: background var(--dur-press) var(--ease-step);
   }
   .trk__dot.is-done { border-color: var(--gold); background: color-mix(in srgb, var(--env) 24%, var(--bg)); color: var(--ink); }
   .trk__dot.is-cur { border-color: var(--ember); color: var(--ink); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ember) 30%, transparent); }
-  @media (max-width: 640px) { .trk__dot { font-size: 9px; padding: 3px 1px; } }
+  @media (max-width: 640px) { .trk__dot { font-size: 12px; padding: 6px 2px; } }
 </style>

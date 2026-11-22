@@ -2,7 +2,7 @@
 import sprites from '../data/sprites.generated.json';
 import player from '../data/player.generated.json';
 
-const U = 4;
+const U = 8; // 32px 精灵 × 8 = 256px，整数倍不糊
 const palette = sprites.palette as Record<string, string>;
 const heroes = sprites.sprites as { id: string; name: string; role: string; rects: number[][] }[];
 const mage = heroes[0];
@@ -25,7 +25,7 @@ function cells(sprite: { rects: number[][] }) {
   <div class="party">
     {[mage, knight].map((h, i) => (
       <figure class="party__slot">
-        <svg class="party__art" viewBox="0 0 128 128" width="128" height="128" shape-rendering="crispEdges" role="img" aria-label={h.name}>
+        <svg class="party__art" viewBox="0 0 256 256" width="256" height="256" shape-rendering="crispEdges" role="img" aria-label={h.name}>
           {cells(h).map((c) => <rect x={c.x} y={c.y} width={c.w} height={c.h} fill={c.fill} />)}
         </svg>
         <figcaption>
@@ -56,29 +56,29 @@ function cells(sprite: { rects: number[][] }) {
   }
   .party__vs {
     position: absolute; left: 50%; top: 40px; transform: translateX(-50%);
-    font-family: var(--font-mono); font-size: 14px; color: var(--ember);
-    background: var(--surface); padding: 4px 6px; border-left: 2px solid var(--line);
-    border-right: 2px solid var(--line);
+    font-family: var(--font-mono); font-size: 12px; color: var(--ember);
+    background: var(--surface); padding: 8px 12px; border-left: 4px solid var(--line);
+    border-right: 4px solid var(--line);
   }
-  .party__slot { margin: 0; display: grid; justify-items: center; gap: 6px; }
+  .party__slot { margin: 0; display: grid; justify-items: center; gap: 8px; }
   .party__art {
-    border: 2px solid var(--line); background: var(--bg);
+    border: var(--px-border) solid var(--line); background: var(--bg);
     transition: transform var(--dur-press) var(--ease-step);
   }
   .party__slot:hover .party__art { transform: translateY(-4px); }
-  figcaption { display: grid; justify-items: center; gap: 2px; }
-  .party__name { font-family: var(--font-mono); font-size: 13px; letter-spacing: 1px; color: var(--ink); }
-  .party__role { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--ash); }
-  .party__stats { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; width: 100%; max-width: 168px; }
-  .party__stats li { display: grid; grid-template-columns: 34px auto 16px; gap: 6px; align-items: center; }
-  .party__key { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: var(--ash); }
-  .party__bar { display: flex; gap: 2px; }
-  .party__bar i { width: 8px; height: 8px; background: var(--line); display: block; }
+  figcaption { display: grid; justify-items: center; gap: 4px; }
+  .party__name { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; color: var(--ink); }
+  .party__role { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--ash); }
+  .party__stats { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; width: 100%; max-width: 256px; }
+  .party__stats li { display: grid; grid-template-columns: 48px auto 24px; gap: 8px; align-items: center; }
+  .party__key { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; color: var(--ash); }
+  .party__bar { display: flex; gap: 4px; }
+  .party__bar i { width: 16px; height: 16px; background: var(--line); display: block; }
   .party__bar i.on { background: var(--cyan); }
-  .party__stats b { font-family: var(--font-mono); font-size: 10px; color: var(--ink); }
+  .party__stats b { font-family: var(--font-mono); font-size: 12px; color: var(--ink); }
   @media (max-width: 420px) {
     .party { grid-template-columns: 1fr; }
-    .party__art { width: 104px; height: 104px; }
+    .party__art { width: 128px; height: 128px; }
     .party__vs { display: none; }
   }
 </style>

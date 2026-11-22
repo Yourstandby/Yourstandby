@@ -24,14 +24,14 @@ const notes = (await getCollection('notes'))
 
 <style>
   .log { list-style: none; padding: 0; margin: 0; }
-  .log li + li { border-top: 2px dashed var(--line); }
+  .log li + li { border-top: 4px dashed var(--line); }
   .log a {
-    display: grid; grid-template-columns: 88px 96px 1fr; gap: var(--space-2);
-    align-items: center; padding: 10px 0; border-bottom: 0;
+    display: grid; grid-template-columns: 96px 112px 1fr; gap: var(--space-2);
+    align-items: center; padding: 16px 0; border-bottom: 0;
   }
   .log a:hover .log__title { color: var(--ember); }
-  .log__issue { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ember); }
-  .log__date { font-family: var(--font-mono); font-size: 11px; color: var(--ash); }
-  .log__title { font-size: var(--fs-sm); color: var(--ink); }
+  .log__issue { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; color: var(--ember); }
+  .log__date { font-family: var(--font-mono); font-size: 12px; color: var(--ash); }
+  .log__title { font-size: var(--fs-xs); color: var(--ink); }
   @media (max-width: 560px) { .log a { grid-template-columns: 1fr; gap: 2px; } }
 </style>

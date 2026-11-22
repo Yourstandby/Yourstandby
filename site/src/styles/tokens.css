@@ -3,20 +3,36 @@
 @import './_tokens.generated.css';
 
 :root {
-  --font-display: "Press Start 2P", var(--font-pixel, monospace);
+  /* --font-pixel 之前从未定义，导致中文标题一路回落到系统 monospace（非像素字体）。
+     现在补上定义，display 字体没有中文字形时由 Fusion Pixel 接手。 */
+  --font-pixel: 'Fusion Pixel';
+  --font-display: "Press Start 2P", var(--font-pixel), monospace;
   /* 拉丁正文用 Silkscreen，中文回落到系统黑体（可选自托管 Fusion Pixel 12px 覆盖） */
   /* Fusion Pixel 自带拉丁字形，中英混排高度才齐；Silkscreen 只做备用 */
   --font-body: 'Fusion Pixel', Silkscreen, ui-monospace, "Microsoft YaHei", system-ui, sans-serif;
   --font-mono: 'Fusion Pixel', ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;
 
-  --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px; --fs-lg: 20px;
-  --fs-xl: 28px; --fs-2xl: 40px; --fs-3xl: 56px;
+  /* 像素字号阶梯：只取两款像素字体原生网格的交集/公倍数
+     Fusion Pixel 12px → 12 的倍数；Press Start 2P 8px → 8 的倍数。
+     24 / 72 两者都满足；12 / 36 / 48 / 60 只给 Fusion（中文与小号拉丁）用。
+     任何 10、11、13、14、16px 都会被重采样成糊边，已全部清掉。 */
+  --fs-xs: 12px; --fs-sm: 24px; --fs-md: 24px; --fs-lg: 36px;
+  --fs-xl: 48px; --fs-2xl: 60px; --fs-3xl: 72px;
 
-  --space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 24px;
-  --space-5: 32px; --space-6: 48px; --space-7: 64px; --space-8: 96px;
+  /* 间距走 8px 子网格，投影与边框永远落在整数像素上 */
+  --space-1: 8px; --space-2: 16px; --space-3: 24px; --space-4: 32px;
+  --space-5: 48px; --space-6: 64px; --space-7: 96px; --space-8: 128px;
+
+  /* 结构尺寸 2x：前面覆盖 --px-border / --px-shadow 的 1x 值。
+     4px = 结构框（面板/卡片/舞台），2px = 小构件内描边（徽章/角标/下划线）。 */
+  --px-border: 4px;
+  --px-shadow: 8px 8px 0 var(--line);
+  --px-shadow-hover: 12px 12px 0 var(--line);
+  --px-tile: 32px;
 
   --z-base: 1; --z-nav: 10; --z-overlay: 30; --z-toast: 50;
 
   --dur-dither: 320ms;
-  --maxw: 1120px;
+  --maxw: 1280px; /* 40 个 32px tile */
+
 }

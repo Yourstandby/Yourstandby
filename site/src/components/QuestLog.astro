@@ -23,21 +23,21 @@ const TONE = { cleared: 'lime', active: 'gold', locked: 'ember' } as const;
 </section>
 
 <style>
-  .quests { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
-  .quests__row { display: grid; grid-template-columns: 18px 1fr; gap: 4px var(--space-2); align-items: center; }
+  .quests { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+  .quests__row { display: grid; grid-template-columns: 24px 1fr; gap: 8px var(--space-2); align-items: center; }
   .quests__row .gauge { grid-column: 2; }
-  .quests__state { grid-column: 2; font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--ash); }
+  .quests__state { grid-column: 2; font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--ash); }
   .quests__mark {
-    width: 18px; height: 18px; display: grid; place-items: center;
-    border: 2px solid var(--line); font-family: var(--font-mono); font-size: 11px; line-height: 1;
+    width: 24px; height: 24px; display: grid; place-items: center;
+    border: 2px solid var(--line); font-family: var(--font-mono); font-size: 12px; line-height: 1;
     color: var(--ash);
   }
   .quests__mark.is-cleared { border-color: var(--lime); color: var(--lime); }
   .quests__mark.is-active { border-color: var(--gold); color: var(--gold); }
-  .quests__name { font-size: var(--fs-sm); color: var(--ink); }
+  .quests__name { font-size: var(--fs-xs); color: var(--ink); }
   .is-locked .quests__name { color: var(--ash); }
   @media (min-width: 640px) {
-    .quests__row { grid-template-columns: 18px 1fr auto auto; }
+    .quests__row { grid-template-columns: 24px 1fr auto auto; }
     .quests__row .gauge, .quests__state { grid-column: auto; }
   }
 </style>

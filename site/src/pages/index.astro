@@ -104,26 +104,26 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
     color: var(--ash); margin: 0 0 var(--space-2);
   }
   .hero__title {
-    font-family: var(--font-display); font-size: clamp(28px, 7vw, var(--fs-3xl));
-    line-height: 1.15; margin: 0 0 var(--space-3); letter-spacing: 2px;
+    font-family: var(--font-display); font-size: var(--fs-2xl);
+    line-height: 1.2; margin: 0 0 var(--space-3); letter-spacing: 2px;
     color: var(--ink); text-shadow: 4px 4px 0 var(--ember-deep);
   }
   .hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-4); }
   .stack-list { display: grid; gap: var(--space-3); }
-  .stack-row { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .stack-row { display: grid; grid-template-columns: 1fr; gap: 8px; }
   @media (min-width: 768px) {
-    .stack-row { grid-template-columns: 110px auto 1fr; align-items: center; }
+    .stack-row { grid-template-columns: 128px auto 1fr; align-items: center; }
   }
   /* 技术徽章：品牌色底 + 像素字母，替代文字描述 */
-  .stack-tiles { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stack-tiles { display: flex; flex-wrap: wrap; gap: 8px; }
   .stack-tile {
     display: inline-grid; place-items: center;
-    width: 30px; height: 30px; flex: none;
+    width: 40px; height: 40px; flex: none;
     background: var(--c); color: #fff;
-    border: 2px solid var(--line);
-    font-family: var(--font-mono); font-size: 11px; line-height: 1;
+    border: 4px solid var(--line);
+    font-family: var(--font-mono); font-size: 12px; line-height: 1;
     letter-spacing: 0; text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.45);
     transition: transform var(--dur-press) var(--ease-step);
   }
-  .stack-tile:hover { transform: translateY(-2px); }
+  .stack-tile:hover { transform: translateY(-4px); }
 </style>

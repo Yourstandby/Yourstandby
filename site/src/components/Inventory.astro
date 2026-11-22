@@ -3,7 +3,7 @@ import player from '../data/player.generated.json';
 
 const items = player.inventory;
 
-// 16×16 像素图标：矩形列表，全部整数格，缩放到 32px 仍然锐利
+// 16×16 像素图标：矩形列表，全部整数格，4x（64px）渲染仍然锐利
 const ICONS: Record<string, { fill: string; rects: number[][] }[]> = {
   pad: [
     { fill: 'var(--ink)', rects: [[3, 6, 10, 5]] },
@@ -31,7 +31,7 @@ const ICONS: Record<string, { fill: string; rects: number[][] }[]> = {
   <ul class="inv">
     {items.map((it) => (
       <li class="inv__cell">
-        <svg class="inv__slot" viewBox="0 0 16 16" width="32" height="32" aria-hidden="true">
+        <svg class="inv__slot" viewBox="0 0 16 16" width="64" height="64" aria-hidden="true">
           {(ICONS[it.icon] ?? []).map((group) => (
             <g fill={group.fill}>
               {group.rects.map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} />)}
@@ -48,12 +48,12 @@ const ICONS: Record<string, { fill: string; rects: number[][] }[]> = {
 <style>
   .inv { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
   .inv__cell {
-    border: 2px solid var(--line); background: var(--bg); padding: var(--space-2);
-    display: grid; gap: 4px; justify-items: start; min-width: 0;
+    border: var(--px-border) solid var(--line); background: var(--bg); padding: var(--space-2);
+    display: grid; gap: 8px; justify-items: start; min-width: 0;
   }
   .inv__cell:hover { border-color: var(--ember); }
-  .inv__slot { border: 2px solid var(--line); background: var(--surface-2); shape-rendering: crispEdges; }
-  .inv__name { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ink); }
-  .inv__desc { font-family: var(--font-mono); font-size: 10px; color: var(--ash); }
+  .inv__slot { border: 4px solid var(--line); background: var(--surface-2); shape-rendering: crispEdges; }
+  .inv__name { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; color: var(--ink); }
+  .inv__desc { font-family: var(--font-mono); font-size: 12px; color: var(--ash); }
   @media (max-width: 400px) { .inv { grid-template-columns: 1fr; } }
 </style>
