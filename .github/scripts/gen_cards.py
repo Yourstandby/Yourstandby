@@ -301,6 +301,12 @@ def load_player():
         return json.load(fh)
 
 
+def load_player():
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "player.json")
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
 # 24x24 网格的"像素小狗魔法师"：下垂耳 + 尖顶帽 + 法杖。
 # 全部整数格，unit=4 时正好 96px，放大到 192px 也不会糊。
 AVATAR_SHAPES = [
@@ -339,10 +345,12 @@ def pixel_avatar(t, x0=20, y0=52, unit=4):
 def render_player(_data, t):
     p = load_player()
     exp_ratio = p["exp"]["current"] / p["exp"]["next"]
+    sp = load_sprites()
+    mage = sp["sprites"][0]
     body = [
         f'<rect x="16" y="48" width="104" height="104" fill="{t["surface"]}" '
         f'stroke="{t["line"]}" stroke-width="2"/>',
-        pixel_avatar(t),
+        draw_sprite(mage, sp["palette"], 20, 52, unit=3),
         f'<text x="140" y="76" font-family="{MONO}" font-size="22" font-weight="700" '
         f'letter-spacing="2" fill="{t["ink"]}">{p["name"]}</text>',
         tag(140, 100, p["title"], t, 12, t["ash"]),

@@ -1,36 +1,32 @@
 ---
 import Gauge from './Gauge.astro';
 import player from '../data/player.generated.json';
+import sprites from '../data/sprites.generated.json';
 
 const { name, title, level, exp, stats } = player;
+
+// 头像复用队伍的鸡毛法师（32x32，unit=3 → 96px）
+const U = 3;
+const palette = sprites.palette as Record<string, string>;
+const mage = (sprites.sprites as { rects: number[][] }[])[0];
+
+function cells(sprite: { rects: number[][] }) {
+  const out: { x: number; y: number; w: number; h: number; fill: string }[] = [];
+  for (const r of sprite.rects) {
+    if (r[5]) out.push({ x: (r[0] - 1) * U, y: (r[1] - 1) * U, w: (r[2] + 2) * U, h: (r[3] + 2) * U, fill: palette.K });
+  }
+  for (const r of sprite.rects) {
+    out.push({ x: r[0] * U, y: r[1] * U, w: r[2] * U, h: r[3] * U, fill: palette[r[4]] });
+  }
+  return out;
+}
 ---
 <section class="panel span-7">
   <div class="panel__head"><span class="panel__tag">PLAYER</span></div>
   <div class="player">
-    <div class="player__avatar" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="96" height="96" shape-rendering="crispEdges">
-        <rect x="11" y="0" width="2" height="1" fill="var(--cyan)" />
-        <rect x="10" y="1" width="4" height="1" fill="var(--cyan)" />
-        <rect x="9" y="2" width="6" height="2" fill="var(--cyan)" />
-        <rect x="8" y="4" width="8" height="2" fill="var(--cyan)" />
-        <rect x="7" y="6" width="10" height="2" fill="var(--cyan)" />
-        <rect x="6" y="8" width="12" height="1" fill="var(--cyan)" />
-        <rect x="15" y="5" width="2" height="2" fill="var(--gold)" />
-        <rect x="7" y="9" width="10" height="2" fill="var(--ink)" />
-        <rect x="6" y="11" width="12" height="5" fill="var(--ink)" />
-        <rect x="7" y="16" width="10" height="1" fill="var(--ink)" />
-        <rect x="4" y="10" width="2" height="6" fill="var(--ink)" />
-        <rect x="18" y="10" width="2" height="6" fill="var(--ink)" />
-        <rect x="9" y="12" width="2" height="2" fill="var(--bg)" />
-        <rect x="14" y="12" width="2" height="2" fill="var(--bg)" />
-        <rect x="12" y="14" width="2" height="2" fill="var(--bg)" />
-        <rect x="8" y="17" width="8" height="1" fill="var(--ember)" />
-        <rect x="8" y="18" width="8" height="4" fill="var(--ink)" />
-        <rect x="8" y="22" width="2" height="2" fill="var(--ink)" />
-        <rect x="14" y="22" width="2" height="2" fill="var(--ink)" />
-        <rect x="21" y="11" width="1" height="9" fill="var(--gold)" />
-        <rect x="20" y="9" width="3" height="1" fill="var(--gold)" />
-        <rect x="21" y="8" width="1" height="3" fill="var(--gold)" />
+    <div class="player__avatar">
+      <svg viewBox="0 0 96 96" width="96" height="96" shape-rendering="crispEdges" role="img" aria-label="鸡毛法师头像">
+        {cells(mage).map((c) => <rect x={c.x} y={c.y} width={c.w} height={c.h} fill={c.fill} />)}
       </svg>
     </div>
     <div class="player__id">
@@ -56,7 +52,7 @@ const { name, title, level, exp, stats } = player;
 
 <style>
   .player { display: flex; gap: var(--space-4); align-items: flex-start; flex-wrap: wrap; }
-  .player__avatar { border: 2px solid var(--line); background: var(--bg); padding: 8px; flex: none; }
+  .player__avatar { border: 2px solid var(--line); background: var(--bg); padding: 4px; flex: none; line-height: 0; }
   .player__name { font-family: var(--font-display); font-size: 16px; margin: 0 0 6px; color: var(--ink); }
   .player__title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; color: var(--ash); margin: 0 0 var(--space-3); }
   .player__exp { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
