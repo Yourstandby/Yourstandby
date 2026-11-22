@@ -1,0 +1,67 @@
+name: Render contribution hop
+
+on:
+  schedule:
+    - cron: '47 3 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - site/scripts/render-hop.mjs
+      - site/public/sprites.json
+      - .github/workflows/hop-render.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hop-render
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install renderer
+        working-directory: site
+        run: npm ci
+
+      - name: Render hop animation
+        working-directory: site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_LOGIN: ${{ github.repository_owner }}
+        run: node scripts/render-hop.mjs 20
+
+      - name: Commit animation
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile/hop.gif profile/hop.webp
+          if git diff --cached --quiet; then
+            echo "hop unchanged"
+            exit 0
+          fi
+          ls -lh profile/hop.webp
+          git commit -m "chore(hop): re-render contribution hop"
+          for i in 1 2 3; do
+            if git pull --rebase --autostash origin ${GITHUB_REF_NAME} && git push; then
+              echo pushed; exit 0
+            fi
+            sleep 5
+          done
+          exit 1

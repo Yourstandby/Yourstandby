@@ -180,6 +180,20 @@
 <!-- CONTRIB:END -->
 
 <details open>
+<summary><strong>跳跃踩点 / Contribution hop</strong></summary>
+
+<p align="center">
+<a href="https://yourstandby.github.io/Yourstandby/#trials">
+<picture>
+  <source type="image/webp" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/hop.webp" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/hop.gif" alt="鸡毛法师与小白战士在贡献热力格上跳跃，踩过的格子逐个亮起，最后在中列会合" width="640" />
+</picture>
+</a>
+</p>
+
+</details>
+
+<details open>
 <summary><strong>3D 贡献日历 / Contribution city</strong></summary>
 
 <p align="center">
