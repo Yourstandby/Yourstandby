@@ -44,7 +44,7 @@ const notes = (await getCollection('notes'))
             <span class="gauge" role="img" aria-label={`${s.label} ${s.pct}/${s.max}`}>
               {Array.from({ length: s.max }, (_, i) => <i class={i < s.pct ? 'on' : ''} />)}
             </span>
-            <span class="stack-row__val">{s.value}</span>
+            <span class="stack-row__val">{s.detail}</span>
           </div>
         ))}
       </div>

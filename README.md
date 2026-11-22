@@ -109,17 +109,17 @@ $ cat mission.txt
 ---
 
 <a id="stack"></a>
+<a id="stack"></a>
 ## 03 / 技术栈 · Stack
 
-```text
-LANGUAGES   ██████████████░░░  TypeScript / Python / Go
-FRONTEND    ████████████░░░░░  React / Astro / 原生 CSS
-BACKEND     ██████████░░░░░░░  Node / FastAPI / Postgres
-TOOLING     █████████████░░░░  Git / Docker / Actions
-DESIGN      ██████████████░░░  像素风 / SVG / 动效
-```
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/stack-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/stack-light.svg" alt="技术栈像素仪表：语言 14 格、前端 12 格、后端 10 格、工具 13 格、设计 14 格" width="760" />
+</picture>
+</p>
 
-<sub>进度条按自己的真实水平改，别写满——留白的部分才是下一步。</sub>
+<sub>进度条按自己的真实水平改，别写满——留白的部分才是下一步。数据源 `design/stack.json`，改这一处，README 卡片和网站同时更新。</sub>
 
 ---
 

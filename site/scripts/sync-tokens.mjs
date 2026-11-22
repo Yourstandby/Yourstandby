@@ -12,3 +12,9 @@ const css = await readFile(src, 'utf8');
 const banner = '/* 自动生成，请勿手改。源文件：design/tokens.css */\n';
 await writeFile(out, banner + css, 'utf8');
 console.log('tokens synced:', out);
+
+// 技术栈数据同样只有一份：design/stack.json，卡片脚本和站点都读它
+const stackSrc = resolve(here, '../../design/stack.json');
+const stackOut = resolve(here, '../src/data/stack.generated.json');
+await writeFile(stackOut, await readFile(stackSrc, 'utf8'), 'utf8');
+console.log('stack synced:', stackOut);

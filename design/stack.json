@@ -1,0 +1,32 @@
+[
+  {
+    "label": "LANGUAGES",
+    "detail": "TypeScript / Python / Go",
+    "pct": 14,
+    "max": 18
+  },
+  {
+    "label": "FRONTEND",
+    "detail": "React / Astro / 原生 CSS",
+    "pct": 12,
+    "max": 18
+  },
+  {
+    "label": "BACKEND",
+    "detail": "Node / FastAPI / Postgres",
+    "pct": 10,
+    "max": 18
+  },
+  {
+    "label": "TOOLING",
+    "detail": "Git / Docker / Actions",
+    "pct": 13,
+    "max": 18
+  },
+  {
+    "label": "DESIGN",
+    "detail": "像素风 / SVG / 动效",
+    "pct": 14,
+    "max": 18
+  }
+]

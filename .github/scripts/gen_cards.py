@@ -217,6 +217,26 @@ def render_contrib(data, t):
                  "贡献热力图", "过去一年的每日提交热力图，地牢配色")
 
 
+def load_stack():
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "stack.json")
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def render_stack(_data, t):
+    """技术栈卡片：14 格像素条 + 技术名。README 里按 760px 显示，1:1 不缩放。"""
+    items = load_stack()
+    body = [tag(20, 28, "STACK", t, 13)]
+    for i, it in enumerate(items):
+        y = 64 + i * 40
+        body.append(tag(20, y, it["label"], t, 13, t["ink"]))
+        body.append(gauge(176, y - 11, it["pct"] / it["max"], t, cells=14, cw=18, ch=11, gap=6))
+        body.append(tag(540, y, it["detail"], t, 12, t["dim"]))
+    height = 64 + len(items) * 40 + 8
+    return shell(760, height, t, "".join(body), "技术栈",
+                 "、".join(it["label"] for it in items))
+
+
 def render_pin(repo, t):
     name = esc(repo["name"])[:24]
     desc = esc(repo["description"] or "")
@@ -254,7 +274,8 @@ def main():
     out = os.environ.get("OUT_DIR", ".build")
     os.makedirs(out, exist_ok=True)
     writers = {"stats": render_stats, "top-langs": render_langs,
-               "streak": render_streak, "contrib": render_contrib}
+               "streak": render_streak, "contrib": render_contrib,
+               "stack": render_stack}
     pins = []
     for repo_name in PIN_REPOS:
         repo = gql(token, PIN_QUERY, {"owner": login, "name": repo_name}).get("repository")
