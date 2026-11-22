@@ -1,0 +1,52 @@
+/* ember-pixel · 设计 token（README SVG 与 Astro 站点共用同一份变量） */
+:root {
+  --px-grid: 8px;
+  --px-border: 2px;
+  --px-shadow: 4px 4px 0 var(--line);
+  --dur-press: 120ms;
+  --dur-panel: 180ms;
+  --dur-blink: 1000ms;
+  --ease-step: steps(1, end);
+
+  --bg: #16090A; --surface: #22100F; --surface-2: #2E1512;
+  --line: #3D1B16; --ink: #FFE9D6; --ink-dim: #FFB08A; --ash: #8A6A64;
+  --ember: #FF3B1F; --ember-deep: #C21B00; --flame: #FFB000; --spark: #FFE9A8;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #FFF4EC; --surface: #FFFFFF; --surface-2: #FFE7D8;
+    --line: #1A0D0A; --ink: #1A0D0A; --ink-dim: #5C3A32;
+    --ember: #C81E00; --ember-deep: #8A1400; --flame: #8A4A00; --spark: #FFC98A;
+  }
+}
+
+/* 像素底：纯色 + 点阵，禁用渐变与模糊 */
+.px-bg { background: var(--bg); background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 32px 32px; }
+
+/* 硬边框 + 硬投影，零圆角 */
+.px-card { background: var(--surface); border: var(--px-border) solid var(--line); border-radius: 0; box-shadow: var(--px-shadow); }
+.px-card--flat { box-shadow: none; }
+
+/* 按钮：hover 抬 2px 投影 6px，active 塌陷归零，全程 step 曲线 */
+.px-btn {
+  font: 700 12px/1 var(--font-pixel, monospace); letter-spacing: .08em;
+  padding: 12px 20px; color: var(--ink); background: var(--surface-2);
+  border: var(--px-border) solid var(--line); border-radius: 0;
+  box-shadow: 4px 4px 0 var(--line); cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-step), box-shadow var(--dur-press) var(--ease-step);
+}
+.px-btn:hover { transform: translate(-1px, -2px); box-shadow: 6px 6px 0 var(--line); }
+.px-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--line); }
+.px-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+/* 像素光标：严格两帧闪烁，不做呼吸 */
+.px-caret { display: inline-block; width: .6em; height: 1em; background: var(--ember); animation: px-blink var(--dur-blink) var(--ease-step) infinite; }
+@keyframes px-blink { 0%, 49.9% { opacity: 1 } 50%, 100% { opacity: 0 } }
+
+/* 8 级 dither 擦除遮罩（4x4 Bayer），替代淡入 */
+.px-dither { --d: 0; mask-image: conic-gradient(#0000 0 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .px-btn:hover, .px-btn:active { transform: none; }
+}

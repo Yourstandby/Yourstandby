@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="224" viewBox="0 0 1200 224" role="img" aria-labelledby="bt bd">
+  <title id="bt">Yourstandby — 火红像素工作台</title>
+  <desc id="bd">左侧燃烧的像素火焰，右侧 YOURSTANDBY 标题与 CODE × FIRE × CURIOSITY 副标题</desc>
+  <defs>
+    <pattern id="dot" width="32" height="32" patternUnits="userSpaceOnUse">
+      <rect width="2" height="2" fill="#3D1B16"/>
+    </pattern>
+    <style>
+      .f1,.f2,.f3{opacity:1}
+      .f1{animation:fr1 .72s steps(1,end) infinite}
+      .f2{animation:fr2 .72s steps(1,end) infinite;opacity:0}
+      .f3{animation:fr3 .72s steps(1,end) infinite;opacity:0}
+      @keyframes fr1{0%,33.32%{opacity:1}33.33%,100%{opacity:0}}
+      @keyframes fr2{0%,33.32%{opacity:0}33.33%,66.65%{opacity:1}66.66%,100%{opacity:0}}
+      @keyframes fr3{0%,66.65%{opacity:0}66.66%,100%{opacity:1}}
+      .em{animation:rise 4.5s linear infinite}
+      .em2{animation:rise 5.4s linear infinite;animation-delay:-1.6s}
+      .em3{animation:rise 3.9s linear infinite;animation-delay:-2.9s}
+      .em4{animation:rise 6.1s linear infinite;animation-delay:-4.2s}
+      @keyframes rise{0%{transform:translateY(0);opacity:0}12%{opacity:1}88%{opacity:1}100%{transform:translateY(-88px);opacity:0}}
+      .scan{animation:scan 6s linear infinite;opacity:.18}
+      @keyframes scan{0%{transform:translateY(0)}100%{transform:translateY(220px)}}
+      .live{animation:live 1s steps(1,end) infinite}
+      @keyframes live{0%,49.9%{opacity:1}50%,100%{opacity:0}}
+      @media (prefers-reduced-motion: reduce){*{animation:none !important}}
+    </style>
+  </defs>
+
+  <rect width="1200" height="224" fill="#16090A"/>
+  <rect width="1200" height="224" fill="url(#dot)"/>
+  <rect width="1200" height="2" fill="#FF3B1F"/>
+  <rect y="222" width="1200" height="2" fill="#3D1B16"/>
+
+  <!-- 火焰：三帧逐格切换，像素动画不做插值 -->
+  <g class="f1">
+    <g fill="#FF3B1F">
+      <rect x="72" y="168" width="64" height="8"/><rect x="72" y="160" width="64" height="8"/>
+      <rect x="72" y="152" width="56" height="8"/><rect x="80" y="144" width="48" height="8"/>
+      <rect x="88" y="136" width="32" height="8"/><rect x="96" y="128" width="16" height="8"/>
+      <rect x="104" y="120" width="8" height="8"/>
+    </g>
+    <g fill="#FFB000">
+      <rect x="80" y="168" width="40" height="8"/><rect x="80" y="160" width="40" height="8"/>
+      <rect x="88" y="152" width="32" height="8"/><rect x="96" y="144" width="16" height="8"/>
+    </g>
+    <rect x="88" y="168" width="16" height="8" fill="#FFE9A8"/>
+  </g>
+  <g class="f2">
+    <g fill="#FF3B1F">
+      <rect x="72" y="168" width="64" height="8"/><rect x="72" y="160" width="64" height="8"/>
+      <rect x="72" y="152" width="56" height="8"/><rect x="72" y="144" width="48" height="8"/>
+      <rect x="80" y="136" width="40" height="8"/><rect x="88" y="128" width="24" height="8"/>
+      <rect x="96" y="120" width="8" height="8"/><rect x="104" y="112" width="8" height="8"/>
+    </g>
+    <g fill="#FFB000">
+      <rect x="80" y="168" width="40" height="8"/><rect x="80" y="160" width="40" height="8"/>
+      <rect x="88" y="152" width="24" height="8"/><rect x="96" y="144" width="8" height="8"/>
+    </g>
+    <rect x="88" y="168" width="16" height="8" fill="#FFE9A8"/>
+  </g>
+  <g class="f3">
+    <g fill="#FF3B1F">
+      <rect x="72" y="168" width="64" height="8"/><rect x="72" y="160" width="64" height="8"/>
+      <rect x="72" y="152" width="56" height="8"/><rect x="80" y="144" width="40" height="8"/>
+      <rect x="88" y="136" width="24" height="8"/><rect x="96" y="128" width="8" height="8"/>
+    </g>
+    <g fill="#FFB000">
+      <rect x="80" y="168" width="40" height="8"/><rect x="80" y="160" width="32" height="8"/>
+      <rect x="88" y="152" width="16" height="8"/>
+    </g>
+    <rect x="88" y="168" width="16" height="8" fill="#FFE9A8"/>
+  </g>
+
+  <!-- 余烬：4 颗 2×2，错峰上升 -->
+  <rect class="em" x="120" y="160" width="4" height="4" fill="#FF3B1F"/>
+  <rect class="em2" x="96" y="150" width="4" height="4" fill="#FFB000"/>
+  <rect class="em3" x="140" y="168" width="4" height="4" fill="#FFE9A8"/>
+  <rect class="em4" x="150" y="140" width="4" height="4" fill="#FF3B1F"/>
+
+  <!-- 标题：硬投影 4px 偏移，无模糊 -->
+  <text x="284" y="116" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="68" font-weight="700" letter-spacing="6" fill="#C21B00">YOURSTANDBY</text>
+  <text x="280" y="112" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="68" font-weight="700" letter-spacing="6" fill="#FFE9D6">YOURSTANDBY</text>
+  <text x="282" y="162" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="22" letter-spacing="5" fill="#FFB08A">CODE x FIRE x CURIOSITY</text>
+
+  <!-- 状态面板 -->
+  <g>
+    <rect x="900" y="48" width="236" height="128" fill="none" stroke="#3D1B16" stroke-width="2"/>
+    <rect x="900" y="48" width="8" height="8" fill="#FF3B1F"/>
+    <text x="924" y="84" font-family="ui-monospace, Consolas, monospace" font-size="16" letter-spacing="3" fill="#8A6A64">STATUS</text>
+    <rect class="live" x="924" y="100" width="10" height="10" fill="#FF3B1F"/>
+    <text x="944" y="110" font-family="ui-monospace, Consolas, monospace" font-size="18" letter-spacing="3" fill="#FFE9D6">ONLINE</text>
+    <text x="924" y="146" font-family="ui-monospace, Consolas, monospace" font-size="16" letter-spacing="3" fill="#8A6A64">LV.03 · BUILDER</text>
+    <rect x="1024" y="132" width="88" height="14" fill="#3D1B16"/>
+    <rect x="1024" y="132" width="60" height="14" fill="#FF3B1F"/>
+  </g>
+
+  <rect class="scan" y="0" width="1200" height="2" fill="#FF3B1F"/>
+</svg>

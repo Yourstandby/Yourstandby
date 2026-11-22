@@ -1,0 +1,50 @@
+{
+  "name": "ember-pixel",
+  "meta": {
+    "grid": 8,
+    "radius": 0,
+    "border": 2,
+    "shadow": "4px 4px 0",
+    "motion": "step-end",
+    "fonts": {
+      "display": "Press Start 2P",
+      "body": "Silkscreen",
+      "cjk": "Fusion Pixel 12px",
+      "svg": "ui-monospace"
+    }
+  },
+  "dark": {
+    "bg": "#16090A",
+    "surface": "#22100F",
+    "surface2": "#2E1512",
+    "line": "#3D1B16",
+    "ink": "#FFE9D6",
+    "inkDim": "#FFB08A",
+    "ash": "#8A6A64",
+    "ember": "#FF3B1F",
+    "emberDeep": "#C21B00",
+    "flame": "#FFB000",
+    "spark": "#FFE9A8"
+  },
+  "light": {
+    "bg": "#FFF4EC",
+    "surface": "#FFFFFF",
+    "surface2": "#FFE7D8",
+    "line": "#1A0D0A",
+    "ink": "#1A0D0A",
+    "inkDim": "#5C3A32",
+    "ash": "#8A6A64",
+    "ember": "#C81E00",
+    "emberDeep": "#8A1400",
+    "flame": "#8A4A00",
+    "spark": "#FFC98A"
+  },
+  "contrast": {
+    "ember on dark bg": "5.47:1",
+    "ink on dark bg": "15.6:1",
+    "inkDim on dark bg": "9.4:1",
+    "ember on light bg": "5.34:1",
+    "ink on light bg": "16.1:1",
+    "ash on dark bg": "4.0:1 (decor/大字 only)"
+  }
+}
