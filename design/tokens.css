@@ -1,8 +1,14 @@
 /* ember-pixel · 设计 token（README SVG 与 Astro 站点共用同一份变量） */
 :root {
-  --px-grid: 8px;
-  --px-border: 2px;
-  --px-shadow: 4px 4px 0 var(--line);
+  /* 像素尺寸刻度（2x）：真源在这里，站点与卡片共用。
+     --px-grid 8px 子网格 → 16px；结构框 2px → 4px；投影 4px → 8px。
+     小构件（徽章/角标/表格线）仍用 2px 内描边，避免粗边框吃掉内空间。 */
+  --px-grid: 16px;
+  --px-tile: 32px;
+  --px-border: 4px;
+  --px-hair: 2px;
+  --px-shadow: 8px 8px 0 var(--line);
+  --px-shadow-hover: 12px 12px 0 var(--line);
   --dur-press: 120ms;
   --dur-panel: 180ms;
   --dur-blink: 1000ms;
@@ -26,8 +32,8 @@
   }
 }
 
-/* 像素底：纯色 + 点阵，禁用渐变与模糊 */
-.px-bg { background: var(--bg); background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 32px 32px; }
+/* 像素底：纯色 + 点阵，禁用渐变与模糊。2px 点才在 2x 屏上立得住 */
+.px-bg { background: var(--bg); background-image: radial-gradient(var(--line) 2px, transparent 2px); background-size: var(--px-tile) var(--px-tile); }
 
 /* 硬边框 + 硬投影，零圆角 */
 .px-card { background: var(--surface); border: var(--px-border) solid var(--line); border-radius: 0; box-shadow: var(--px-shadow); }
@@ -36,14 +42,14 @@
 /* 按钮：hover 抬 2px 投影 6px，active 塌陷归零，全程 step 曲线 */
 .px-btn {
   font: 700 12px/1 var(--font-pixel, monospace); letter-spacing: .08em;
-  padding: 12px 20px; color: var(--ink); background: var(--surface-2);
+  padding: 16px 24px; color: var(--ink); background: var(--surface-2);
   border: var(--px-border) solid var(--line); border-radius: 0;
-  box-shadow: 4px 4px 0 var(--line); cursor: pointer;
+  box-shadow: var(--px-shadow); cursor: pointer;
   transition: transform var(--dur-press) var(--ease-step), box-shadow var(--dur-press) var(--ease-step);
 }
-.px-btn:hover { transform: translate(-1px, -2px); box-shadow: 6px 6px 0 var(--line); }
-.px-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--line); }
-.px-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.px-btn:hover { transform: translate(-2px, -4px); box-shadow: var(--px-shadow-hover); }
+.px-btn:active { transform: translate(8px, 8px); box-shadow: 0 0 0 var(--line); }
+.px-btn:focus-visible { outline: var(--px-hair) solid var(--ember); outline-offset: 2px; }
 
 /* 像素光标：严格两帧闪烁，不做呼吸 */
 .px-caret { display: inline-block; width: .6em; height: 1em; background: var(--ember); animation: px-blink var(--dur-blink) var(--ease-step) infinite; }

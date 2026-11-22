@@ -52,7 +52,27 @@ python -m fontTools.subset fusion-pixel-12px-proportional-zh_hans.otf.woff2 \
   --layout-features='*' --output-file=site/public/fonts/fusion-pixel-12px-zh.woff2
 ```
 
-12px 字体在 12 / 24 / 36px 下最锐利；16px 会有 1.33 倍缩放，像素边缘略软但有 `font-smoothing: none` 兜底。
+12px 字体只在 **12 的整数倍**下最锐利：12 / 24 / 36 / 48 / 60 / 72。任何 10、11、13、14、16px 都是
+1.1~1.33 倍重采样，边缘必然发虚（`font-smoothing: none` 只在 macOS 生效，Windows 上是灰阶抗锯齿）。
+所以 `--fs-*` 阶梯只取 12 的倍数，组件里也不许写裸字号——需要新档位就回到 `tokens.css` 加。
+
+纯拉丁 display 标题用 Press Start 2P（8px 网格），只取 8 的倍数，例如 `.brand` 固定 16px。
+
+## 尺寸刻度（2x）
+
+真源是 `design/tokens.css`，站点通过 `scripts/sync-tokens.mjs` 复制进 `src/styles/_tokens.generated.css`。
+
+| token | 值 | 说明 |
+|---|---|---|
+| `--px-grid` | 16px | 8px 子网格的 2x，所有间距取它的倍数 |
+| `--px-tile` | 32px | 点阵步长，`--maxw: 1280px` = 40 格 |
+| `--px-border` | 4px | 结构框（面板 / 卡片 / 舞台） |
+| `--px-hair` | 2px | 小构件内描边（徽章 / 角标 / 表格线 / 下划线） |
+| `--px-shadow` | 8px 8px | 静态投影；hover 用 `--px-shadow-hover`（12px） |
+
+精灵一律整数倍放大：队伍 `unit 8`（32px 美术 → 256px）、头像 `unit 4`（→128px）、
+库存图标 16px 美术 → 64px、仪表格子 24×16。
+**改美术时保持整数倍**，否则 `shape-rendering="crispEdges"` 救不回来。
 
 ## 动效清单
 
@@ -62,7 +82,7 @@ python -m fontTools.subset fusion-pixel-12px-proportional-zh_hans.otf.woff2 \
 | 页面切换 | ClientRouter 转场后重播揭示 | `astro:after-swap` |
 | 火焰 | 三帧逐格切换 | `Ember.astro` 内 `steps(1,end)` |
 | 仪表 | 语义分色：青=数据 绿=通关 金=进度 | `Gauge.astro` 的 tone |
-| 按钮 / 卡片 | hover 抬 2px，active 塌陷 | `tokens.css` / `pixel.css` |
+| 按钮 / 卡片 | hover 抬 4px + 投影 8→12px，active 塌陷 | `tokens.css` / `pixel.css` |
 | 光标 / 状态灯 | 严格两帧闪烁 | `px-blink` |
 
 全部动画在 `prefers-reduced-motion: reduce` 下关闭。

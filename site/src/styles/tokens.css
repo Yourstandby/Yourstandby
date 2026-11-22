@@ -23,12 +23,8 @@
   --space-1: 8px; --space-2: 16px; --space-3: 24px; --space-4: 32px;
   --space-5: 48px; --space-6: 64px; --space-7: 96px; --space-8: 128px;
 
-  /* 结构尺寸 2x：前面覆盖 --px-border / --px-shadow 的 1x 值。
-     4px = 结构框（面板/卡片/舞台），2px = 小构件内描边（徽章/角标/下划线）。 */
-  --px-border: 4px;
-  --px-shadow: 8px 8px 0 var(--line);
-  --px-shadow-hover: 12px 12px 0 var(--line);
-  --px-tile: 32px;
+  /* 结构尺寸（--px-grid / --px-border / --px-shadow / --px-tile）已收回
+     design/tokens.css 单一真源，这里不再重复覆盖。 */
 
   --z-base: 1; --z-nav: 10; --z-overlay: 30; --z-toast: 50;
 
