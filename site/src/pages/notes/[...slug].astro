@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes');
+  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+---
+<Base title={note.data.title} description={note.data.summary}>
+  <article class="wrap note">
+    <p class="card__kicker">ISSUE {String(note.data.issue).padStart(2, '0')} · {note.data.date.toISOString().slice(0, 10)}</p>
+    <h1>{note.data.title}</h1>
+    <Content />
+    <p><a href="/notes/">← 返回手账</a></p>
+  </article>
+</Base>
+
+<style>
+  .note { max-width: 760px; padding-top: var(--space-7); }
+  .note h1 {
+    font-family: var(--font-display); font-size: clamp(20px, 4vw, 32px);
+    line-height: 1.4; margin: var(--space-3) 0 var(--space-5); color: var(--ink);
+  }
+  .note h2 {
+    font-family: var(--font-display); font-size: var(--fs-sm);
+    margin: var(--space-6) 0 var(--space-3); color: var(--ember);
+  }
+  .note p, .note li { color: var(--ink-dim); }
+  .note code {
+    font-family: var(--font-mono); background: var(--surface-2);
+    border: 2px solid var(--line); padding: 1px 4px; color: var(--ink);
+  }
+</style>

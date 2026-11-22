@@ -1,0 +1,42 @@
+---
+import '../styles/tokens.css';
+import '../styles/pixel.css';
+import { site } from '../data/site.ts';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props { title?: string; description?: string }
+const { title = site.name, description = site.tagline } = Astro.props;
+const full = title === site.name ? title : `${title} · ${site.name}`;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{full}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#16090A" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到主内容</a>
+    <Nav />
+    <main id="main">{Astro.slots.has('default') && <slot />}</main>
+    <Footer />
+    <!-- 直接静态托管，不走打包：2.5KB，确定性优先 -->
+    <script is:inline defer src="/motion.js"></script>
+    <style>
+      .skip { position: absolute; left: -9999px; }
+      .skip:focus { left: 8px; top: 8px; background: var(--ember); color: var(--bg); padding: 8px; z-index: 99; }
+    </style>
+  </body>
+</html>

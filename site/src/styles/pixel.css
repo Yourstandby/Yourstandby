@@ -1,0 +1,121 @@
+/* 火红像素站：布局与组件。色板与动效变量全部来自 tokens.css */
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: 1.7;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+}
+img, svg { max-width: 100%; height: auto; display: block; }
+a { color: var(--ember); text-decoration: none; border-bottom: 2px solid transparent; }
+a:hover { border-bottom-color: var(--ember); }
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--ember); outline-offset: 2px;
+}
+
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--space-4); }
+.stack > * + * { margin-top: var(--space-4); }
+.center { text-align: center; }
+
+/* ---------- 顶部导航 ---------- */
+.nav {
+  position: sticky; top: 0; z-index: var(--z-nav);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  border-bottom: var(--px-border) solid var(--line);
+  backdrop-filter: none;
+}
+.nav__inner {
+  display: flex; flex-wrap: wrap; gap: var(--space-3);
+  align-items: center; justify-content: space-between;
+  padding: var(--space-3) 0;
+}
+.brand {
+  font-family: var(--font-display); font-size: var(--fs-xs); letter-spacing: 1px;
+  color: var(--ink); border: 0;
+}
+.brand span { color: var(--ember); }
+.nav__links { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.nav__links a {
+  font-size: var(--fs-sm); letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink-dim); border-bottom: 2px solid transparent; padding-bottom: 2px;
+}
+.nav__links a:hover, .nav__links a[aria-current="page"] { color: var(--ember); border-bottom-color: var(--ember); }
+.live {
+  display: inline-block; width: 8px; height: 8px; background: var(--ember);
+  animation: px-blink var(--dur-blink) var(--ease-step) infinite;
+}
+
+/* ---------- 分区标题：编号铭牌 ---------- */
+.sec { padding: var(--space-8) 0 0; }
+.sec__head { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-5); }
+.sec__no {
+  font-family: var(--font-mono); font-size: var(--fs-sm); letter-spacing: 2px;
+  color: var(--bg); background: var(--ember); padding: 4px 8px; line-height: 1;
+}
+.sec__title {
+  font-family: var(--font-display); font-size: var(--fs-lg); letter-spacing: 1px;
+  margin: 0; color: var(--ink);
+}
+.sec__rule { flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 16px); }
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--surface); border: var(--px-border) solid var(--line);
+  padding: var(--space-4); box-shadow: var(--px-shadow);
+  transition: transform var(--dur-press) var(--ease-step), box-shadow var(--dur-press) var(--ease-step);
+}
+.card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--line); }
+.card__kicker { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 2px; color: var(--ash); }
+.card__title { font-family: var(--font-display); font-size: var(--fs-sm); margin: var(--space-2) 0; color: var(--ink); }
+.card__desc { margin: 0; font-size: var(--fs-sm); color: var(--ink-dim); }
+.grid-2 { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- 像素进度条 ---------- */
+.gauge { display: flex; gap: 6px; align-items: center; }
+.gauge i { width: 16px; height: 10px; background: var(--line); display: block; }
+.gauge i.on { background: var(--ember); }
+.gauge__label { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 2px; color: var(--ash); min-width: 96px; }
+
+/* ---------- dither 揭示：像素风不做透明度渐变 ---------- */
+/* 渐进增强：默认完全可见，只有 JS 真的跑起来才会被遮罩。
+   否则脚本 404 时整页内容会永久隐藏。 */
+.dither { -webkit-mask-repeat: repeat; mask-repeat: repeat; -webkit-mask-size: 8px 8px; mask-size: 8px 8px; }
+
+/* ---------- 代码块 / 终端 ---------- */
+.term {
+  background: var(--surface-2); border: var(--px-border) solid var(--line);
+  padding: var(--space-4); font-family: var(--font-mono); font-size: var(--fs-sm);
+  line-height: 1.9; color: var(--ink-dim); overflow-x: auto;
+}
+.term b { color: var(--ember); font-weight: 400; }
+
+/* ---------- 页脚状态栏 ---------- */
+.foot {
+  margin-top: var(--space-8); border-top: var(--px-border) solid var(--line);
+  background: var(--surface);
+}
+.foot__inner {
+  display: flex; flex-wrap: wrap; gap: var(--space-3);
+  justify-content: space-between; padding: var(--space-4) 0;
+  font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 2px; color: var(--ash);
+}
+
+/* ---------- 打字机 ---------- */
+.typed { font-family: var(--font-mono); font-size: var(--fs-md); letter-spacing: 1px; }
+.typed__mask { display: inline-block; overflow: hidden; white-space: nowrap; vertical-align: bottom;
+  animation: typing 4s steps(28, end) 200ms both; }
+@keyframes typing { from { width: 0 } to { width: 100% } }
+
+@media (prefers-reduced-motion: reduce) {
+  .typed__mask { animation: none; width: auto; }
+}

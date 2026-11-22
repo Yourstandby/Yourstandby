@@ -1,0 +1,21 @@
+/* 单一色板来源：design/tokens.css（由 scripts/sync-tokens.mjs 在 dev/build 前生成）
+   这里只补充站点级 token */
+@import './_tokens.generated.css';
+
+:root {
+  --font-display: "Press Start 2P", var(--font-pixel, monospace);
+  /* 拉丁正文用 Silkscreen，中文回落到系统黑体（可选自托管 Fusion Pixel 12px 覆盖） */
+  --font-body: Silkscreen, ui-monospace, "Sarasa Mono SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;
+
+  --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px; --fs-lg: 20px;
+  --fs-xl: 28px; --fs-2xl: 40px; --fs-3xl: 56px;
+
+  --space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 24px;
+  --space-5: 32px; --space-6: 48px; --space-7: 64px; --space-8: 96px;
+
+  --z-base: 1; --z-nav: 10; --z-overlay: 30; --z-toast: 50;
+
+  --dur-dither: 320ms;
+  --maxw: 1120px;
+}

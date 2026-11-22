@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import SecHead from '../../components/SecHead.astro';
+import { getCollection } from 'astro:content';
+
+const notes = (await getCollection('notes'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="技术手账">
+  <div class="wrap">
+    <section class="sec" style="padding-top: var(--space-6)">
+      <SecHead no="06" title="NOTES" />
+      <p class="card__desc">每周一篇，短、具体、只写自己真踩过的坑。</p>
+      <ul class="list">
+        {notes.map((n) => (
+          <li class="card">
+            <span class="card__kicker">ISSUE {String(n.data.issue).padStart(2, '0')} · {n.data.date.toISOString().slice(0, 10)}</span>
+            <h3 class="card__title"><a href={`/notes/${n.id}/`}>{n.data.title}</a></h3>
+            {n.data.summary && <p class="card__desc">{n.data.summary}</p>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .list { list-style: none; padding: 0; margin: var(--space-4) 0 0; display: grid; gap: var(--space-4); }
+</style>

@@ -1,0 +1,125 @@
+---
+import Base from '../layouts/Base.astro';
+import SecHead from '../components/SecHead.astro';
+import Ember from '../components/Ember.astro';
+import { site } from '../data/site.ts';
+import { getCollection } from 'astro:content';
+
+const notes = (await getCollection('notes'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+<Base>
+  <section class="hero wrap">
+    <div class="hero__art"><Ember size={120} /></div>
+    <div class="hero__text">
+      <p class="hero__kicker">BUILDING IN PUBLIC SINCE 2024</p>
+      <h1 class="hero__title">YOUR<br />STANDBY</h1>
+      <p class="typed"><span class="typed__mask">{site.tagline}</span><span class="px-caret" aria-hidden="true"></span></p>
+      <div class="hero__cta">
+        <a class="px-btn" href="/notes/">读手账</a>
+        <a class="px-btn" href={site.github}>GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="sec" data-dither>
+      <SecHead no="01" title="ABOUT" id="about" />
+      <div class="term">
+        <div><b>$</b> whoami</div>
+        <div>&gt; yourstandby — 全栈学徒 / 机械结构爱好者 / 像素画业余选手</div>
+        <div><b>$</b> cat mission.txt</div>
+        <div>&gt; 把抽象的问题拆成结构清楚的小系统：一段代码、一个工具、一张图。</div>
+        <div>&gt; 目标：把工程思维带进软件，把软件的克制带回机械。</div>
+      </div>
+    </section>
+
+    <section class="sec" data-dither>
+      <SecHead no="02" title="STACK" id="stack" />
+      <div class="stack-list">
+        {site.stack.map((s) => (
+          <div class="stack-row">
+            <span class="gauge__label">{s.label}</span>
+            <span class="gauge" role="img" aria-label={`${s.label} ${s.pct}/${s.max}`}>
+              {Array.from({ length: s.max }, (_, i) => <i class={i < s.pct ? 'on' : ''} />)}
+            </span>
+            <span class="stack-row__val">{s.value}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="sec" data-dither>
+      <SecHead no="03" title="PROJECTS" id="projects" />
+      <div class="grid-2">
+        {site.projects.map((p) => (
+          <a class="card" href={p.repo}>
+            <span class="card__kicker">{p.tag}</span>
+            <h3 class="card__title">{p.name}</h3>
+            <p class="card__desc">{p.desc}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="sec" data-dither>
+      <SecHead no="04" title="NOTES" id="notes" />
+      {notes.length === 0 ? <p class="card__desc">还没有手账。</p> : (
+        <ul class="notes">
+          {notes.map((n) => (
+            <li>
+              <a href={`/notes/${n.id}/`}>
+                <span class="notes__date">{n.data.date.toISOString().slice(0, 10)}</span>
+                <span class="notes__title">{n.data.title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p><a href="/notes/">全部手账 →</a></p>
+    </section>
+
+    <section class="sec" data-dither>
+      <SecHead no="05" title="CONNECT" id="connect" />
+      <div class="card">
+        <p class="card__desc">合作、提问、纠错都欢迎。给我一个能复现问题的仓库链接，回复会快很多。</p>
+        <p><a href={`mailto:${site.email}`}>{site.email}</a> · <a href={site.github}>github.com/Yourstandby</a></p>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .hero {
+    display: grid; gap: var(--space-6);
+    grid-template-columns: 1fr; align-items: center;
+    padding: var(--space-8) 0 var(--space-4);
+  }
+  @media (min-width: 768px) { .hero { grid-template-columns: 200px 1fr; } }
+  .hero__art { display: flex; justify-content: center; }
+  .hero__kicker {
+    font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 3px;
+    color: var(--ash); margin: 0 0 var(--space-2);
+  }
+  .hero__title {
+    font-family: var(--font-display); font-size: clamp(28px, 7vw, var(--fs-3xl));
+    line-height: 1.15; margin: 0 0 var(--space-3); letter-spacing: 2px;
+    color: var(--ink); text-shadow: 4px 4px 0 var(--ember-deep);
+  }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-4); }
+  .stack-list { display: grid; gap: var(--space-3); }
+  .stack-row { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  @media (min-width: 768px) {
+    .stack-row { grid-template-columns: 110px auto 1fr; align-items: center; }
+  }
+  .stack-row__val { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--ink-dim); }
+  .notes { list-style: none; padding: 0; margin: 0 0 var(--space-4); }
+  .notes li + li { border-top: 2px dashed var(--line); }
+  .notes a {
+    display: flex; flex-wrap: wrap; gap: var(--space-3);
+    padding: var(--space-3) 0; border-bottom: 0; color: var(--ink);
+  }
+  .notes a:hover .notes__title { color: var(--ember); }
+  .notes__date { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ash); letter-spacing: 2px; }
+</style>

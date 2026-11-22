@@ -1,0 +1,20 @@
+---
+import { site } from '../data/site.ts';
+const year = new Date().getFullYear();
+const hp = Array.from({ length: site.hpMax }, (_, i) => i < site.hp);
+---
+<footer class="foot">
+  <div class="wrap foot__inner">
+    <span>LV.{String(site.level).padStart(2, '0')} · BUILDER</span>
+    <span class="hp" aria-label={`HP ${site.hp}/${site.hpMax}`}>
+      HP {hp.map((on) => <i class={on ? 'on' : ''} />)}
+    </span>
+    <span>© {year} {site.name}</span>
+    <a href={site.github} rel="me">GITHUB ↗</a>
+  </div>
+  <style>
+    .hp { display: inline-flex; gap: 4px; align-items: center; }
+    .hp i { width: 12px; height: 12px; background: var(--line); }
+    .hp i.on { background: var(--ember); }
+  </style>
+</footer>

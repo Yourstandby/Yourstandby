@@ -1,0 +1,21 @@
+---
+import { site } from '../data/site.ts';
+const path = Astro.url.pathname;
+---
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="/">YOUR<span>STANDBY</span></a>
+    <nav class="nav__links" aria-label="主导航">
+      {site.nav.map((item) => (
+        <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>
+      ))}
+    </nav>
+    <span class="nav__stat"><span class="live"></span> LV.{String(site.level).padStart(2, '0')}</span>
+  </div>
+  <style>
+    .nav__stat {
+      font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 2px;
+      color: var(--ash); display: inline-flex; align-items: center; gap: 8px;
+    }
+  </style>
+</header>
