@@ -14,5 +14,9 @@
   },
   "dependencies": {
     "astro": "^5.6.0"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^1.2.0",
+    "gifenc": "^1.0.3"
   }
 }

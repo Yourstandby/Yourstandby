@@ -1,40 +1,48 @@
 ---
 import { base } from '../data/site.ts';
 
-const MAGE = ['雪原', '原始森林', '沙漠', '石坑', '水底'];
-const KNIGHT = ['水底', '石坑', '沙漠', '原始森林', '雪原'];
+const SNOW = '#B8D8E8', FOREST = '#4CE06A', DESERT = '#C98F3D', QUARRY = '#8B929B', WATER = '#2BD9FF';
+const COLOR: Record<string, string> = { snow: SNOW, forest: FOREST, desert: DESERT, quarry: QUARRY, water: WATER };
+
+const STAGES = [
+  { l: { place: '雪原', env: 'snow' }, r: { place: '水底', env: 'water' } },
+  { l: { place: '原始森林', env: 'forest' }, r: { place: '石坑', env: 'quarry' } },
+  { l: { place: '沙漠', env: 'desert' }, r: { place: '沙漠', env: 'desert' } },
+  { l: { place: '石坑', env: 'quarry' }, r: { place: '原始森林', env: 'forest' } },
+  { l: { place: '水底', env: 'water' }, r: { place: '雪原', env: 'snow' } }
+];
 ---
 <section class="panel span-12" id="trials">
   <div class="panel__head trial__head">
-    <span class="panel__tag">THE TEN TRIALS</span>
-    <span class="trial__count"><b id="quest-idx">01</b> / 10</span>
+    <span class="panel__tag">THE TEN TRIALS · 双屏</span>
+    <span class="trial__count"><b id="quest-idx">01</b> / 05</span>
   </div>
 
   <div class="stage">
     <canvas
       id="quest-canvas"
-      width="320"
+      width="640"
       height="180"
       data-base={base}
-      aria-label="十关闯关动画：鸡毛法师从左、小白战士从右，各自通过五种环境在中央相遇"
+      aria-label="双屏闯关动画：左侧鸡毛法师、右侧小白战士，各自通过五种环境，第五组后打破分屏线相遇"
     ></canvas>
   </div>
 
   <div class="stage__cap">
-    <span class="stage__who" id="quest-who">鸡毛法师</span>
-    <span class="stage__place" id="quest-place">雪原</span>
-    <span class="stage__tech" id="quest-tech">法杖点地，一道冰墙拔地而起挡住雪崩</span>
+    <span class="stage__who is-mage">鸡毛法师</span>
+    <span class="stage__place" id="quest-place">雪原 ↔ 水底</span>
+    <span class="stage__who is-knight">小白战士</span>
+    <span class="stage__tech" id="quest-tech">法杖点地，冰墙挡住雪崩 / 大剑搅出涡流借力上浮</span>
   </div>
 
-  <div class="trk">
-    <ol class="trk__side trk__side--mage" id="quest-track-mage">
-      {MAGE.map((p) => <li class="trk__dot is-mage" title={p}><span>{p}</span></li>)}
-    </ol>
-    <span class="trk__mid" aria-hidden="true">VS</span>
-    <ol class="trk__side trk__side--knight" id="quest-track-knight">
-      {KNIGHT.slice().reverse().map((p) => <li class="trk__dot is-knight" title={p}><span>{p}</span></li>)}
-    </ol>
-  </div>
+  <ol class="trk" id="quest-track">
+    {STAGES.map((s) => (
+      <li class="trk__dot">
+        <span class="trk__half is-l" style={`--env:${COLOR[s.l.env]}`}>{s.l.place}</span>
+        <span class="trk__half is-r" style={`--env:${COLOR[s.r.env]}`}>{s.r.place}</span>
+      </li>
+    ))}
+  </ol>
 </section>
 
 <style>
@@ -43,37 +51,36 @@ const KNIGHT = ['水底', '石坑', '沙漠', '原始森林', '雪原'];
   .trial__count b { color: var(--ember); font-size: 15px; }
   .stage {
     border: 2px solid var(--line); background: #0B0C0E; line-height: 0;
-    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+    max-width: 640px; margin: 0 auto;
   }
   .stage canvas {
     width: 100%; height: auto; display: block;
     image-rendering: pixelated; image-rendering: crisp-edges;
   }
   .stage__cap {
-    display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2);
-    margin-top: var(--space-3); min-height: 22px;
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center;
+    gap: 6px var(--space-2); margin-top: var(--space-3); min-height: 22px;
   }
-  .stage__who { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--ember); }
-  .stage__place { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--cyan); }
-  .stage__tech { font-size: 13px; color: var(--ink-dim); }
+  .stage__who { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; }
+  .stage__who.is-mage { color: var(--cyan); }
+  .stage__who.is-knight { color: var(--ink); }
+  .stage__place { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--gold); }
+  .stage__tech { flex-basis: 100%; text-align: center; font-size: 12px; color: var(--ink-dim); }
 
-  .trk { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--space-3); align-items: center; margin-top: var(--space-3); }
-  .trk__side { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; align-items: center; }
-  .trk__side--mage { justify-content: flex-start; }
-  .trk__side--knight { justify-content: flex-end; }
-  .trk__mid { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; color: var(--ash); }
-  .trk__dot {
-    flex: 1; min-width: 0; height: 18px; border: 2px solid var(--line); background: var(--bg);
-    display: grid; place-items: center; font-family: var(--font-mono); font-size: 9px;
-    color: transparent; transition: background var(--dur-press) var(--ease-step), color var(--dur-press) var(--ease-step);
+  .trk { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .trk__dot { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--line); background: var(--bg); }
+  .trk__half {
+    display: block; padding: 4px 2px; text-align: center;
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: 0;
+    color: var(--ash); border-left: 2px solid var(--line);
   }
-  .trk__dot span { white-space: nowrap; overflow: hidden; text-overflow: clip; }
-  .trk__dot.is-mage.is-done { background: var(--cyan); border-color: var(--cyan); }
-  .trk__dot.is-knight.is-done { background: var(--ink); border-color: var(--ink); }
-  .trk__dot.is-cur { border-color: var(--gold); }
-  .trk__dot.is-cur span { color: var(--gold); }
+  .trk__half.is-l { border-left: 0; }
+  .trk__dot.is-done { border-color: var(--gold); }
+  .trk__dot.is-done .trk__half { background: color-mix(in srgb, var(--env) 26%, var(--bg)); color: var(--ink); }
+  .trk__dot.is-cur { border-color: var(--ember); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ember) 30%, transparent); }
+  .trk__dot.is-cur .trk__half { color: var(--ink); }
   @media (max-width: 640px) {
-    .trk__dot span { display: none; }
-    .trk__dot { height: 12px; }
+    .trk__half { font-size: 8px; padding: 2px 1px; }
+    .trk { grid-template-columns: repeat(5, 1fr); gap: 2px; }
   }
 </style>
