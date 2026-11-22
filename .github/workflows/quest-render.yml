@@ -1,0 +1,59 @@
+name: Render quest animation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - site/public/quest.js
+      - site/public/sprites.json
+      - site/scripts/render-quest.mjs
+      - design/sprites.json
+      - .github/workflows/quest-render.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quest-render
+  cancel-in-progress: false
+
+jobs:
+  render:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install renderer
+        working-directory: site
+        run: npm ci
+
+      - name: Render frames to GIF + WebP
+        working-directory: site
+        run: node scripts/render-quest.mjs 10
+
+      - name: Commit animation
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile/quest.gif profile/quest.webp
+          if git diff --cached --quiet; then
+            echo "animation unchanged"
+          else
+            ls -lh profile/quest.webp profile/quest.gif
+            git commit -m "chore(quest): re-render animation from source"
+            git push
+          fi
