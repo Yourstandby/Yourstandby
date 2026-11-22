@@ -1,0 +1,21 @@
+---
+const RAW = 'https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile';
+---
+<section class="panel span-12">
+  <div class="panel__head"><span class="panel__tag">CONTRIBUTIONS · LAST 365 DAYS</span></div>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset={`${RAW}/contrib-dark.svg`} />
+    <img
+      src={`${RAW}/contrib-light.svg`}
+      alt="过去一年每日提交热力图，地牢配色"
+      width="721"
+      loading="lazy"
+      decoding="async"
+    />
+  </picture>
+  <p class="panel__foot">同一份卡片资产由 Actions 每日生成，README 和这里共用。</p>
+</section>
+
+<style>
+  .panel img { display: block; max-width: 100%; height: auto; }
+</style>

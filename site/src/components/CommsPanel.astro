@@ -19,7 +19,12 @@ const links = player.links;
 
 <style>
   .comms { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-  .comms li { display: grid; grid-template-columns: 10px 56px 1fr auto; gap: var(--space-2); align-items: center; }
+  .comms li { display: grid; grid-template-columns: 10px 56px 1fr auto; gap: var(--space-2); align-items: center; min-width: 0; }
+  .comms li > * { min-width: 0; }
+  @media (max-width: 480px) {
+    .comms li { grid-template-columns: 10px 1fr auto; }
+    .comms__label { display: none; }
+  }
   .comms__live { width: 8px; height: 8px; background: var(--lime); animation: px-blink var(--dur-blink) var(--ease-step) infinite; }
   .comms__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; color: var(--ash); }
   .comms__value { font-family: var(--font-mono); font-size: 12px; color: var(--ink); overflow-wrap: anywhere; }

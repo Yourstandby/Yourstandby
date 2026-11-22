@@ -1,13 +1,43 @@
 ---
 import player from '../data/player.generated.json';
+
 const items = player.inventory;
+
+// 16×16 像素图标：矩形列表，全部整数格，缩放到 32px 仍然锐利
+const ICONS: Record<string, { fill: string; rects: number[][] }[]> = {
+  pad: [
+    { fill: 'var(--ink)', rects: [[3, 6, 10, 5]] },
+    { fill: 'var(--bg)', rects: [[5, 7, 1, 3], [4, 8, 3, 1]] },
+    { fill: 'var(--ember)', rects: [[11, 7, 2, 2]] }
+  ],
+  brush: [
+    { fill: 'var(--ink)', rects: [[8, 3, 3, 8]] },
+    { fill: 'var(--gold)', rects: [[9, 4, 1, 6]] },
+    { fill: 'var(--ember)', rects: [[7, 11, 4, 3]] }
+  ],
+  gear: [
+    { fill: 'var(--cyan)', rects: [[6, 7, 4, 4]] },
+    { fill: 'var(--ink)', rects: [[7, 4, 2, 2], [7, 12, 2, 2], [4, 7, 2, 2], [10, 7, 2, 2]] }
+  ],
+  coffee: [
+    { fill: 'var(--ink)', rects: [[4, 6, 7, 6], [11, 8, 2, 2]] },
+    { fill: 'var(--gold)', rects: [[6, 2, 1, 2], [9, 3, 1, 2]] },
+    { fill: 'var(--ember)', rects: [[5, 11, 5, 1]] }
+  ]
+};
 ---
 <section class="panel span-5">
   <div class="panel__head"><span class="panel__tag">INVENTORY</span></div>
   <ul class="inv">
     {items.map((it) => (
       <li class="inv__cell">
-        <span class="inv__slot" aria-hidden="true" data-icon={it.icon}></span>
+        <svg class="inv__slot" viewBox="0 0 16 16" width="32" height="32" aria-hidden="true">
+          {(ICONS[it.icon] ?? []).map((group) => (
+            <g fill={group.fill}>
+              {group.rects.map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} />)}
+            </g>
+          ))}
+        </svg>
         <span class="inv__name">{it.name}</span>
         <span class="inv__desc">{it.desc}</span>
       </li>
@@ -19,17 +49,11 @@ const items = player.inventory;
   .inv { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
   .inv__cell {
     border: 2px solid var(--line); background: var(--bg); padding: var(--space-2);
-    display: grid; gap: 4px; justify-items: start;
+    display: grid; gap: 4px; justify-items: start; min-width: 0;
   }
-  .inv__slot {
-    width: 32px; height: 32px; display: block; border: 2px solid var(--line);
-    background: var(--surface-2);
-    /* 4 个道具用 emoji 之外的纯色块占位，避免和像素风打架 */
-  }
-  .inv__slot[data-icon='pad'] { background: linear-gradient(var(--ember), var(--ember)) 8px 12px / 16px 8px no-repeat, var(--bg); }
-  .inv__slot[data-icon='brush'] { background: linear-gradient(var(--ink), var(--ink)) 14px 6px / 4px 14px no-repeat, linear-gradient(var(--gold), var(--gold)) 12px 20px / 8px 6px no-repeat, var(--bg); }
-  .inv__slot[data-icon='gear'] { background: radial-gradient(var(--cyan) 0 6px, transparent 6px) center / 32px 32px no-repeat, var(--bg); }
-  .inv__slot[data-icon='coffee'] { background: linear-gradient(var(--ink), var(--ink)) 6px 14px / 14px 12px no-repeat, linear-gradient(var(--ember), var(--ember)) 8px 26px / 10px 2px no-repeat, var(--bg); }
+  .inv__cell:hover { border-color: var(--ember); }
+  .inv__slot { border: 2px solid var(--line); background: var(--surface-2); shape-rendering: crispEdges; }
   .inv__name { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ink); }
   .inv__desc { font-family: var(--font-mono); font-size: 10px; color: var(--ash); }
+  @media (max-width: 400px) { .inv { grid-template-columns: 1fr; } }
 </style>

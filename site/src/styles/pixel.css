@@ -103,6 +103,9 @@ a:focus-visible, button:focus-visible {
   transition: transform var(--dur-press) var(--ease-step), box-shadow var(--dur-press) var(--ease-step);
 }
 .panel:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--line); }
+/* 栅格子项默认 min-width:auto，长 URL / 长标题会把栅格顶破，统一压掉 */
+.panel, .panel > *, .dash > * { min-width: 0; }
+.panel img, .panel svg { max-width: 100%; height: auto; }
 .panel__head {
   border-bottom: 2px dashed var(--line); padding-bottom: 8px; margin-bottom: var(--space-3);
 }
