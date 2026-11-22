@@ -30,11 +30,17 @@
 </p>
 
 <p align="center">
-<!-- TODO(contact): 换成你的真实链接与账号 -->
-<a href="mailto:YOUR_EMAIL"><img src="https://img.shields.io/badge/Email-YOUR__EMAIL-C81E00?style=flat-square&logo=gmail&logoColor=fff" alt="Email" /></a>
-<a href="https://yourstandby.github.io/Yourstandby/"><img src="https://img.shields.io/badge/Site-yourstandby.github.io-1A0D0A?style=flat-square&logo=githubpages&logoColor=fff" alt="Website" /></a>
-<img src="https://komarev.com/ghpvc/?username=Yourstandby&label=Views&color=C81E00&style=flat-square" alt="Views" />
-<a href="https://github.com/Yourstandby?tab=followers"><img src="https://img.shields.io/github/followers/Yourstandby?label=Following&style=flat-square&color=FF3B1F" alt="Followers" /></a>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/gear-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/gear-light.svg" alt="状态栏：Followers / Repos / Stars / Commits" width="760" />
+</picture>
+</p>
+
+<!-- TODO(contact): 换成真实邮箱 -->
+<p align="center">
+<a href="mailto:YOUR_EMAIL">Email</a> ·
+<a href="https://yourstandby.github.io/Yourstandby/">Website</a> ·
+<a href="https://github.com/Yourstandby">GitHub</a>
 </p>
 
 <p align="center">
@@ -146,7 +152,12 @@
 ## 05 / 贡献 · Contributions
 
 <!-- CONTRIB:START -->
-> 地牢地图风格的贡献热力图正在由 `.github/workflows/contrib.yml` 生成为 `profile/contrib-{dark,light}.svg`。
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/contrib-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/contrib-light.svg" alt="过去一年每日提交热力图，地牢配色" width="720" />
+</picture>
+</p>
 <!-- CONTRIB:END -->
 
 ---
@@ -155,6 +166,13 @@
 ## 06 / 技术手账 · Notes
 
 每周一篇，短、具体、只写自己真踩过的坑。
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/log-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/log-light.svg" alt="战报日志：最近几期手账标题" width="760" />
+</picture>
+</p>
 
 <!-- WEEKLY:START -->
 ### [01｜把主页做成像素工作台](weekly/2026/issue-1.md)
@@ -171,24 +189,30 @@
 <a id="life"></a>
 ## 07 / 代码之外 · Off-screen
 
-- 🎮 玩通了会做笔记的游戏，比通关本身重要
-- 🖌️ 画 16×16 的精灵图，练习「少即是多」
-- ⚙️ 拆解机械结构，观察力的来源
-- ☕ 一杯手冲的时间，够想明白一个 bug
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/inventory-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/inventory-light.svg" alt="物品栏：GAME PAD / SPRITE BRUSH / GEAR / HAND BREW" width="760" />
+</picture>
+</p>
+
+<sub>离开键盘之后，这些事在给代码充值。</sub>
 
 ---
 
 <a id="connect"></a>
 ## 08 / 联系 · Connect
 
-| 渠道 | 地址 |
-|---|---|
-| Email | `YOUR_EMAIL` |
-| Website | [yourstandby.github.io](https://yourstandby.github.io/Yourstandby/) |
-| GitHub | [@Yourstandby](https://github.com/Yourstandby) |
-| 其他 | 见页面底部社交链接 |
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/comms-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/comms-light.svg" alt="通讯面板：SITE / GITHUB 在线" width="760" />
+</picture>
+</p>
 
 > 合作、提问、纠错都欢迎。给我一个可以复现问题的仓库链接，回复会快很多。
+>
+> [Email](mailto:YOUR_EMAIL) · [Website](https://yourstandby.github.io/Yourstandby/) · [GitHub](https://github.com/Yourstandby)
 
 ---
 

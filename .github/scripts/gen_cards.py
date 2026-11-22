@@ -2,8 +2,10 @@
 """生成像素风 GitHub 卡片：stats / top-langs / streak / contrib，深浅双版。
 只用标准库 + 环境变量 GITHUB_TOKEN，避免依赖任何第三方卡片服务。"""
 import datetime as dt
+import glob
 import json
 import os
+import re
 import sys
 import urllib.request
 
@@ -33,6 +35,7 @@ query($login:String!, $from:DateTime!, $to:DateTime!) {
         }
       }
     }
+    followers { totalCount }
     contributionsCollection(from:$from, to:$to) {
       totalCommitContributions
       totalPullRequestContributions
@@ -217,6 +220,25 @@ def render_contrib(data, t):
                  "贡献热力图", "过去一年的每日提交热力图，地牢配色")
 
 
+
+ICON_SHAPES = {
+    "pad": [((3, 6, 10, 5), "ink"), ((5, 7, 1, 3), "bg"), ((4, 8, 3, 1), "bg"),
+            ((11, 7, 2, 2), "ember")],
+    "brush": [((8, 3, 3, 8), "ink"), ((7, 11, 4, 3), "ember"), ((9, 4, 1, 6), "flame")],
+    "gear": [((6, 7, 4, 4), "ember"), ((7, 4, 2, 2), "ink"), ((7, 12, 2, 2), "ink"),
+             ((4, 7, 2, 2), "ink"), ((10, 7, 2, 2), "ink")],
+    "coffee": [((4, 6, 7, 6), "ink"), ((11, 8, 2, 2), "ink"), ((6, 2, 1, 2), "flame"),
+               ((9, 3, 1, 2), "flame"), ((5, 11, 5, 1), "ember")],
+}
+
+
+def draw_icon(kind, t, x0, y0, unit=3):
+    out = []
+    for (gx, gy, w, h), color in ICON_SHAPES.get(kind, []):
+        out.append(f'<rect x="{x0 + gx * unit}" y="{y0 + gy * unit}" '
+                   f'width="{w * unit}" height="{h * unit}" fill="{t[color]}"/>')
+    return "".join(out)
+
 def load_player():
     path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "player.json")
     with open(path, encoding="utf-8") as fh:
@@ -296,6 +318,87 @@ def render_quests(_data, t):
                  f'已通关 {cleared}/{len(quests)}')
 
 
+def render_inventory(_data, t):
+    p = load_player()
+    items = p["inventory"]
+    body = [tag(20, 28, "INVENTORY", t, 13)]
+    for i, it in enumerate(items):
+        x = 16 + i * 184
+        body.append(f'<rect x="{x}" y="44" width="172" height="132" fill="{t["surface"]}" '
+                    f'stroke="{t["line"]}" stroke-width="2"/>')
+        body.append(f'<rect x="{x + 20}" y="60" width="52" height="52" fill="{t["bg"]}" '
+                    f'stroke="{t["line"]}" stroke-width="2"/>')
+        body.append(draw_icon(it["icon"], t, x + 26, 64))
+        body.append(tag(x + 20, 136, it["name"], t, 12, t["ink"]))
+        body.append(tag(x + 20, 158, it["desc"], t, 11, t["ash"]))
+    return shell(760, 196, t, "".join(body), "物品栏",
+                 "、".join(it["name"] for it in items))
+
+
+def render_gear(data, t):
+    repos = data["repositories"]
+    stars = sum(r["stargazerCount"] for r in repos["nodes"])
+    cells = [
+        ("FOLLOWERS", data["followers"]["totalCount"]),
+        ("REPOS", repos["totalCount"]),
+        ("STARS", stars),
+        ("COMMITS", data["contributionsCollection"]["totalCommitContributions"]),
+    ]
+    body = []
+    for i, (label, value) in enumerate(cells):
+        x = 12 + i * 186
+        body.append(f'<rect x="{x}" y="10" width="174" height="56" fill="{t["surface"]}" '
+                    f'stroke="{t["line"]}" stroke-width="2"/>')
+        body.append(f'<rect x="{x + 10}" y="20" width="8" height="8" fill="{t["ember"]}" class="cur"/>')
+        body.append(tag(x + 26, 30, label, t, 11, t["ash"]))
+        body.append(f'<text x="{x + 12}" y="56" font-family="{MONO}" font-size="22" '
+                    f'font-weight="700" fill="{t["ink"]}">{value}</text>')
+    return shell(760, 76, t, "".join(body), "状态栏",
+                 "、".join(f"{l} {v}" for l, v in cells))
+
+
+def load_weekly(limit=3):
+    root = os.path.join(os.path.dirname(__file__), "..", "..", "weekly")
+    files = sorted(glob.glob(os.path.join(root, "*", "issue-*.md")))
+    rows = []
+    for f in files[-limit:][::-1]:
+        raw = open(f, encoding="utf-8").read()
+        title = next((l[2:].strip() for l in raw.splitlines() if l.startswith("# ")),
+                     os.path.basename(f))
+        num = re.search(r"issue-(\d+)", f)
+        date = re.search(r"^date:\s*(\S+)", raw, re.M)
+        rows.append({"issue": int(num.group(1)) if num else 0,
+                     "title": title, "date": date.group(1) if date else ""})
+    return rows
+
+
+def render_log(_data, t):
+    rows = load_weekly(3)
+    body = [tag(20, 28, "BATTLE LOG", t, 13)]
+    for i, r in enumerate(rows):
+        y = 62 + i * 34
+        body.append(tag(20, y, f'ISSUE-{r["issue"]:02d}', t, 12, t["ember"]))
+        body.append(tag(112, y, r["date"], t, 12, t["ash"]))
+        body.append(tag(216, y, r["title"][:24], t, 13, t["ink"]))
+    height = 62 + max(len(rows), 1) * 34 + 14
+    return shell(760, height, t, "".join(body), "战报日志",
+                 f"最近 {len(rows)} 期手账")
+
+
+def render_contact(_data, t):
+    p = load_player()
+    body = [tag(20, 28, "COMMS", t, 13)]
+    for i, link in enumerate(p["links"]):
+        y = 64 + i * 34
+        body.append(f'<rect x="20" y="{y - 14}" width="8" height="8" fill="{t["ember"]}" class="cur"/>')
+        body.append(tag(40, y, link["label"], t, 12, t["ash"]))
+        body.append(tag(160, y, link["value"], t, 13, t["ink"]))
+        body.append(tag(640, y, "ONLINE", t, 11, t["dim"]))
+    height = 64 + len(p["links"]) * 34 + 12
+    return shell(760, height, t, "".join(body), "通讯面板",
+                 "、".join(link["label"] for link in p["links"]))
+
+
 def load_stack():
     path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "stack.json")
     with open(path, encoding="utf-8") as fh:
@@ -355,7 +458,8 @@ def main():
     writers = {"stats": render_stats, "top-langs": render_langs,
                "streak": render_streak, "contrib": render_contrib,
                "stack": render_stack, "player": render_player,
-               "quests": render_quests}
+               "quests": render_quests, "inventory": render_inventory,
+               "gear": render_gear, "log": render_log, "comms": render_contact}
     pins = []
     for repo_name in PIN_REPOS:
         repo = gql(token, PIN_QUERY, {"owner": login, "name": repo_name}).get("repository")

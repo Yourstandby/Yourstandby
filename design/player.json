@@ -54,5 +54,37 @@
       "status": "locked",
       "progress": 0
     }
+  ],
+  "inventory": [
+    {
+      "name": "GAME PAD",
+      "desc": "玩通了会做笔记",
+      "icon": "pad"
+    },
+    {
+      "name": "SPRITE BRUSH",
+      "desc": "16×16 精灵图",
+      "icon": "brush"
+    },
+    {
+      "name": "GEAR",
+      "desc": "机械结构拆解",
+      "icon": "gear"
+    },
+    {
+      "name": "HAND BREW",
+      "desc": "一杯手冲的时间",
+      "icon": "coffee"
+    }
+  ],
+  "links": [
+    {
+      "label": "SITE",
+      "value": "yourstandby.github.io"
+    },
+    {
+      "label": "GITHUB",
+      "value": "github.com/Yourstandby"
+    }
   ]
 }
