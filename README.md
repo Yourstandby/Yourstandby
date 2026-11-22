@@ -80,8 +80,6 @@
 </picture>
 </p>
 
-<sub>状态只有三种：<code>cleared</code> / <code>active</code> / <code>locked</code>。数据源 <code>design/player.json</code>，改一处两边同步。</sub>
-
 ---
 
 <a id="projects"></a>
@@ -126,8 +124,6 @@
 </picture>
 </p>
 
-<sub>进度条按自己的真实水平改，别写满——留白的部分才是下一步。数据源 `design/stack.json`，改这一处，README 卡片和网站同时更新。</sub>
-
 ---
 
 <a id="signals"></a>
@@ -150,8 +146,6 @@
   <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/streak-light.svg" alt="连续提交" width="720" />
 </picture>
 </p>
-
-<sub>以上卡片由 GitHub Actions 每日生成并提交进仓库，不依赖第三方实时接口。</sub>
 
 ---
 
@@ -189,8 +183,6 @@
 - 浅色主题把 `#FF3B1F` 压到 `#C81E00`，对比度才够 4.5:1。
 <!-- WEEKLY:END -->
 
-<sub>最新一期自动注入到上面，历史归档在 <a href="./weekly/">weekly/</a>。</sub>
-
 ---
 
 <a id="life"></a>
@@ -202,8 +194,6 @@
   <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/inventory-light.svg" alt="物品栏：GAME PAD / SPRITE BRUSH / GEAR / HAND BREW" width="760" />
 </picture>
 </p>
-
-<sub>离开键盘之后，这些事在给代码充值。</sub>
 
 ---
 
