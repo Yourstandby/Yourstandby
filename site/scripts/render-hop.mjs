@@ -17,7 +17,7 @@ const GRID_W = COLS * (CELL + GAP) - GAP;
 const GRID_H = ROWS * (CELL + GAP) - GAP;
 const W = GRID_W + 24, H = 320;
 const GX = 12, GY = 132;
-const HERO = 32;
+const HERO = 16;          // 只有一格大小
 
 /* 浅色纸底 */
 const C = {
@@ -111,15 +111,39 @@ const SPRITE = {
   knight: SPR.sprites.find((s) => s.id === 'knight')
 };
 
-function drawHero(ctx, id, x, y, squash, flip) {
+/* 32x32 精灵预烘焙到离屏画布，再用最近邻缩到 16px，形象不变细节减半 */
+const baked = {};
+for (const id of ['mage', 'knight']) {
+  const oc = createCanvas(32, 32);
+  const octx = oc.getContext('2d');
+  octx.imageSmoothingEnabled = false;
   const sp = SPRITE[id], pal = SPR.palette;
+  for (const r of sp.rects) if (r[5]) { octx.fillStyle = pal.K; octx.fillRect(r[0] - 1, r[1] - 1, r[2] + 2, r[3] + 2); }
+  for (const r of sp.rects) { octx.fillStyle = pal[r[4]]; octx.fillRect(r[0], r[1], r[2], r[3]); }
+  baked[id] = oc;
+}
+
+function drawHero(ctx, id, x, y, squash, flip) {
+  const h = Math.max(12, Math.round(HERO * squash));
   ctx.save();
-  if (flip) { ctx.translate(Math.round(x) + HERO, Math.round(y)); ctx.scale(-1, 1); }
-  else ctx.translate(Math.round(x), Math.round(y));
-  if (squash !== 1) { ctx.translate(0, HERO); ctx.scale(1, squash); ctx.translate(0, -HERO); }
-  for (const r of sp.rects) if (r[5]) { ctx.fillStyle = pal.K; ctx.fillRect(r[0] - 1, r[1] - 1, r[2] + 2, r[3] + 2); }
-  for (const r of sp.rects) { ctx.fillStyle = pal[r[4]]; ctx.fillRect(r[0], r[1], r[2], r[3]); }
+  ctx.imageSmoothingEnabled = false;
+  if (flip) { ctx.translate(Math.round(x) + HERO, Math.round(y) + HERO - h); ctx.scale(-1, 1); }
+  else ctx.translate(Math.round(x), Math.round(y) + HERO - h);
+  ctx.drawImage(baked[id], 0, 0, 32, 32, 0, 0, HERO, h);
   ctx.restore();
+}
+
+/* 落地冲击波：两帧内向外扩一圈方环 */
+function drawShock(ctx, x, y, p, color) {
+  if (p <= 0 || p >= 1) return;
+  const r = Math.round(p * 14);
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 1 - p;
+  ctx.fillRect(x - r, y - r, HERO + r * 2, 2);
+  ctx.fillRect(x - r, y + HERO + r - 2, HERO + r * 2, 2);
+  ctx.fillRect(x - r, y - r, 2, HERO + r * 2);
+  ctx.fillRect(x + HERO + r - 2, y - r, 2, HERO + r * 2);
+  ctx.globalAlpha = 1;
 }
 
 const cellX = (c) => GX + c * (CELL + GAP);
@@ -179,8 +203,11 @@ function renderHop(ctx, t) {
       let fill = RAMP[count <= 0 ? 0 : count < 3 ? 1 : count < 6 ? 2 : count < 10 ? 3 : 4];
       const isLit = lit.has(c + ':' + r);
       let sink = 0;
-      if (c === mCol && r === mRow && mPress > 0) sink = Math.round(mPress * 4);
-      if (c === kCol && r === kRow && kPress > 0) sink = Math.round(kPress * 4);
+      if (c === mCol && r === mRow && mPress > 0) sink = Math.round(mPress * 7);
+      if (c === kCol && r === kRow && kPress > 0) sink = Math.round(kPress * 7);
+      // 左右相邻格被震塌 1px
+      if (Math.abs(c - mCol) === 1 && r === mRow && mPress > 0.4) sink = 1;
+      if (Math.abs(c - kCol) === 1 && r === kRow && kPress > 0.4) sink = 1;
       if (isLit) {
         ctx.fillStyle = C.hit;
         ctx.fillRect(cellX(c), cellY(r) + sink, CELL, CELL - sink);
@@ -195,16 +222,20 @@ function renderHop(ctx, t) {
 
   const mX = cellX(m.col), mY = cellY(m.row) + CELL - HERO;
   const kX = cellX(k.col), kY = cellY(k.row) + CELL - HERO;
-  const mSink = Math.round(mPress * 4), kSink = Math.round(kPress * 4);
+  const mSink = Math.round(mPress * 7), kSink = Math.round(kPress * 7);
+  drawShock(ctx, mX, mY, mPress > 0 ? 1 - mPress : 0, C.hit);
+  drawShock(ctx, kX, kY, kPress > 0 ? 1 - kPress : 0, C.spark);
 
   drawHero(ctx, 'mage', mX, mY + mSink - m.pose.height, m.pose.squash, false);
   drawHero(ctx, 'knight', kX, kY + kSink - k.pose.height, k.pose.squash, true);
 
-  if (mPress > 0.25) for (let i = 0; i < 3; i++) {
-    ctx.fillStyle = C.dust; ctx.fillRect(mX + 4 + i * 9, cellY(m.row) + CELL + 1 + (i % 2), 2, 2);
+  if (mPress > 0.2) for (let i = 0; i < 4; i++) {
+    ctx.fillStyle = i % 2 ? C.dust : C.hitEdge;
+    ctx.fillRect(mX - 3 + i * 6, cellY(m.row) + CELL + 1 + (i % 2) * 2, 2, 2);
   }
-  if (kPress > 0.25) for (let i = 0; i < 3; i++) {
-    ctx.fillStyle = C.dust; ctx.fillRect(kX + 4 + i * 9, cellY(k.row) + CELL + 1 + (i % 2), 2, 2);
+  if (kPress > 0.2) for (let i = 0; i < 4; i++) {
+    ctx.fillStyle = i % 2 ? C.dust : C.spark;
+    ctx.fillRect(kX - 3 + i * 6, cellY(k.row) + CELL + 1 + (i % 2) * 2, 2, 2);
   }
 
   const barY = H - 26;
