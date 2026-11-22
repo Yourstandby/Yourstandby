@@ -12,7 +12,10 @@ import ContribPanel from '../components/ContribPanel.astro';
 import PartyPanel from '../components/PartyPanel.astro';
 import QuestStage from '../components/QuestStage.astro';
 import { site, base } from '../data/site.ts';
-import icons from '../data/icons.generated.json';
+import iconData from '../data/icons.generated.json';
+
+// 模板里不能写 TS 类型断言，统一在 frontmatter 定型
+const ICONS = iconData as Record<string, { title: string; hex: string; path: string }>;
 ---
 <Base>
   <section class="hero wrap">
@@ -57,7 +60,7 @@ import icons from '../data/icons.generated.json';
             <Gauge value={s.pct} max={s.max} cells={14} tone="cyan" label={`${s.label} ${s.pct}/${s.max}`} />
             <span class="stack-tiles">
               {s.items.map((slug) => {
-                const ic = (icons as Record<string, { title: string; hex: string; path: string }>)[slug];
+                const ic = ICONS[slug];
                 if (!ic) return null;
                 return (
                   <span class="stack-tile" style={`--c:${ic.hex}`} title={ic.title}>
