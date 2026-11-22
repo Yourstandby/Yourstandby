@@ -325,6 +325,24 @@ def render_party(_data, t):
         f'<text x="{760 - 24 - pad}" y="{role_y}" text-anchor="end" font-family="{MONO}" '
         f'font-size="11" letter-spacing="2" fill="{t["ash"]}">{knight["role"]}</text>',
     ]
+    # 中间空白处：两人的基础属性，右侧战士镜像排布
+    combat = load_player().get("combat", {})
+    for side, who in ((0, "mage"), (1, "knight")):
+        for i, (label, val) in enumerate(combat.get(who, [])):
+            y = 96 + i * 30
+            tone = "ember" if label == "HP" else "cyan"
+            if side == 0:
+                body.append(f'<text x="252" y="{y}" text-anchor="end" font-family="{MONO}" '
+                            f'font-size="11" letter-spacing="1" fill="{t["ash"]}">{label}</text>')
+                body.append(gauge(262, y - 9, val / 10, t, cells=6, cw=10, ch=8, gap=4, color=tone))
+                body.append(f'<text x="352" y="{y}" font-family="{MONO}" font-size="11" '
+                            f'fill="{t["ink"]}">{val}</text>')
+            else:
+                body.append(f'<text x="408" y="{y}" font-family="{MONO}" font-size="11" '
+                            f'letter-spacing="1" fill="{t["ash"]}">{label}</text>')
+                body.append(gauge(458, y - 9, val / 10, t, cells=6, cw=10, ch=8, gap=4, color=tone))
+                body.append(f'<text x="548" y="{y}" font-family="{MONO}" font-size="11" '
+                            f'fill="{t["ink"]}">{val}</text>')
     return shell(760, 52 + size + 60, t, "".join(body), "队伍",
                  f'{mage["name"]} 与 {knight["name"]} 的像素立绘')
 
@@ -560,6 +578,24 @@ def tech_tile(item, t, x, y, scale=2):
     return "".join(out)
 
 
+def load_icons():
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "icons.json")
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def tech_tile(slug, icons, x, y, size=24, inset=2):
+    """品牌色方块 + 官方图标 path（simple-icons，24x24 viewBox），白描边保持像素感。"""
+    icon = icons.get(slug)
+    if not icon:
+        return ""
+    scale = (size - inset * 2) / 24.0
+    return (f'<rect x="{x}" y="{y}" width="{size}" height="{size}" fill="{icons and "#1A1D23"}"/>'
+            f'<rect x="{x + 1}" y="{y + 1}" width="{size - 2}" height="{size - 2}" fill="{icon["hex"]}"/>'
+            f'<g transform="translate({x + inset} {y + inset}) scale({scale:.4f})">'
+            f'<path d="{icon["path"]}" fill="#FFFFFF"/></g>')
+
+
 def load_stack():
     path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "stack.json")
     with open(path, encoding="utf-8") as fh:
@@ -569,17 +605,18 @@ def load_stack():
 def render_stack(_data, t):
     """技术栈卡片：14 格像素条 + 技术名。README 里按 760px 显示，1:1 不缩放。"""
     items = load_stack()
+    icons = load_icons()
     body = [tag(20, 28, "STACK", t, 13)]
     for i, it in enumerate(items):
         y = 68 + i * 44
         body.append(tag(20, y, it["label"], t, 13, t["ink"]))
         body.append(gauge(150, y - 11, it["pct"] / it["max"], t,
                           cells=10, cw=16, ch=10, gap=5, color="cyan"))
-        for j, item in enumerate(it.get("items", [])):
-            body.append(tech_tile(item, t, 356 + j * 40, y - 18))
+        for j, slug in enumerate(it.get("items", [])):
+            body.append(tech_tile(slug, icons, 372 + j * 32, y - 18, size=26))
     height = 72 + len(items) * 44 + 8
     return shell(760, height, t, "".join(body), "技术栈",
-                 "、".join(item["name"] for it in items for item in it.get("items", [])))
+                 "、".join(icons[s]["title"] for it in items for s in it.get("items", []) if s in icons))
 
 
 def render_pin(repo, t):

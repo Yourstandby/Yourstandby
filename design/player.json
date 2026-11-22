@@ -86,5 +86,35 @@
       "label": "GITHUB",
       "value": "github.com/Yourstandby"
     }
-  ]
+  ],
+  "combat": {
+    "mage": [
+      [
+        "HP",
+        7
+      ],
+      [
+        "MP",
+        9
+      ],
+      [
+        "INT",
+        8
+      ]
+    ],
+    "knight": [
+      [
+        "HP",
+        9
+      ],
+      [
+        "ATK",
+        8
+      ],
+      [
+        "DEF",
+        7
+      ]
+    ]
+  }
 }
