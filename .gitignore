@@ -7,3 +7,4 @@ site/.astro/
 site/src/styles/_tokens.generated.css
 *.log
 .DS_Store
+design/preview-sprites.png

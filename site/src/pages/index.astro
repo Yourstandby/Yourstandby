@@ -39,8 +39,10 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
         <PlayerPanel />
         <QuestLog />
         <Inventory />
-        <LogPanel />
         <CommsPanel />
+      </div>
+      <div class="dash-tail">
+        <LogPanel />
         <ContribPanel />
       </div>
     </section>
@@ -126,4 +128,33 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
     transition: transform var(--dur-press) var(--ease-step);
   }
   .stack-tile:hover { transform: translateY(-4px); }
+
+  /* ---------- 1280×720 固定画布（40×22 个 32px tile） ----------
+     只在视口够宽时启用，且**不做分数缩放**：非整数倍会把 4px 边框和 2px 内描边
+     重采样成灰边。窄屏直接退回原来的 12 栏流式栅格。 */
+  .dash-tail {
+    display: grid; gap: var(--space-4); grid-template-columns: 1fr;
+    margin-top: var(--space-4);
+  }
+  @media (min-width: 900px) { .dash-tail { grid-template-columns: 1fr 1fr; } }
+
+  @media (min-width: 1344px) {
+    .dash {
+      position: relative; left: 50%; transform: translateX(-50%);
+      width: 1280px; height: 720px; margin: 0;
+      display: grid; gap: 0;
+      grid-template-columns: repeat(40, 32px);
+      grid-template-rows: repeat(22, 32px);
+    }
+    /* 第一带 384px：角色存档 + 双人队伍；第二带 320px：任务 / 装备 / 通讯 */
+    .dash > :nth-child(1) { grid-area: 1 / 17 / 13 / 41; }
+    .dash > :nth-child(2) { grid-area: 1 / 1 / 13 / 17; }
+    .dash > :nth-child(3) { grid-area: 13 / 1 / 23 / 15; }
+    .dash > :nth-child(4) { grid-area: 13 / 15 / 23 / 27; }
+    .dash > :nth-child(5) { grid-area: 13 / 27 / 23 / 41; }
+    .dash > * { min-width: 0; overflow: hidden; }
+    /* 画布内收紧内边距并关掉 hover 位移：位移会让面板越出自己的 tile 格 */
+    .dash :global(.panel) { padding: 16px; }
+    .dash :global(.panel:hover) { transform: none; box-shadow: var(--px-shadow); }
+  }
 </style>
