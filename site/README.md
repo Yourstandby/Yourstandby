@@ -74,6 +74,16 @@ python -m fontTools.subset fusion-pixel-12px-proportional-zh_hans.otf.woff2 \
 库存图标 16px 美术 → 64px、仪表格子 24×16。
 **改美术时保持整数倍**，否则 `shape-rendering="crispEdges"` 救不回来。
 
+### 还没做的（受资源/决策限制）
+
+| 项 | 卡在哪 |
+|---|---|
+| 中文字号再上一个原生尺寸（16px） | 仓库只有子集化后的 12px woff2，没有 Fusion Pixel 的 TTF/OTF 源，也无法联网下载 |
+| 精灵真 64×64 美术 | `design/sprites.json` 是 32×32 的 rect 数据（mage 23 块 / knight 20 块），做细节等于重画；现在只是 8x 整数放大，信息量没变 |
+| 1280×720 固定画布 | 需要把 12 栏响应式 grid 改成绝对定位 + `transform: scale()`，10 个组件重排，移动端可读性会退化，未获确认 |
+| 闯关 canvas 内部分辨率 640×180 | 提到 1280×360 只是超采样，画质不变（CSS 侧已是 `image-rendering: pixelated` 整数放大），不解决"细节不够" |
+| README SVG 卡片 | `gen_cards.py` 走 GitHub API，离线跑不了；不过它不读 tokens.css，1x/2x 刻度不影响它 |
+
 ## 动效清单
 
 | 位置 | 效果 | 实现 |
