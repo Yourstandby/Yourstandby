@@ -378,12 +378,12 @@ def render_trials(_data, t):
     stages = load_quest()
     body = [tag(20, 26, "THE TEN TRIALS", t, 13),
             f'<rect x="58" y="66" width="644" height="2" fill="{t["line"]}"/>',
-            f'<rect x="14" y="47" width="38" height="38" fill="{t["surface"]}" '
+            f'<rect x="14" y="47" width="70" height="70" fill="{t["surface"]}" '
             f'stroke="{t["line"]}" stroke-width="2"/>',
             draw_sprite(sp["sprites"][0], pal, 17, 50, unit=1),
-            f'<rect x="{760 - 52}" y="47" width="38" height="38" fill="{t["surface"]}" '
+            f'<rect x="{760 - 84}" y="47" width="70" height="70" fill="{t["surface"]}" '
             f'stroke="{t["line"]}" stroke-width="2"/>',
-            draw_sprite(sp["sprites"][1], pal, 760 - 49, 50, unit=1)]
+            draw_sprite(sp["sprites"][1], pal, 760 - 81, 50, unit=1)]
     for i, st in enumerate(stages):
         x = 118 + i * 132
         body.append(f'<rect x="{x}" y="58" width="16" height="16" fill="{st["color"]}" '
@@ -397,8 +397,10 @@ def render_party(_data, t):
     sp = load_sprites()
     pal = sp["palette"]
     mage, knight = sp["sprites"][0], sp["sprites"][1]
-    u = 4
-    size = 32 * u
+    # 美术分辨率写在 sprites.json 的 grid/unit 里，卡片按 grid*unit 定尺寸，
+    # 换分辨率（32→64）时卡片版面不变
+    u = mage.get("unit", 4)
+    size = mage.get("grid", 32) * u
     # 左右严格镜像：左边距 24、内缩 8、名字左对齐；右侧全部按 760 - x - w 翻转
     box, pad = size + 16, 8
     name_y = 52 + size + 32
@@ -500,7 +502,7 @@ def render_player(_data, t):
     body = [
         f'<rect x="16" y="48" width="104" height="104" fill="{t["surface"]}" '
         f'stroke="{t["line"]}" stroke-width="2"/>',
-        draw_sprite(mage, sp["palette"], 20, 52, unit=3),
+        draw_sprite(mage, sp["palette"], 36, 68, unit=1),  # 64px 美术居中放进 104px 存档框
         f'<text x="140" y="76" font-family="{MONO}" font-size="22" font-weight="700" '
         f'letter-spacing="2" fill="{t["ink"]}">{p["name"]}</text>',
         tag(140, 100, p["title"], t, 12, t["ash"]),

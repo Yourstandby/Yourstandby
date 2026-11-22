@@ -348,11 +348,13 @@
     for (i = 0; i < SPR.sprites.length; i++) if (SPR.sprites[i].id === who) sprite = SPR.sprites[i];
     if (!sprite) return;
     var pal = SPR.palette, U = 1;
-    var bob = moving ? Math.round(Math.sin(t * 9) * 1) : 0;
+    // y 是"32 格精灵的顶部"传统锚点：64 格美术按差值上移，脚底始终踩在同一地面线
+    var grid = sprite.grid || 32;
+    var top = Math.round(y + bob) - (grid - 32) * U;
     ctx.save();
     // 镜像：右屏的战士水平翻转，剑朝向中心，两人严格对阵
-    if (flip) { ctx.translate(Math.round(x) + 32, Math.round(y + bob)); ctx.scale(-1, 1); }
-    else { ctx.translate(Math.round(x), Math.round(y + bob)); }
+    if (flip) { ctx.translate(Math.round(x) + grid * U, top); ctx.scale(-1, 1); }
+    else { ctx.translate(Math.round(x), top); }
     var rs = sprite.rects, r;
     for (i = 0; i < rs.length; i++) {
       r = rs[i];

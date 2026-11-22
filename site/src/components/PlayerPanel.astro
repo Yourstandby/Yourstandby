@@ -6,7 +6,7 @@ import sprites from '../data/sprites.generated.json';
 const { name, title, level, exp, stats } = player;
 
 // 头像复用队伍的鸡毛法师（32x32，unit=3 → 96px）
-const U = 4; // 4x 整数放大，头像 128px（给 EXP 横排留出空间）
+const U = 2; // 64px 美术 × 2 = 128px
 const palette = sprites.palette as Record<string, string>;
 const mage = (sprites.sprites as { rects: number[][] }[])[0];
 

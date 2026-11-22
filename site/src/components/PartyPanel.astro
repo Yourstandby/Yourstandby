@@ -2,7 +2,7 @@
 import sprites from '../data/sprites.generated.json';
 import player from '../data/player.generated.json';
 
-const U = 8; // 32px 精灵 × 8 = 256px，整数倍不糊
+const U = 4; // 64px 美术 × 4 = 256px，整数倍不糊
 const palette = sprites.palette as Record<string, string>;
 const heroes = sprites.sprites as { id: string; name: string; role: string; rects: number[][] }[];
 const mage = heroes[0];

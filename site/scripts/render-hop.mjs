@@ -1,4 +1,4 @@
-/* 马里奥式踩踏：鸡毛法师与小白战士在贡献热力格上跳跃，踩过的格子亮起。
+/* 马里奥式踩踏：两人在贡献热力格上随机跳跃，带蓄力 / 滞空 / 落地缓冲。
    node + @napi-rs/canvas 逐帧渲染 → GIF + 动画 WebP。
    用法：GITHUB_TOKEN=xxx node scripts/render-hop.mjs [fps] */
 import fs from 'node:fs';
@@ -18,18 +18,16 @@ const COLS = 53, ROWS = 7, CELL = 9, GAP = 1;
 const GRID_W = COLS * (CELL + GAP) - GAP;
 const GX = Math.round((W - GRID_W) / 2);
 const GY = 96;
+const MAGE_ROW = 3, KNIGHT_ROW = 4;
 
-const STEP = 20;        // 每跳 2 格
-const HOP = 0.3;        // 每次跳跃时长（秒），20fps 下每跳 6 帧
-const JUMP = 13;        // 跳跃高度
-const HOLDS = [13, 13]; // 各跳 13 次 = 26 格，正好在中列（26）会合
-
+/* 浅色纸底，和 README 卡片同色，不再是黑块 */
 const C = {
-  ink: '#1A1D23', bg: '#0B0C0E', line: '#3D1B16',
-  ember: '#FF3B1F', deep: '#C21B00', flame: '#FFB000', spark: '#FFE9A8',
-  cyan: '#2BD9FF', gold: '#FFB000', ash: '#8A6A64',
-  empty: '#241110', lvl1: '#4A1A12', lvl2: '#8A2416', lvl3: '#C21B00', lvl4: '#FF6A3D'
+  paper: '#FFF4EC', gridEmpty: '#E9DACD', line: '#D9C8BA',
+  text: '#5C3A32', textDim: '#9A8074',
+  lvl1: '#C9B5A6', lvl2: '#E8A17F', lvl3: '#D8563C', lvl4: '#C81E00',
+  hit: '#FFB000', ember: '#C81E00', cyan: '#0A6E8A', spark: '#FF8A3D'
 };
+const RAMP = [C.gridEmpty, C.lvl1, C.lvl2, C.lvl3, C.lvl4];
 
 /* ---------- 数据 ---------- */
 async function loadCalendar() {
@@ -50,8 +48,74 @@ async function loadCalendar() {
   });
   const json = await res.json();
   if (json.errors) throw new Error(JSON.stringify(json.errors).slice(0, 300));
-  const weeks = json.data.user.contributionsCollection.contributionCalendar.weeks;
-  return weeks.map((w) => w.contributionDays.map((d) => d.contributionCount));
+  return json.data.user.contributionsCollection.contributionCalendar.weeks
+    .map((w) => w.contributionDays.map((d) => d.contributionCount));
+}
+
+/* ---------- 随机但可复现 ---------- */
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* 生成一条跳跃路径：步长 1-3 格随机、高度与时长都抖动，终点固定 */
+function planPath(from, to, seed) {
+  const rnd = mulberry32(seed);
+  const dir = Math.sign(to - from);
+  const jumps = [];
+  let cur = from;
+  while (cur !== to) {
+    const remain = Math.abs(to - cur);
+    let step = 1 + Math.floor(rnd() * 3);
+    step = Math.min(step, remain);
+    jumps.push({
+      from: cur,
+      to: cur + dir * step,
+      dur: 0.30 + rnd() * 0.16,      // 0.30 - 0.46s
+      height: 10 + rnd() * 8,        // 10 - 18px
+      pause: rnd() < 0.25 ? 0.10 : 0 // 偶尔在落地后停一拍
+    });
+    cur += dir * step;
+  }
+  return jumps;
+}
+
+/* 把两条路径的总时长拉齐，保证同时抵达中列 */
+function align(tracks) {
+  const total = (t) => t.reduce((s, j) => s + j.dur + j.pause, 0);
+  const max = Math.max(...tracks.map(total));
+  for (const t of tracks) {
+    const k = max / total(t);
+    for (const j of t) { j.dur *= k; j.pause *= k; }
+  }
+  return max;
+}
+
+/* ---------- 姿态 ---------- */
+const CROUCH = 0.14;   // 蓄力占比
+const LAND = 0.84;     // 触地时刻
+
+function poseAt(p) {
+  // 返回 { squash, height }
+  if (p < CROUCH) {
+    const q = p / CROUCH;
+    return { squash: 1 - 0.30 * Math.sin(q * Math.PI * 0.5), height: 0 };  // 蹲下蓄力
+  }
+  if (p > LAND) {
+    const q = Math.min(1, (p - LAND) / (1 - LAND));
+    // 落地压缩 0.72 → 回弹 1.06 → 稳定 1
+    const squash = q < 0.45 ? 0.72 + (1.06 - 0.72) * (q / 0.45)
+                            : 1.06 - 0.06 * ((q - 0.45) / 0.55);
+    return { squash, height: 0 };
+  }
+  const q = (p - CROUCH) / (LAND - CROUCH);   // 0..1 飞行段
+  // sin^0.62 让顶部更平 → 明显的滞空
+  const arc = Math.pow(Math.sin(Math.PI * q), 0.62);
+  return { squash: q < 0.12 ? 0.72 + 0.28 * (q / 0.12) : 1, height: arc };
 }
 
 /* ---------- 精灵 ---------- */
@@ -81,121 +145,135 @@ function drawHero(ctx, id, x, y, squash) {
   ctx.restore();
 }
 
-/* ---------- 状态 ---------- */
-function levelOf(count) {
-  if (count <= 0) return 0;
-  if (count < 3) return 1;
-  if (count < 6) return 2;
-  if (count < 10) return 3;
-  return 4;
-}
-const RAMP = [C.empty, C.lvl1, C.lvl2, C.lvl3, C.lvl4];
-
-/* 一次跳跃：返回位置和当前跳跃进度 */
-function hop(t, startCol, dir, hops) {
-  const idx = Math.min(hops, Math.max(0, Math.floor(t / HOP)));
-  const p = idx >= hops ? 1 : Math.min(1, (t - idx * HOP) / HOP);
-  const from = startCol + dir * idx * 2;
-  const to = startCol + dir * (idx + 1) * 2;
-  const x = (from + (to - from) * p) * (CELL + GAP);
-  const y = -4 * JUMP * p * (1 - p);
-  return { idx, p, x, y };
+function drawShadow(ctx, x, rowY, heightRatio) {
+  const w = Math.max(6, Math.round(16 - heightRatio * 8));
+  ctx.fillStyle = 'rgba(92,58,50,0.22)';
+  ctx.fillRect(Math.round(x + 16 - w / 2), rowY + CELL + 2, w, 2);
 }
 
-function squashOf(p) {
-  if (p <= 0.001) return 1;
-  if (p < 0.16) return 0.82 + (p / 0.16) * 0.18;
-  if (p > 0.9) return 0.86 + ((1 - p) / 0.1) * 0.14;
-  return 1;
+/* ---------- 主渲染 ---------- */
+let grid, trackM, trackK, TOTAL;
+
+function stateAt(t, track, startCol) {
+  let acc = 0;
+  let col = startCol;
+  for (let i = 0; i < track.length; i++) {
+    const j = track[i];
+    const span = j.dur + j.pause;
+    const landedAt = acc + j.dur;      // 本次跳跃的触地时刻
+    if (t <= acc + span) {
+      const local = Math.min(1, Math.max(0, (t - acc) / j.dur));
+      const endCol = t > landedAt ? j.to : col + (j.to - col) * local;
+      const pose = t > landedAt ? { squash: 1, height: 0 } : poseAt(local);
+      return { col: endCol, pose, landedAt };
+    }
+    acc += span;
+    col = j.to;
+  }
+  return { col, pose: { squash: 1, height: 0 }, landedAt: acc };
 }
 
-function renderHop(ctx, t, grid, sparks) {
-  ctx.fillStyle = C.bg;
+/* 落地后 0.2s 内平台被踩下的深度（0..1） */
+function pressOf(t, landedAt) {
+  const q = (t - landedAt) / 0.2;
+  if (q < 0 || q > 1) return 0;
+  return Math.sin((1 - q) * Math.PI * 0.5);
+}
+
+function renderHop(ctx, t) {
+  ctx.fillStyle = C.paper;
   ctx.fillRect(0, 0, W, H);
 
-  // 顶部标题
-  ctx.fillStyle = C.ash;
+  // 标题点阵
+  ctx.fillStyle = C.textDim;
   for (let i = 0; i < 4; i++) ctx.fillRect(GX + i * 6, 22, 4, 4);
   ctx.fillStyle = C.line;
   ctx.fillRect(GX, 34, GRID_W, 1);
 
-  const m = hop(t, 0, 1, HOLDS[0]);
-  const k = hop(t, COLS - 1, -1, HOLDS[1]);
-  const progressM = m.idx, progressK = k.idx;
+  const m = stateAt(t, trackM, 0);
+  const k = stateAt(t, trackK, COLS - 1);
+  const mPress = m.col % 1 < 0.02 ? pressOf(t, m.landedAt) : 0;
+  const kPress = k.col % 1 > 0.98 ? pressOf(t, k.landedAt) : 0;
 
-  // 网格
+  // 网格：踩过的行段提亮
+  const mCol = Math.min(COLS - 1, Math.round(m.col));
+  const kCol = Math.max(0, Math.round(k.col));
   for (let c = 0; c < COLS; c++) {
     for (let r = 0; r < ROWS; r++) {
       const count = (grid[c] && grid[c][r]) || 0;
-      let lvl = levelOf(count);
+      let lvl = count <= 0 ? 0 : count < 3 ? 1 : count < 6 ? 2 : count < 10 ? 3 : 4;
+      const stepped = (r === MAGE_ROW && c <= mCol) || (r === KNIGHT_ROW && c >= kCol);
+      if (stepped && lvl < 2) lvl = 2;
       const x = GX + c * (CELL + GAP);
       const y = GY + r * (CELL + GAP);
-      // 已踩过的格子提亮一级
-      const stepped = (r === 3 && c <= m.idx * 2) || (r === 4 && c >= COLS - 1 - k.idx * 2);
-      if (stepped) lvl = Math.min(4, Math.max(1, lvl + 1));
+      // 被踩中的那一格向下压扁
+      let sink = 0;
+      if (r === MAGE_ROW && c === mCol) sink = Math.round(mPress * 3);
+      if (r === KNIGHT_ROW && c === kCol) sink = Math.round(kPress * 3);
       ctx.fillStyle = RAMP[lvl];
-      ctx.fillRect(x, y, CELL, CELL);
+      ctx.fillRect(x, y + sink, CELL, CELL - sink);
+      if (sink > 0) {
+        ctx.fillStyle = C.hit;
+        ctx.fillRect(x, y + sink, CELL, 1);
+      }
     }
   }
 
-  // 落点光斑
-  const rowY = GY + 3 * (CELL + GAP);
-  const rowY2 = GY + 4 * (CELL + GAP);
+  const mRowY = GY + MAGE_ROW * (CELL + GAP);
+  const kRowY = GY + KNIGHT_ROW * (CELL + GAP);
+  const mX = GX + m.col * (CELL + GAP);
+  const kX = GX + k.col * (CELL + GAP) - 32;
 
-  // 角色
-  drawHero(ctx, 'mage', GX + m.x, rowY - 32 + m.y, squashOf(m.p));
-  drawHero(ctx, 'knight', GX + k.x - 32, rowY2 - 32 + k.y, squashOf(k.p));
+  // 角色脚底跟着平台一起下沉
+  const mSink = Math.round(mPress * 3);
+  const kSink = Math.round(kPress * 3);
+  drawShadow(ctx, mX, mRowY + mSink, m.pose.height / 18);
+  drawHero(ctx, 'mage', mX, mRowY - 32 + mSink - m.pose.height, m.pose.squash);
 
-  // 落地火花
-  if (m.p > 0.9 || m.p < 0.08) {
-    const cx = GX + m.x + 16;
-    for (let i = 0; i < 3; i++) {
-      ctx.fillStyle = i % 2 ? C.spark : C.ember;
-      ctx.fillRect(cx - 10 + i * 8, rowY + 2, 2, 2);
-    }
-  }
-  if (k.p > 0.9 || k.p < 0.08) {
-    const cx = GX + k.x - 16;
-    for (let i = 0; i < 3; i++) {
-      ctx.fillStyle = i % 2 ? C.spark : C.cyan;
-      ctx.fillRect(cx - 10 + i * 8, rowY2 + 2, 2, 2);
-    }
-  }
+  drawShadow(ctx, kX, kRowY + kSink, k.pose.height / 18);
+  drawHero(ctx, 'knight', kX, kRowY - 32 + kSink - k.pose.height, k.pose.squash);
 
-  // 进度条
-  const barW = GRID_W;
+  // 底部进度条
+  const barY = H - 20;
   ctx.fillStyle = C.line;
-  ctx.fillRect(GX, H - 22, barW, 3);
+  ctx.fillRect(GX, barY, GRID_W, 3);
+  const pm = m.col / (COLS - 1);
+  const pk = 1 - k.col / (COLS - 1);
   ctx.fillStyle = C.ember;
-  ctx.fillRect(GX, H - 22, barW * (progressM / HOLDS[0]) * 0.5, 3);
+  ctx.fillRect(GX, barY, GRID_W * 0.5 * pm, 3);
   ctx.fillStyle = C.cyan;
-  ctx.fillRect(GX + barW - barW * (progressK / HOLDS[1]) * 0.5, H - 22, barW * (progressK / HOLDS[1]) * 0.5, 3);
+  ctx.fillRect(GX + GRID_W - GRID_W * 0.5 * pk, barY, GRID_W * 0.5 * pk, 3);
 
-  // 相遇火花
-  if (m.idx >= HOLDS[0] && k.idx >= HOLDS[1]) {
+  // 会合火花
+  if (t > TOTAL - 0.9) {
     const cx = GX + GRID_W / 2;
-    for (let i = 0; i < 6; i++) {
-      const ang = t * 4 + i * 1.05;
-      ctx.fillStyle = i % 2 ? C.spark : C.gold;
-      ctx.fillRect(Math.round(cx + Math.cos(ang) * 18), Math.round(rowY - 20 + Math.sin(ang) * 10), 2, 2);
+    for (let i = 0; i < 7; i++) {
+      const ang = t * 5 + i * 0.9;
+      ctx.fillStyle = i % 2 ? C.hit : C.spark;
+      ctx.fillRect(Math.round(cx + Math.cos(ang) * 20), Math.round(mRowY - 24 + Math.sin(ang) * 11), 2, 2);
     }
   }
 }
 
 /* ---------- 主流程 ---------- */
-const grid = await loadCalendar();
-const canvas = createCanvas(W, H);
-const ctx = canvas.getContext('2d');
-const cycle = HOLDS[0] * HOP + 0.9;
+grid = await loadCalendar();
+trackM = planPath(0, 26, 20261122);
+trackK = planPath(52, 26, 77712345);
+const travel = align([trackM, trackK]);
+const cycle = travel + 1.1;
+TOTAL = cycle;
 const frames = Math.round(cycle * FPS);
 
+const canvas = createCanvas(W, H);
+const ctx = canvas.getContext('2d');
 const framesBuf = [];
 for (let f = 0; f < frames; f++) {
-  renderHop(ctx, (f / FPS) % cycle, grid, null);
+  renderHop(ctx, (f / FPS) % cycle);
   const { data } = ctx.getImageData(0, 0, W, H);
   framesBuf.push(Buffer.from(data));
 }
-console.log('frames:', frames, 'at', FPS, 'fps, cycle', cycle.toFixed(2), 's');
+console.log('frames:', frames, 'at', FPS, 'fps, cycle', cycle.toFixed(2) + 's,',
+  'mage jumps', trackM.length, 'knight jumps', trackK.length);
 
 const sample = [];
 for (let i = 0; i < framesBuf.length; i += Math.max(1, Math.floor(framesBuf.length / 30))) sample.push(framesBuf[i]);
