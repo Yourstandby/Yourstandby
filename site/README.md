@@ -70,7 +70,7 @@ python -m fontTools.subset fusion-pixel-12px-proportional-zh_hans.otf.woff2 \
 | `--px-hair` | 2px | 小构件内描边（徽章 / 角标 / 表格线 / 下划线） |
 | `--px-shadow` | 8px 8px | 静态投影；hover 用 `--px-shadow-hover`（12px） |
 
-精灵一律整数倍放大：队伍 `unit 8`（32px 美术 → 256px）、头像 `unit 4`（→128px）、
+精灵一律整数倍放大：队伍 `unit 4`（64px 美术 → 256px）、头像 `unit 2`（→128px）、
 库存图标 16px 美术 → 64px、仪表格子 24×16。
 **改美术时保持整数倍**，否则 `shape-rendering="crispEdges"` 救不回来。
 
