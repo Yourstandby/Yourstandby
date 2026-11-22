@@ -1,6 +1,6 @@
 // 64×64 像素角色：用图元画网格 → 自动合并成 rect 数据 + 自动 N px 描边。
 // 运行：node design/build-sprites.mjs（覆写 design/sprites.json 并打印 ASCII 预览）
-// 参考图：白柴战士（藏青长袍 + 背后佩剑 + 斜挎皮带） / 奶油柴法师（青绿尖帽 + 斗篷 + 发光法杖）
+// 参考图：马尔济斯战士（纯白绒毛 + 藏青长袍 + 背后斜剑）/ 金毛法师（垂耳 + 青绿尖帽 + 发光法杖）
 import { writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,18 +13,26 @@ class Grid {
   set(x, y, k) { x |= 0; y |= 0; if (x >= 0 && x < N && y >= 0 && y < N) this.g[y][x] = k; }
   rect(x, y, w, h, k) { for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) this.set(x + i, y + j, k); }
   col(x, y0, y1, k) { for (let y = y0; y <= y1; y++) this.set(x, y, k); }
+  row(y, x0, x1, k) { for (let x = x0; x <= x1; x++) this.set(x, y, k); }
   ellipse(cx, cy, rx, ry, k) {
     for (let y = cy - ry; y <= cy + ry; y++) for (let x = cx - rx; x <= cx + rx; x++) {
       const dx = (x - cx) / (rx + 0.5), dy = (y - cy) / (ry + 0.5);
       if (dx * dx + dy * dy <= 1) this.set(x, y, k);
     }
   }
-  /** 斜线（方形笔头），用来画斜挎皮带 */
+  /** 斜线（方形笔头） */
   line(x0, y0, x1, y1, w, k) {
-    const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+    const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) || 1;
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
       this.rect(Math.round(x0 + (x1 - x0) * t), Math.round(y0 + (y1 - y0) * t), w, w, k);
+    }
+  }
+  /** 沿圆周撒小毛团，做出蓬松的剪影边缘（只撒上半圈） */
+  fluff(cx, cy, rx, ry, n, k, from = Math.PI * 1.05, to = Math.PI * 1.95) {
+    for (let i = 0; i < n; i++) {
+      const a = from + (to - from) * (i / (n - 1));
+      this.rect(Math.round(cx + Math.cos(a) * rx) - 1, Math.round(cy + Math.sin(a) * ry) - 1, 2, 2, k);
     }
   }
 }
@@ -85,90 +93,96 @@ function raster(rects) {
   return g;
 }
 
-/** 柴犬的 w 形嘴：两个小拱 */
-function smile(g, cy) {
-  g.rect(27, cy, 2, 1, 'K'); g.rect(29, cy + 1, 2, 1, 'K');
-  g.rect(31, cy, 2, 1, 'K'); g.rect(33, cy + 1, 2, 1, 'K');
-  g.rect(35, cy, 2, 1, 'K');
+/** 狗嘴：小鼻子 + 两拱 w 形嘴 */
+function muzzle(g, cx, cy, nose, mouth) {
+  g.rect(cx - 1, cy, 3, 2, nose);
+  g.rect(cx - 5, mouth, 2, 1, 'K'); g.rect(cx - 3, mouth + 1, 2, 1, 'K');
+  g.rect(cx - 1, mouth, 2, 1, 'K'); g.rect(cx + 1, mouth + 1, 2, 1, 'K');
+  g.rect(cx + 3, mouth, 2, 1, 'K');
 }
 
-// ---------------- 小白战士：白柴 + 藏青长袍 + 背后佩剑 ----------------
+// ---------------- 小白战士：马尔济斯 ----------------
 function knight() {
   const g = new Grid();
-  // 背后斜挎的剑（先画，被身体压住）
-  g.rect(11, 12, 5, 4, 't');          // 柄头
-  g.line(10, 16, 8, 25, 3, 'W');      // 剑柄
-  g.line(3, 26, 14, 28, 2, 't');      // 护手
-  g.line(8, 28, 5, 42, 3, 'T');       // 剑身（斜向下，刃尖留在画布内）
-  g.rect(3, 40, 6, 5, 'T');           // 剑尖
-  // 耳朵（贴头顶两侧，向外探出）
-  g.ellipse(19, 10, 7, 8, 'B');  // 马尔济斯的耳是圆润毛簇，不是直立方耳
-  g.ellipse(45, 10, 7, 8, 'B');
-  // 头 + 下颌阴影
-  g.ellipse(32, 20, 16, 12, 'B');
-  g.rect(20, 29, 24, 3, 'b');
-  // 脸：圆点眼 + w 嘴
-  g.rect(25, 17, 3, 3, 'K'); g.rect(36, 17, 3, 3, 'K');
-  smile(g, 24);
-  // 藏青长袍
-  g.rect(13, 32, 38, 18, 'A');
-  g.rect(11, 50, 42, 6, 'A');
-  g.col(13, 34, 54, 'C'); g.col(14, 34, 54, 'C');
-  g.col(48, 34, 54, 'a'); g.col(49, 34, 54, 'a');
-  // 斜挎皮带（细）+ 胸扣
-  g.line(19, 32, 44, 50, 2, 'W');
-  g.rect(29, 36, 5, 4, 'T'); g.rect(30, 38, 3, 1, 't');
-  // 脚
-  g.rect(16, 55, 9, 6, 'B'); g.rect(39, 55, 9, 6, 'B');
-  g.rect(16, 59, 9, 2, 'b'); g.rect(39, 59, 9, 2, 'b');
+  // 背后斜挎长剑（先画，被身体压住）
+  g.rect(11, 12, 5, 4, 't');            // 柄头
+  g.line(10, 16, 8, 25, 3, 'W');        // 剑柄
+  g.line(3, 26, 14, 28, 2, 't');        // 护手
+  g.line(8, 28, 5, 42, 3, 'T');         // 剑身
+  g.rect(3, 40, 6, 5, 'T');             // 剑尖
+  // 蓬松的大头（马尔济斯是绒毛，剪影要毛茸茸）
+  g.fluff(32, 20, 16, 13, 5, 'B');
+  g.ellipse(32, 20, 16, 13, 'B');
+  // 耳簇（圆润，向上外翻）
+  g.ellipse(18, 12, 7, 8, 'B'); g.ellipse(46, 12, 7, 8, 'B');
+  g.ellipse(18, 13, 3, 3, 'b'); g.ellipse(46, 13, 3, 3, 'b');
+  // 脸：眼 + 口鼻
+  g.rect(24, 19, 3, 3, 'K'); g.rect(37, 19, 3, 3, 'K');
+  muzzle(g, 32, 24, 'K', 27);
+  // 下颌绒毛阴影
+  g.rect(22, 31, 20, 2, 'b');
+  // 藏青长袍：三阶（亮边 C / 本体 A / 暗部 a）
+  g.rect(13, 33, 38, 16, 'A');
+  g.rect(11, 49, 42, 7, 'A');
+  g.col(13, 34, 55, 'C'); g.col(14, 34, 55, 'C');
+  g.row(33, 14, 49, 'C');
+  g.col(48, 34, 55, 'a'); g.col(49, 34, 55, 'a');
+  g.rect(11, 54, 42, 2, 'a');
+  // 斜挎皮带 + 金属胸扣
+  g.line(19, 33, 44, 50, 2, 'W');
+  g.rect(29, 37, 5, 4, 'T'); g.rect(30, 39, 3, 1, 't');
+  // 白爪子（袍下露出）+ 脚
+  g.rect(17, 51, 7, 4, 'B'); g.rect(40, 51, 7, 4, 'B');
+  g.rect(16, 56, 10, 7, 'B'); g.rect(39, 56, 10, 7, 'B');
+  g.rect(16, 61, 10, 2, 'b'); g.rect(39, 61, 10, 2, 'b');
   return g;
 }
 
-// ---------------- 鸡毛法师：奶油柴 + 青绿尖帽 + 发光法杖 ----------------
+// ---------------- 鸡毛法师：金毛 ----------------
 function mage() {
   const g = new Grid();
-  // 耳朵（帽檐两侧露出，内耳用毛色阴影而不是黑色）
-  g.ellipse(15, 32, 6, 8, 'f');  // 金毛垂耳：从帽檐垂到下颌两侧
-  g.ellipse(49, 32, 6, 8, 'f');
-  // 头 + 下颌阴影
-  g.ellipse(32, 32, 16, 11, 'F');
-  g.rect(22, 42, 20, 2, 'f');  // 下巴阴影收窄，别做成络腮胡
-  // 脸：圆点眼 + w 嘴
-  g.rect(25, 32, 3, 3, 'K'); g.rect(36, 32, 3, 3, 'K');
-  smile(g, 37);
-  // 斗篷
-  g.rect(13, 44, 38, 12, 'C');
-  g.rect(11, 52, 42, 6, 'C');
-  g.col(14, 45, 53, 'h');
-  g.rect(11, 56, 42, 2, 'i');
+  // 垂耳（金毛垂到下颌，比脸深一档）
+  g.ellipse(13, 33, 7, 12, 'f');
+  g.ellipse(51, 33, 7, 12, 'f');
+  // 头（宽而圆）+ 口鼻部浅色块
+  g.ellipse(32, 32, 17, 12, 'F');
+  // 脸：眼 + 口鼻
+  g.rect(25, 31, 3, 3, 'K'); g.rect(36, 31, 3, 3, 'K');
+  g.rect(25, 31, 1, 1, 'l'); g.rect(36, 31, 1, 1, 'l');
+  muzzle(g, 32, 37, 'K', 40);
+  // 青绿斗篷：三阶
+  g.rect(12, 44, 40, 11, 'C');
+  g.rect(10, 52, 44, 7, 'C');
+  g.col(13, 45, 57, 'h'); g.col(14, 45, 57, 'h');
+  g.rect(10, 57, 44, 2, 'i');
   // 前爪 + 脚
-  g.rect(21, 50, 8, 7, 'F'); g.rect(35, 50, 8, 7, 'F');
+  g.rect(21, 50, 8, 6, 'F'); g.rect(35, 50, 8, 6, 'F');
   g.rect(19, 58, 11, 5, 'F'); g.rect(34, 58, 11, 5, 'F');
   g.rect(19, 61, 11, 2, 'f'); g.rect(34, 61, 11, 2, 'f');
-  // 法杖 + 发光宝珠（胸口高度，画在最前面）
+  // 法杖 + 胸口发光宝珠
   g.rect(31, 44, 3, 20, 'W'); g.col(33, 44, 63, 'w');
-  g.ellipse(32, 48, 6, 6, 'G'); g.ellipse(30, 46, 3, 3, 'g');
-  // 帽子：先尖帽（尖端向右上翘）再帽檐压住头顶
-  for (let y = 4; y <= 16; y++) {
-    const t = (y - 4) / 12;
-    const half = Math.round(2 + 16 * t);
-    const cx = Math.round(46 - 14 * t);
+  g.ellipse(32, 48, 6, 6, 'G'); g.ellipse(30, 46, 3, 3, 'g'); g.rect(35, 51, 1, 1, 'g');
+  // 帽子：尖帽（尖端向右上翘）+ 帽檐
+  for (let y = 3; y <= 16; y++) {
+    const t = (y - 3) / 13;
+    const half = Math.round(2 + 17 * t);
+    const cx = Math.round(47 - 15 * t);
     g.rect(cx - half, y, half * 2, 1, 'H');
-    g.rect(cx - half, y, Math.max(1, Math.round(half * 0.55)), 1, 'h');
+    g.rect(cx - half, y, Math.max(1, Math.round(half * 0.5)), 1, 'h');
   }
-  g.ellipse(32, 20, 22, 4, 'H');
-  g.rect(12, 17, 40, 2, 'h');
-  g.rect(11, 23, 42, 2, 'i');  // 帽檐底影压在额头上，别留一条纯 H 的边
+  g.ellipse(32, 20, 23, 4, 'H');
+  g.rect(11, 17, 42, 2, 'h');
+  g.rect(11, 23, 42, 2, 'i');
   return g;
 }
 
 const PALETTE = {
-  K: '#1A1D23',          // 描边/眼睛
-  B: '#F7F5F0', b: '#D3D8DE',   // 马尔济斯：纯白毛 / 冷灰阴影
-  F: '#EFD9A6', f: '#C79B54',   // 金毛：奶油金毛色 / 垂耳与阴影
-  A: '#2E4A6B', a: '#22374E', C: '#4A6D8C',  // 藏青长袍 / 暗部 / 亮边
-  H: '#2F6675', h: '#4E97A4', i: '#1F4A55',  // 青绿帽 / 亮部 / 暗部
-  R: '#C0392B', r: '#7E170E', G: '#4FD1C5', g: '#A9F0EA',
+  K: '#1A1D23',
+  B: '#F7F5F0', b: '#C9CFD8',          // 马尔济斯：纯白毛 / 冷灰阴影
+  F: '#EFD9A6', f: '#C79B54', l: '#F9EFD2',  // 金毛：金毛色 / 垂耳与阴影 / 口鼻高光
+  A: '#2E4A6B', C: '#4A6D8C', a: '#22374E',  // 藏青长袍：本体 / 亮边 / 暗部
+  H: '#2F6675', h: '#4E97A4', i: '#1F4A55',  // 青绿帽与斗篷：本体 / 亮部 / 暗部
+  G: '#4FD1C5', g: '#A9F0EA', R: '#C0392B', r: '#7E170E',
   W: '#8B5E3C', w: '#5C3A22', T: '#C8CDD4', t: '#9AA3AC',
   Y: '#C9A227', y: '#E8D48B', M: '#3D5A80', m: '#2C4159',
 };
@@ -176,8 +190,7 @@ const PALETTE = {
 function build(name, id, role, fn, outline = 2) {
   const art = fn();
   const ol = outlineN(art.g, outline);
-  const rects = [...toRects(ol), ...toRects(art.g)]; // 描边先画，填充后画
-  // 自检：矩形回填必须与「描边 ∪ 填充」逐格相同
+  const rects = [...toRects(ol), ...toRects(art.g)];
   const back = raster(rects).map((row) => row.map((v) => v ?? ' ').join(''));
   const orig = art.g.map((row, y) => row.map((v, x) => v ?? ol[y][x] ?? ' ').join(''));
   return { id, name, role, grid: N, unit: 2, rects, _ascii: back, _ok: back.join('') === orig.join('') };
