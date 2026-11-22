@@ -1,0 +1,62 @@
+name: Update profile cards
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/scripts/gen_cards.py
+      - .github/scripts/validate.py
+      - .github/scripts/publish.sh
+      - .github/workflows/cards.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: profile-cards
+  cancel-in-progress: false
+
+jobs:
+  cards:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate cards into build dir
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_LOGIN: ${{ github.repository_owner }}
+          OUT_DIR: .build
+        run: python .github/scripts/gen_cards.py
+
+      - name: Validate every card
+        run: python .github/scripts/validate.py .build
+
+      - name: Publish atomically
+        run: bash .github/scripts/publish.sh .build profile
+
+      - name: Commit changed cards
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile/*.svg
+          if git diff --cached --quiet; then
+            echo "no card changes"
+          else
+            git commit -m "chore(cards): refresh generated svg cards"
+            git push
+          fi

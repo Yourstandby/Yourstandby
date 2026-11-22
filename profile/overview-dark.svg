@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="176" viewBox="0 0 1200 176" role="img" aria-labelledby="ot od">
+  <title id="ot">公开仓库 18 个、Stars 42、主要语言 6 种、年度提交 1280 次</title>
+  <desc id="od">四个像素仪表盘，进度条逐格充能</desc>
+  <defs>
+    <style>
+      .bar{opacity:0;animation:on 6s steps(1,end) infinite}
+      @keyframes on{0%{opacity:0}6%{opacity:1}88%{opacity:1}94%{opacity:0}100%{opacity:0}}
+      .glow{animation:pulse 6s steps(1,end) infinite}
+      @keyframes pulse{0%{fill:#C21B00}6%{fill:#FF3B1F}88%{fill:#FF3B1F}94%{fill:#C21B00}100%{fill:#C21B00}}
+      @media (prefers-reduced-motion: reduce){*{animation:none !important}}
+    </style>
+  </defs>
+  <rect width="1200" height="176" fill="#16090A"/>
+    <g>
+    <rect x="10" y="16" width="280" height="144" fill="#22100F" stroke="#3D1B16" stroke-width="2"/>
+    <rect x="10" y="16" width="8" height="8" fill="#FF3B1F"/>
+    <text x="30" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="14" letter-spacing="2" fill="#8A6A64">PUBLIC REPOS</text>
+    <text x="30" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="48" font-weight="700" letter-spacing="2" fill="#FFE9D6">18</text>
+    <rect x="30" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.00s"/>
+    <rect x="60" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.18s"/>
+    <rect x="90" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.36s"/>
+    <rect x="120" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.54s"/>
+    <rect x="150" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.72s"/>
+    <rect x="180" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="210" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="240" y="128" width="24" height="10" fill="#3D1B16"/>
+  </g>
+  <g>
+    <rect x="310" y="16" width="280" height="144" fill="#22100F" stroke="#3D1B16" stroke-width="2"/>
+    <rect x="310" y="16" width="8" height="8" fill="#FF3B1F"/>
+    <text x="330" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="14" letter-spacing="2" fill="#8A6A64">STARS EARNED</text>
+    <text x="330" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="48" font-weight="700" letter-spacing="2" fill="#FFE9D6">42</text>
+    <rect x="330" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.00s"/>
+    <rect x="360" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.18s"/>
+    <rect x="390" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.36s"/>
+    <rect x="420" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="450" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="480" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="510" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="540" y="128" width="24" height="10" fill="#3D1B16"/>
+  </g>
+  <g>
+    <rect x="610" y="16" width="280" height="144" fill="#22100F" stroke="#3D1B16" stroke-width="2"/>
+    <rect x="610" y="16" width="8" height="8" fill="#FF3B1F"/>
+    <text x="630" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="14" letter-spacing="2" fill="#8A6A64">MAIN LANGS</text>
+    <text x="630" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="48" font-weight="700" letter-spacing="2" fill="#FFE9D6">6</text>
+    <rect x="630" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.00s"/>
+    <rect x="660" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.18s"/>
+    <rect x="690" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.36s"/>
+    <rect x="720" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.54s"/>
+    <rect x="750" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="780" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="810" y="128" width="24" height="10" fill="#3D1B16"/>
+    <rect x="840" y="128" width="24" height="10" fill="#3D1B16"/>
+  </g>
+  <g>
+    <rect x="910" y="16" width="280" height="144" fill="#22100F" stroke="#3D1B16" stroke-width="2"/>
+    <rect x="910" y="16" width="8" height="8" fill="#FF3B1F"/>
+    <text x="930" y="52" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="14" letter-spacing="2" fill="#8A6A64">COMMITS / YEAR</text>
+    <text x="930" y="108" font-family="ui-monospace, SFMono-Regular, Consolas, Menlo, monospace" font-size="48" font-weight="700" letter-spacing="2" fill="#FFE9D6">1280</text>
+    <rect x="930" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.00s"/>
+    <rect x="960" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.18s"/>
+    <rect x="990" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.36s"/>
+    <rect x="1020" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.54s"/>
+    <rect x="1050" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.72s"/>
+    <rect x="1080" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:0.90s"/>
+    <rect x="1110" y="128" width="24" height="10" fill="#FF3B1F" class="bar" style="animation-delay:1.08s"/>
+    <rect x="1140" y="128" width="24" height="10" fill="#3D1B16"/>
+  </g>
+</svg>

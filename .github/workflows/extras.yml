@@ -1,0 +1,51 @@
+name: Update profile extras
+
+on:
+  schedule:
+    - cron: '37 3 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - weekly/**
+      - .github/scripts/inject_weekly.py
+      - .github/workflows/extras.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: profile-extras
+  cancel-in-progress: false
+
+jobs:
+  weekly:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Inject latest weekly issue into README
+        run: python .github/scripts/inject_weekly.py
+
+      - name: Commit README update
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "no readme changes"
+          else
+            git commit -m "docs(readme): inject latest weekly issue"
+            git push
+          fi
