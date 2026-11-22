@@ -279,8 +279,8 @@ def render_trials(_data, t):
     pal = sp["palette"]
     body = [tag(20, 26, "THE TEN TRIALS", t, 13)]
     # 分屏线
-    body.append(f'<rect x="377" y="44" width="2" height="72" fill="{t["ember"]}"/>')
-    body.append(f'<rect x="371" y="{44 + 32}" width="14" height="2" fill="{t["ember"]}"/>')
+    body.append(f'<rect x="379" y="44" width="2" height="72" fill="{t["ember"]}"/>')
+    body.append(f'<rect x="373" y="{44 + 32}" width="14" height="2" fill="{t["ember"]}"/>')
     # 法师：立绘 + 从左往右五个节点
     body.append(f'<rect x="14" y="46" width="38" height="38" fill="{t["surface"]}" '
                 f'stroke="{t["line"]}" stroke-width="2"/>')
@@ -291,8 +291,9 @@ def render_trials(_data, t):
                     f'stroke="{t["line"]}" stroke-width="2"/>')
         body.append(tag(x - 2, 92, label, t, 9, t["ash"]))
     # 战士：从右往左五个节点 + 立绘
+    # 右半按 760 - x - 14 镜像：左侧第 i 个在 62+i*58，右侧就该是 684-i*58
     for i, (label, color) in enumerate(KNIGHT_TRACK):
-        x = 692 - i * 58
+        x = 684 - i * 58
         body.append(f'<rect x="{x}" y="58" width="14" height="14" fill="{color}" '
                     f'stroke="{t["line"]}" stroke-width="2"/>')
         body.append(tag(x - 2, 92, label, t, 9, t["ash"]))
@@ -312,23 +313,29 @@ def render_party(_data, t):
     mage, knight = sp["sprites"][0], sp["sprites"][1]
     u = 4
     size = 32 * u
+    # 左右严格镜像：左边距 24、内缩 8、名字左对齐；右侧全部按 760 - x - w 翻转
+    box, pad = size + 16, 8
+    name_y = 52 + size + 32
+    role_y = name_y + 18
     body = [
         tag(20, 28, "PARTY", t, 13),
-        f'<rect x="24" y="44" width="{size + 16}" height="{size + 16}" fill="{t["surface"]}" '
+        f'<rect x="24" y="44" width="{box}" height="{box}" fill="{t["surface"]}" '
         f'stroke="{t["line"]}" stroke-width="2"/>',
-        draw_sprite(mage, pal, 32, 52),
-        f'<text x="32" y="{52 + size + 32}" font-family="{MONO}" font-size="14" '
+        draw_sprite(mage, pal, 24 + pad, 52),
+        f'<text x="{24 + pad}" y="{name_y}" font-family="{MONO}" font-size="14" '
         f'letter-spacing="1" fill="{t["ink"]}">{mage["name"]}</text>',
-        tag(32, 52 + size + 50, mage["role"], t, 11, t["ash"]),
-        # 中间分隔：一条虚线加 VS
-        f'<rect x="378" y="52" width="2" height="{size + 8}" fill="{t["line"]}"/>',
-        tag(390, 52 + size // 2, "VS", t, 16, t["ember"]),
-        f'<rect x="{760 - 32 - size - 16}" y="44" width="{size + 16}" height="{size + 16}" '
+        tag(24 + pad, role_y, mage["role"], t, 11, t["ash"]),
+        # 中线严格居中：分屏线 x=379（中心 380），VS 文字 anchor=middle
+        f'<rect x="379" y="52" width="2" height="{size + 8}" fill="{t["line"]}"/>',
+        f'<text x="380" y="{60 + size // 2}" text-anchor="middle" font-family="{MONO}" '
+        f'font-size="16" fill="{t["ember"]}">VS</text>',
+        f'<rect x="{760 - 24 - box}" y="44" width="{box}" height="{box}" '
         f'fill="{t["surface"]}" stroke="{t["line"]}" stroke-width="2"/>',
-        draw_sprite(knight, pal, 760 - 32 - size, 52),
-        f'<text x="{760 - 32 - size}" y="{52 + size + 32}" font-family="{MONO}" '
+        draw_sprite(knight, pal, 760 - 24 - pad - size, 52),
+        f'<text x="{760 - 24 - pad}" y="{name_y}" text-anchor="end" font-family="{MONO}" '
         f'font-size="14" letter-spacing="1" fill="{t["ink"]}">{knight["name"]}</text>',
-        tag(760 - 32 - size, 52 + size + 50, knight["role"], t, 11, t["ash"]),
+        f'<text x="{760 - 24 - pad}" y="{role_y}" text-anchor="end" font-family="{MONO}" '
+        f'font-size="11" letter-spacing="2" fill="{t["ash"]}">{knight["role"]}</text>',
     ]
     return shell(760, 52 + size + 60, t, "".join(body), "队伍",
                  f'{mage["name"]} 与 {knight["name"]} 的像素立绘')
