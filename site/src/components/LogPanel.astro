@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import { base } from '../data/site.ts';
+
+const notes = (await getCollection('notes'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+<section class="panel span-7">
+  <div class="panel__head"><span class="panel__tag">BATTLE LOG</span></div>
+  <ul class="log">
+    {notes.map((n) => (
+      <li>
+        <a href={`${base}/notes/${n.id}/`}>
+          <span class="log__issue">ISSUE-{String(n.data.issue).padStart(2, '0')}</span>
+          <span class="log__date">{n.data.date.toISOString().slice(0, 10)}</span>
+          <span class="log__title">{n.data.title}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="panel__foot"><a href={`${base}/notes/`}>ALL LOGS →</a></p>
+</section>
+
+<style>
+  .log { list-style: none; padding: 0; margin: 0; }
+  .log li + li { border-top: 2px dashed var(--line); }
+  .log a {
+    display: grid; grid-template-columns: 88px 96px 1fr; gap: var(--space-2);
+    align-items: center; padding: 10px 0; border-bottom: 0;
+  }
+  .log a:hover .log__title { color: var(--ember); }
+  .log__issue { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ember); }
+  .log__date { font-family: var(--font-mono); font-size: 11px; color: var(--ash); }
+  .log__title { font-size: var(--fs-sm); color: var(--ink); }
+  @media (max-width: 560px) { .log a { grid-template-columns: 1fr; gap: 2px; } }
+</style>

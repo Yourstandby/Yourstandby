@@ -1,0 +1,35 @@
+---
+import player from '../data/player.generated.json';
+const items = player.inventory;
+---
+<section class="panel span-5">
+  <div class="panel__head"><span class="panel__tag">INVENTORY</span></div>
+  <ul class="inv">
+    {items.map((it) => (
+      <li class="inv__cell">
+        <span class="inv__slot" aria-hidden="true" data-icon={it.icon}></span>
+        <span class="inv__name">{it.name}</span>
+        <span class="inv__desc">{it.desc}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .inv { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+  .inv__cell {
+    border: 2px solid var(--line); background: var(--bg); padding: var(--space-2);
+    display: grid; gap: 4px; justify-items: start;
+  }
+  .inv__slot {
+    width: 32px; height: 32px; display: block; border: 2px solid var(--line);
+    background: var(--surface-2);
+    /* 4 个道具用 emoji 之外的纯色块占位，避免和像素风打架 */
+  }
+  .inv__slot[data-icon='pad'] { background: linear-gradient(var(--ember), var(--ember)) 8px 12px / 16px 8px no-repeat, var(--bg); }
+  .inv__slot[data-icon='brush'] { background: linear-gradient(var(--ink), var(--ink)) 14px 6px / 4px 14px no-repeat, linear-gradient(var(--gold), var(--gold)) 12px 20px / 8px 6px no-repeat, var(--bg); }
+  .inv__slot[data-icon='gear'] { background: radial-gradient(var(--cyan) 0 6px, transparent 6px) center / 32px 32px no-repeat, var(--bg); }
+  .inv__slot[data-icon='coffee'] { background: linear-gradient(var(--ink), var(--ink)) 6px 14px / 14px 12px no-repeat, linear-gradient(var(--ember), var(--ember)) 8px 26px / 10px 2px no-repeat, var(--bg); }
+  .inv__name { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ink); }
+  .inv__desc { font-family: var(--font-mono); font-size: 10px; color: var(--ash); }
+</style>

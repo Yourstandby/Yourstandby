@@ -82,8 +82,39 @@ a:focus-visible, button:focus-visible {
 
 /* ---------- 像素进度条 ---------- */
 .gauge { display: flex; gap: 6px; align-items: center; }
-.gauge i { width: 16px; height: 10px; background: var(--line); display: block; }
+.gauge i { width: 14px; height: 10px; background: var(--line); display: block; }
+/* 语义分工：火红=热/血，青=数据，绿=已通关，金=进行中 */
 .gauge i.on { background: var(--ember); }
+.gauge i.on.cyan { background: var(--cyan); }
+.gauge i.on.lime { background: var(--lime); }
+.gauge i.on.gold { background: var(--gold); }
+
+/* ---------- 仪表盘栅格 ---------- */
+.dash { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+@media (min-width: 900px) {
+  .dash { grid-template-columns: repeat(12, 1fr); }
+  .span-5 { grid-column: span 5; }
+  .span-7 { grid-column: span 7; }
+  .span-12 { grid-column: span 12; }
+}
+.panel {
+  background: var(--surface); border: var(--px-border) solid var(--line);
+  box-shadow: var(--px-shadow); padding: var(--space-4);
+  transition: transform var(--dur-press) var(--ease-step), box-shadow var(--dur-press) var(--ease-step);
+}
+.panel:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--line); }
+.panel__head {
+  border-bottom: 2px dashed var(--line); padding-bottom: 8px; margin-bottom: var(--space-3);
+}
+.panel__tag {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; color: var(--ash);
+  text-transform: uppercase;
+}
+.panel__foot {
+  margin: var(--space-3) 0 0; font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 1px; color: var(--ash);
+}
+.panel__foot a { color: var(--ember); }
 .gauge__label { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 2px; color: var(--ash); min-width: 96px; }
 
 /* ---------- dither 揭示：像素风不做透明度渐变 ---------- */

@@ -2,12 +2,13 @@
 import Base from '../layouts/Base.astro';
 import SecHead from '../components/SecHead.astro';
 import Ember from '../components/Ember.astro';
+import Gauge from '../components/Gauge.astro';
+import PlayerPanel from '../components/PlayerPanel.astro';
+import QuestLog from '../components/QuestLog.astro';
+import Inventory from '../components/Inventory.astro';
+import LogPanel from '../components/LogPanel.astro';
+import CommsPanel from '../components/CommsPanel.astro';
 import { site, base } from '../data/site.ts';
-import { getCollection } from 'astro:content';
-
-const notes = (await getCollection('notes'))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
 ---
 <Base>
   <section class="hero wrap">
@@ -25,13 +26,13 @@ const notes = (await getCollection('notes'))
 
   <div class="wrap">
     <section class="sec" data-dither>
-      <SecHead no="01" title="ABOUT" id="about" />
-      <div class="term">
-        <div><b>$</b> whoami</div>
-        <div>&gt; yourstandby — 全栈学徒 / 机械结构爱好者 / 像素画业余选手</div>
-        <div><b>$</b> cat mission.txt</div>
-        <div>&gt; 把抽象的问题拆成结构清楚的小系统：一段代码、一个工具、一张图。</div>
-        <div>&gt; 目标：把工程思维带进软件，把软件的克制带回机械。</div>
+      <SecHead no="01" title="DASHBOARD" id="dashboard" />
+      <div class="dash">
+        <PlayerPanel />
+        <QuestLog />
+        <Inventory />
+        <LogPanel />
+        <CommsPanel />
       </div>
     </section>
 
@@ -41,9 +42,7 @@ const notes = (await getCollection('notes'))
         {site.stack.map((s) => (
           <div class="stack-row">
             <span class="gauge__label">{s.label}</span>
-            <span class="gauge" role="img" aria-label={`${s.label} ${s.pct}/${s.max}`}>
-              {Array.from({ length: s.max }, (_, i) => <i class={i < s.pct ? 'on' : ''} />)}
-            </span>
+            <Gauge value={s.pct} max={s.max} cells={14} tone="cyan" label={`${s.label} ${s.pct}/${s.max}`} />
             <span class="stack-row__val">{s.detail}</span>
           </div>
         ))}
@@ -60,31 +59,6 @@ const notes = (await getCollection('notes'))
             <p class="card__desc">{p.desc}</p>
           </a>
         ))}
-      </div>
-    </section>
-
-    <section class="sec" data-dither>
-      <SecHead no="04" title="NOTES" id="notes" />
-      {notes.length === 0 ? <p class="card__desc">还没有手账。</p> : (
-        <ul class="notes">
-          {notes.map((n) => (
-            <li>
-              <a href={`${base}/notes/${n.id}/`}>
-                <span class="notes__date">{n.data.date.toISOString().slice(0, 10)}</span>
-                <span class="notes__title">{n.data.title}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-      <p><a href={`${base}/notes/`}>全部手账 →</a></p>
-    </section>
-
-    <section class="sec" data-dither>
-      <SecHead no="05" title="CONNECT" id="connect" />
-      <div class="card">
-        <p class="card__desc">合作、提问、纠错都欢迎。给我一个能复现问题的仓库链接，回复会快很多。</p>
-        <p><a href={`mailto:${site.email}`}>{site.email}</a> · <a href={site.github}>github.com/Yourstandby</a></p>
       </div>
     </section>
   </div>
@@ -114,12 +88,4 @@ const notes = (await getCollection('notes'))
     .stack-row { grid-template-columns: 110px auto 1fr; align-items: center; }
   }
   .stack-row__val { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--ink-dim); }
-  .notes { list-style: none; padding: 0; margin: 0 0 var(--space-4); }
-  .notes li + li { border-top: 2px dashed var(--line); }
-  .notes a {
-    display: flex; flex-wrap: wrap; gap: var(--space-3);
-    padding: var(--space-3) 0; border-bottom: 0; color: var(--ink);
-  }
-  .notes a:hover .notes__title { color: var(--ember); }
-  .notes__date { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ash); letter-spacing: 2px; }
 </style>

@@ -1,0 +1,43 @@
+---
+import Gauge from './Gauge.astro';
+import player from '../data/player.generated.json';
+
+const quests = player.quests;
+const cleared = quests.filter((q) => q.status === 'cleared').length;
+const MARK = { cleared: 'X', active: '>', locked: '-' } as const;
+const TONE = { cleared: 'lime', active: 'gold', locked: 'ember' } as const;
+---
+<section class="panel span-5">
+  <div class="panel__head"><span class="panel__tag">QUEST LOG</span></div>
+  <ul class="quests">
+    {quests.map((q) => (
+      <li class={`quests__row is-${q.status}`}>
+        <span class={`quests__mark is-${q.status}`} aria-hidden="true">{MARK[q.status as keyof typeof MARK]}</span>
+        <span class="quests__name">{q.name}</span>
+        <Gauge value={q.progress} max={1} cells={8} tone={TONE[q.status as keyof typeof TONE]} label={`进度 ${Math.round(q.progress * 100)}%`} />
+        <span class="quests__state">{q.status.toUpperCase()}</span>
+      </li>
+    ))}
+  </ul>
+  <p class="panel__foot">CLEARED {cleared}/{quests.length}</p>
+</section>
+
+<style>
+  .quests { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .quests__row { display: grid; grid-template-columns: 18px 1fr; gap: 4px var(--space-2); align-items: center; }
+  .quests__row .gauge { grid-column: 2; }
+  .quests__state { grid-column: 2; font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--ash); }
+  .quests__mark {
+    width: 18px; height: 18px; display: grid; place-items: center;
+    border: 2px solid var(--line); font-family: var(--font-mono); font-size: 11px; line-height: 1;
+    color: var(--ash);
+  }
+  .quests__mark.is-cleared { border-color: var(--lime); color: var(--lime); }
+  .quests__mark.is-active { border-color: var(--gold); color: var(--gold); }
+  .quests__name { font-size: var(--fs-sm); color: var(--ink); }
+  .is-locked .quests__name { color: var(--ash); }
+  @media (min-width: 640px) {
+    .quests__row { grid-template-columns: 18px 1fr auto auto; }
+    .quests__row .gauge, .quests__state { grid-column: auto; }
+  }
+</style>

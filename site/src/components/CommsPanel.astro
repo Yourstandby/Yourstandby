@@ -1,0 +1,27 @@
+---
+import player from '../data/player.generated.json';
+const links = player.links;
+---
+<section class="panel span-5">
+  <div class="panel__head"><span class="panel__tag">COMMS</span></div>
+  <ul class="comms">
+    {links.map((l) => (
+      <li>
+        <span class="comms__live" aria-hidden="true"></span>
+        <span class="comms__label">{l.label}</span>
+        <span class="comms__value">{l.value}</span>
+        <span class="comms__state">ONLINE</span>
+      </li>
+    ))}
+  </ul>
+  <p class="panel__foot">有问题给我一个能复现的仓库链接，回复会快很多。</p>
+</section>
+
+<style>
+  .comms { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .comms li { display: grid; grid-template-columns: 10px 56px 1fr auto; gap: var(--space-2); align-items: center; }
+  .comms__live { width: 8px; height: 8px; background: var(--lime); animation: px-blink var(--dur-blink) var(--ease-step) infinite; }
+  .comms__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; color: var(--ash); }
+  .comms__value { font-family: var(--font-mono); font-size: 12px; color: var(--ink); overflow-wrap: anywhere; }
+  .comms__state { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: var(--lime); }
+</style>

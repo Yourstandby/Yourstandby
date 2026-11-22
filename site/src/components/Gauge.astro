@@ -1,0 +1,14 @@
+---
+interface Props {
+  value: number;
+  max?: number;
+  cells?: number;
+  tone?: 'cyan' | 'ember' | 'lime' | 'gold';
+  label?: string;
+}
+const { value, max = 10, cells = 10, tone = 'cyan', label } = Astro.props;
+const lit = Math.round(Math.min(value / max, 1) * cells);
+---
+<span class="gauge" role="img" aria-label={label ?? `${value}/${max}`}>
+  {Array.from({ length: cells }, (_, i) => <i class={i < lit ? `on ${tone}` : ''} />)}
+</span>
