@@ -185,8 +185,8 @@
 <p align="center">
 <a href="https://yourstandby.github.io/Yourstandby/#trials">
 <picture>
-  <source type="image/webp" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/hop.webp?v=2" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/hop.gif?v=2" alt="鸡毛法师与小白战士在贡献热力格上跳跃，踩过的格子逐个亮起，最后在中列会合" width="640" />
+  <source type="image/webp" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/hop.webp?v=3" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/hop.gif?v=3" alt="鸡毛法师与小白战士在贡献热力格上跳跃，踩过的格子逐个亮起，最后在中列会合" width="640" />
 </picture>
 </a>
 </p>
