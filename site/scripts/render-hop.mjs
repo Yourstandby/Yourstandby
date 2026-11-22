@@ -111,15 +111,41 @@ const SPRITE = {
   knight: SPR.sprites.find((s) => s.id === 'knight')
 };
 
-/* 32x32 精灵预烘焙到离屏画布，再用最近邻缩到 16px，形象不变细节减半 */
+/* 把 sprites.json 的网格烘焙成一格大小（HERO×HERO），必须整只都在格子里：
+   - 源分辨率取自 sprite.grid（现在是 64），不能写死 32，否则只拷到左上四分之一
+   - 缩小用「多数投票」而不是最近邻抽样：16px 下最近邻会把细线整块丢掉，
+     投票能保住剪影和主色，人物不会缺胳膊少腿
+   HERO 必须 == CELL，人物正好占一格 */
 const baked = {};
 for (const id of ['mage', 'knight']) {
-  const oc = createCanvas(32, 32);
+  const sp = SPRITE[id], pal = SPR.palette;
+  const g = sp.grid || 32;
+  const px = Array.from({ length: g }, () => Array(g).fill(null));
+  for (const r of sp.rects) if (r[5]) for (let y = r[1] - 1; y < r[1] + r[3] + 1; y++) for (let x = r[0] - 1; x < r[0] + r[2] + 1; x++) {
+    if (px[y] && px[y][x] === null) px[y][x] = 'K';
+  }
+  for (const r of sp.rects) for (let y = r[1]; y < r[1] + r[3]; y++) for (let x = r[0]; x < r[0] + r[2]; x++) {
+    if (px[y] && px[y][x] !== undefined) px[y][x] = r[4];
+  }
+  const oc = createCanvas(HERO, HERO);
   const octx = oc.getContext('2d');
   octx.imageSmoothingEnabled = false;
-  const sp = SPRITE[id], pal = SPR.palette;
-  for (const r of sp.rects) if (r[5]) { octx.fillStyle = pal.K; octx.fillRect(r[0] - 1, r[1] - 1, r[2] + 2, r[3] + 2); }
-  for (const r of sp.rects) { octx.fillStyle = pal[r[4]]; octx.fillRect(r[0], r[1], r[2], r[3]); }
+  for (let ty = 0; ty < HERO; ty++) for (let tx = 0; tx < HERO; tx++) {
+    const x0 = Math.floor((tx * g) / HERO), x1 = Math.max(x0 + 1, Math.ceil(((tx + 1) * g) / HERO));
+    const y0 = Math.floor((ty * g) / HERO), y1 = Math.max(y0 + 1, Math.ceil(((ty + 1) * g) / HERO));
+    const votes = new Map();
+    let total = 0, opaque = 0;
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+      total++;
+      const k = px[y]?.[x];
+      if (k) { opaque++; votes.set(k, (votes.get(k) || 0) + 1); }
+    }
+    if (opaque / total < 0.5) continue;         // 半格以上是空的就留空，保住剪影
+    let pick = 'K', best = 0;
+    for (const [k, c] of votes) if (c > best) { best = c; pick = k; }
+    octx.fillStyle = pal[pick];
+    octx.fillRect(tx, ty, 1, 1);
+  }
   baked[id] = oc;
 }
 
@@ -129,7 +155,7 @@ function drawHero(ctx, id, x, y, squash, flip) {
   ctx.imageSmoothingEnabled = false;
   if (flip) { ctx.translate(Math.round(x) + HERO, Math.round(y) + HERO - h); ctx.scale(-1, 1); }
   else ctx.translate(Math.round(x), Math.round(y) + HERO - h);
-  ctx.drawImage(baked[id], 0, 0, 32, 32, 0, 0, HERO, h);
+  ctx.drawImage(baked[id], 0, 0, HERO, HERO, 0, 0, HERO, h);
   ctx.restore();
 }
 
