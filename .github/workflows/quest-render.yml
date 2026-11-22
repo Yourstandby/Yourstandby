@@ -52,8 +52,16 @@ jobs:
           git add profile/quest.gif profile/quest.webp
           if git diff --cached --quiet; then
             echo "animation unchanged"
-          else
-            ls -lh profile/quest.webp profile/quest.gif
-            git commit -m "chore(quest): re-render animation from source"
-            git push
+            exit 0
           fi
+          ls -lh profile/quest.webp profile/quest.gif
+          git commit -m "chore(quest): re-render animation from source"
+          # 手动 push 可能与 CI 撞车，先 rebase 再推，最多重试 3 次
+          for i in 1 2 3; do
+            if git pull --rebase --autostash origin ${GITHUB_REF_NAME} && git push; then
+              echo "pushed"; exit 0
+            fi
+            sleep 5
+          done
+          echo "failed to push after retries" >&2
+          exit 1
