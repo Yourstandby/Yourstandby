@@ -66,24 +66,24 @@
 
 <p align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/party-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/party-light.svg" alt="队伍：鸡毛法师（蓝色尖顶帽、青色宝石法杖）与小白战士（白毛、深蓝剑士服、背后大剑）" width="760" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/party-dark.svg?v=7" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/party-light.svg?v=7" alt="队伍：鸡毛法师（金毛犬、青绿尖帽、发光宝石法杖）与小白战士（马尔济斯、藏青长袍、斜挎皮带、背后斜剑）" width="760" />
 </picture>
 </p>
 
 <p align="center">
 <a href="https://yourstandby.github.io/Yourstandby/#trials">
 <picture>
-  <source type="image/webp" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/quest.webp" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/quest.gif" alt="十关双屏闯关：鸡毛法师从雪原走到水底，小白战士从水底走到雪原，最后打破分屏线在中央相遇" width="640" />
+  <source type="image/webp" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/quest.webp?v=7" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/quest.gif?v=7" alt="十关双屏闯关：鸡毛法师从雪原走到水底，小白战士从水底走到雪原，最后打破分屏线在中央相遇" width="640" />
 </picture>
 </a>
 </p>
 
 <p align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-light.svg" alt="角色存档：YOURSTANDBY · FULL-STACK BUILDER · LV.03 · EXP 620/900 · 属性 CODE 8 / DESIGN 7 / SYSTEMS 6 / CURIOUS 9" width="760" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-dark.svg?v=7" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-light.svg?v=7" alt="角色存档：YOURSTANDBY · FULL-STACK BUILDER · LV.03 · EXP 620/900 · 属性 CODE 8 / DESIGN 7 / SYSTEMS 6 / CURIOUS 9" width="760" />
 </picture>
 </p>
 
