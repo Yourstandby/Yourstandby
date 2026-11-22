@@ -15,10 +15,12 @@ RM = "@media (prefers-reduced-motion: reduce){*{animation:none !important}}"
 PALETTE = {
     "dark": dict(bg="#16090A", surface="#22100F", line="#3D1B16", ink="#FFE9D6",
                  dim="#FFB08A", ash="#8A6A64", ember="#FF3B1F", deep="#C21B00",
-                 flame="#FFB000", spark="#FFE9A8", empty="#2A1512"),
+                 flame="#FFB000", spark="#FFE9A8", empty="#2A1512",
+                 cyan="#2BD9FF", lime="#4CE06A", gold="#FFB000"),
     "light": dict(bg="#FFF4EC", surface="#FFFFFF", line="#1A0D0A", ink="#1A0D0A",
                   dim="#5C3A32", ash="#8A6A64", ember="#C81E00", deep="#8A1400",
-                  flame="#8A4A00", spark="#FFC98A", empty="#E7D3C6"),
+                  flame="#8A4A00", spark="#FFC98A", empty="#E7D3C6",
+                  cyan="#0A6E8A", lime="#1F7A3F", gold="#8A4A00"),
 }
 
 QUERY = """
@@ -113,14 +115,17 @@ def tag(x, y, text, t, size=13, fill=None):
             f'letter-spacing="2" fill="{fill}">{text}</text>')
 
 
-def gauge(x, y, ratio, t, cells=12, cw=16, ch=10, gap=6):
+def gauge(x, y, ratio, t, cells=12, cw=16, ch=10, gap=6, color=None):
+    """像素条。color 传调色板键名，语义分工：
+    ember=血/热力, cyan=数据/技能, lime=已通关, gold=进行中。"""
+    tone = color if (color or "").startswith("#") else t[color or "ember"]
     lit = max(0, min(cells, round(ratio * cells)))
     out = []
     for i in range(cells):
         on = i < lit
         cls = f' class="bar" style="animation-delay:{(i * 0.12):.2f}s"' if on else ""
         out.append(f'<rect x="{x + i * (cw + gap)}" y="{y}" width="{cw}" height="{ch}" '
-                   f'fill="{t["ember"] if on else t["empty"]}"{cls}/>')
+                   f'fill="{tone if on else t["empty"]}"{cls}/>')
     return "".join(out)
 
 
@@ -146,7 +151,7 @@ def render_stats(data, t):
         body.append(tag(cx, cy, name, t, 13))
         body.append(f'<text x="{cx}" y="{cy + 34}" font-family="{MONO}" font-size="30" '
                     f'font-weight="700" letter-spacing="1" fill="{t["ink"]}">{value}</text>')
-        body.append(gauge(cx, cy + 44, ratio, t, cells=7, cw=16, ch=8, gap=6))
+        body.append(gauge(cx, cy + 44, ratio, t, cells=7, cw=16, ch=8, gap=6, color="cyan"))
     return shell(476, 200, t, "".join(body), "GitHub 概况",
                  f"仓库 {repos['totalCount']} 个、Stars {stars}、提交 {contrib['totalCommitContributions']} 次、语言 {len(langs)} 种")
 
@@ -163,7 +168,7 @@ def render_langs(data, t):
         y = 60 + i * 26
         ratio = size / total
         body.append(tag(20, y, name.upper()[:13], t, 13, t["ink"]))
-        body.append(gauge(158, y - 10, ratio, t, cells=12, cw=13, ch=9, gap=4))
+        body.append(gauge(158, y - 10, ratio, t, cells=12, cw=13, ch=9, gap=4, color="cyan"))
         body.append(tag(412, y, f"{ratio * 100:.0f}%", t, 12))
     return shell(476, 208, t, "".join(body), "常用语言",
                  "、".join(n for n, _ in top))
@@ -193,8 +198,9 @@ def render_streak(data, t):
             [("CURRENT", now, "天"), ("LONGEST", best, "天"), ("THIS YEAR", total, "次")]):
         x = 24 + i * 226
         body.append(tag(x, 64, name, t, 12))
+        tone = [t["lime"], t["gold"], t["cyan"]][i]
         body.append(f'<text x="{x}" y="108" font-family="{MONO}" font-size="36" '
-                    f'font-weight="700" fill="{t["ink"]}">{value}'
+                    f'font-weight="700" fill="{tone}">{value}'
                     f'<tspan font-size="16" fill="{t["ash"]}"> {unit}</tspan></text>')
     body.append(tag(24, 138, "KEEP THE FIRE ALIVE", t, 12, t["dim"]))
     return shell(720, 160, t, "".join(body), "连续提交",
@@ -280,13 +286,13 @@ def render_player(_data, t):
         f'<text x="140" y="132" font-family="{MONO}" font-size="16" letter-spacing="2" '
         f'fill="{t["flame"]}">LV.{p["level"]:02d}</text>',
         # 条的右边界 = 200 + 9*12 + 8*5 = 348，文字从 352 起，属性列从 452 起
-        gauge(200, 120, exp_ratio, t, cells=9, cw=12, ch=9, gap=5),
+        gauge(200, 120, exp_ratio, t, cells=9, cw=12, ch=9, gap=5, color="gold"),
         tag(358, 132, f'EXP {p["exp"]["current"]}/{p["exp"]["next"]}', t, 11, t["ash"]),
     ]
     for i, st in enumerate(p["stats"]):
         y = 76 + i * 30
         body.append(tag(452, y, st["key"], t, 12, t["ink"]))
-        body.append(gauge(544, y - 10, st["value"] / st["max"], t, cells=10, cw=12, ch=9, gap=4))
+        body.append(gauge(544, y - 10, st["value"] / st["max"], t, cells=10, cw=12, ch=9, gap=4, color="cyan"))
         body.append(tag(714, y, f'{st["value"]}', t, 12, t["dim"]))
     return shell(760, 176, t, "".join(body), "角色存档",
                  f'{p["name"]} · {p["title"]} · LV.{p["level"]}')
@@ -309,7 +315,8 @@ def render_quests(_data, t):
                     f'fill="{color}">{QUEST_MARK[q["status"]]}</text>')
         body.append(tag(48, y, q["name"], t, 13, t["ink"] if q["status"] != "locked" else t["ash"]))
         # 条的右边界 = 440 + 10*12 + 9*4 = 596，状态文字从 620 起
-        body.append(gauge(440, y - 11, q["progress"], t, cells=10, cw=12, ch=9, gap=4))
+        tone = t["lime"] if q["status"] == "cleared" else (t["gold"] if q["status"] == "active" else None)
+        body.append(gauge(440, y - 11, q["progress"], t, cells=10, cw=12, ch=9, gap=4, color=tone))
         body.append(tag(620, y, q["status"].upper(), t, 11,
                         t["dim"] if q["status"] != "locked" else t["ash"]))
     cleared = sum(1 for q in quests if q["status"] == "cleared")
@@ -354,7 +361,7 @@ def render_gear(data, t):
         body.append(f'<rect x="{x + 10}" y="20" width="8" height="8" fill="{t["ember"]}" class="cur"/>')
         body.append(tag(x + 26, 30, label, t, 11, t["ash"]))
         body.append(f'<text x="{x + 12}" y="56" font-family="{MONO}" font-size="22" '
-                    f'font-weight="700" fill="{t["ink"]}">{value}</text>')
+                    f'font-weight="700" fill="{t["cyan"]}">{value}</text>')
     return shell(760, 76, t, "".join(body), "状态栏",
                  "、".join(f"{l} {v}" for l, v in cells))
 
@@ -414,7 +421,7 @@ def render_stack(_data, t):
     for i, it in enumerate(items):
         y = 64 + i * 40
         body.append(tag(20, y, it["label"], t, 13, t["ink"]))
-        body.append(gauge(176, y - 11, it["pct"] / it["max"], t, cells=14, cw=18, ch=11, gap=6))
+        body.append(gauge(176, y - 11, it["pct"] / it["max"], t, cells=14, cw=18, ch=11, gap=6, color="cyan"))
         body.append(tag(540, y, it["detail"], t, 12, t["dim"]))
     height = 64 + len(items) * 40 + 8
     return shell(760, height, t, "".join(body), "技术栈",

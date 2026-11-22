@@ -11,12 +11,18 @@
   --bg: #16090A; --surface: #22100F; --surface-2: #2E1512;
   --line: #3D1B16; --ink: #FFE9D6; --ink-dim: #FFB08A; --ash: #8A6A64;
   --ember: #FF3B1F; --ember-deep: #C21B00; --flame: #FFB000; --spark: #FFE9A8;
+
+  /* 语义色：火红只负责"热"的部分，数据走青、完成走绿、进行中走金。
+     一味加饱和度会让整页糊成一片红。 */
+  --cyan: #2BD9FF; --lime: #4CE06A; --gold: #FFB000;
 }
 @media (prefers-color-scheme: light) {
   :root {
     --bg: #FFF4EC; --surface: #FFFFFF; --surface-2: #FFE7D8;
     --line: #1A0D0A; --ink: #1A0D0A; --ink-dim: #5C3A32;
     --ember: #C81E00; --ember-deep: #8A1400; --flame: #8A4A00; --spark: #FFC98A;
+    /* 浅底上必须压暗，否则 4.5:1 过不了 */
+    --cyan: #0A6E8A; --lime: #1F7A3F; --gold: #8A4A00;
   }
 }
 
