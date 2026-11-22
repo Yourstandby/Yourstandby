@@ -556,6 +556,18 @@
     requestAnimationFrame(frame);
   }).catch(function () { /* 精灵加载失败就留空，不阻塞页面 */ });
 
+  /* CI / 离屏渲染入口：node 里 mock 掉 DOM 后可直接驱动任意帧 */
+  window.__QUEST_RENDER__ = function (opts) {
+    opts = opts || {};
+    if (opts.meet) { drawMeeting(opts.t || 0); return; }
+    var k = Math.min(Math.max(opts.k | 0, 0), STAGES.length - 1);
+    state.k = k;
+    var st = STAGES[k];
+    seedParts(st.l.env, st.r.env);
+    render(phaseOf(opts.t || 0), opts.t || 0);
+  };
+  window.__QUEST_INFO__ = { total: TOTAL, stages: STAGES.length, w: W, h: H, meet: MEET };
+
   var visible = true;
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (en) {

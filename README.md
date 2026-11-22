@@ -65,8 +65,8 @@
 <p align="center">
 <a href="https://yourstandby.github.io/Yourstandby/#trials">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/trials-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/trials-light.svg" alt="十关赛程：法师从雪原走到水底，战士从水底走到雪原，在中央会合" width="760" />
+  <source type="image/webp" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/quest.webp" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/quest.gif" alt="十关双屏闯关：鸡毛法师从雪原走到水底，小白战士从水底走到雪原，最后打破分屏线在中央相遇" width="640" />
 </picture>
 </a>
 </p>
