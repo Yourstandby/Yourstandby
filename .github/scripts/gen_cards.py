@@ -267,44 +267,32 @@ def draw_sprite(sprite, palette, x0, y0, unit=None):
     return "".join(out)
 
 
-MAGE_TRACK = [("SNOW", "#B8D8E8"), ("WOOD", "#2E5C43"), ("DUNE", "#C98F3D"),
-              ("ROCK", "#5A5F66"), ("SEA", "#1F5C7A")]
-KNIGHT_TRACK = [("SEA", "#1F5C7A"), ("ROCK", "#5A5F66"), ("DUNE", "#C98F3D"),
-                ("WOOD", "#2E5C43"), ("SNOW", "#B8D8E8")]
+def load_quest():
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "quest.json")
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)["stages"]
 
 
 def render_trials(_data, t):
-    """双屏赛程：左半法师（左→右），右半战士（右→左），中间一道分屏线。"""
+    """五关赛道：两端是角色，中间五关同一环境，数据源 design/quest.json。"""
     sp = load_sprites()
     pal = sp["palette"]
-    body = [tag(20, 26, "THE TEN TRIALS", t, 13)]
-    # 分屏线
-    body.append(f'<rect x="379" y="44" width="2" height="72" fill="{t["ember"]}"/>')
-    body.append(f'<rect x="373" y="{44 + 32}" width="14" height="2" fill="{t["ember"]}"/>')
-    # 法师：立绘 + 从左往右五个节点
-    body.append(f'<rect x="14" y="46" width="38" height="38" fill="{t["surface"]}" '
-                f'stroke="{t["line"]}" stroke-width="2"/>')
-    body.append(draw_sprite(sp["sprites"][0], pal, 17, 49, unit=1))
-    for i, (label, color) in enumerate(MAGE_TRACK):
-        x = 62 + i * 58
-        body.append(f'<rect x="{x}" y="58" width="14" height="14" fill="{color}" '
+    stages = load_quest()
+    body = [tag(20, 26, "THE TEN TRIALS", t, 13),
+            f'<rect x="58" y="66" width="644" height="2" fill="{t["line"]}"/>',
+            f'<rect x="14" y="47" width="38" height="38" fill="{t["surface"]}" '
+            f'stroke="{t["line"]}" stroke-width="2"/>',
+            draw_sprite(sp["sprites"][0], pal, 17, 50, unit=1),
+            f'<rect x="{760 - 52}" y="47" width="38" height="38" fill="{t["surface"]}" '
+            f'stroke="{t["line"]}" stroke-width="2"/>',
+            draw_sprite(sp["sprites"][1], pal, 760 - 49, 50, unit=1)]
+    for i, st in enumerate(stages):
+        x = 118 + i * 132
+        body.append(f'<rect x="{x}" y="58" width="16" height="16" fill="{st["color"]}" '
                     f'stroke="{t["line"]}" stroke-width="2"/>')
-        body.append(tag(x - 2, 92, label, t, 9, t["ash"]))
-    # 战士：从右往左五个节点 + 立绘
-    # 右半按 760 - x - 14 镜像：左侧第 i 个在 62+i*58，右侧就该是 684-i*58
-    for i, (label, color) in enumerate(KNIGHT_TRACK):
-        x = 684 - i * 58
-        body.append(f'<rect x="{x}" y="58" width="14" height="14" fill="{color}" '
-                    f'stroke="{t["line"]}" stroke-width="2"/>')
-        body.append(tag(x - 2, 92, label, t, 9, t["ash"]))
-    body.append(f'<rect x="{760 - 52}" y="46" width="38" height="38" fill="{t["surface"]}" '
-                f'stroke="{t["line"]}" stroke-width="2"/>')
-    body.append(draw_sprite(sp["sprites"][1], pal, 760 - 49, 49, unit=1))
-    # 第三组双方同为沙漠 —— 互文点，底下加一道金线
-    body.append(f'<rect x="172" y="102" width="146" height="2" fill="{t["gold"]}"/>')
-    body.append(f'<rect x="442" y="102" width="146" height="2" fill="{t["gold"]}"/>')
-    return shell(760, 124, t, "".join(body), "双屏赛程",
-                 "左：法师 雪原→水底；右：战士 水底→雪原；中间为分屏线，两组沙漠关卡互相呼应")
+        body.append(tag(x - 4, 92, st["label"], t, 9, t["ash"]))
+    return shell(760, 118, t, "".join(body), "五关赛程",
+                 "同一场景两侧并行：法师用法术、战士用剑盾")
 
 
 def render_party(_data, t):

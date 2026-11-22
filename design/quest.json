@@ -1,0 +1,45 @@
+{
+  "note": "五关：两侧同一环境，left=法师解法，right=战士解法。quest.js 与 gen_cards.py 都读这份。",
+  "stages": [
+    {
+      "env": "snow",
+      "place": "雪原",
+      "label": "SNOW",
+      "color": "#B8D8E8",
+      "left": "icewall",
+      "right": "charge"
+    },
+    {
+      "env": "forest",
+      "place": "原始森林",
+      "label": "WOOD",
+      "color": "#2E5C43",
+      "left": "fire",
+      "right": "slash"
+    },
+    {
+      "env": "desert",
+      "place": "沙漠",
+      "label": "DUNE",
+      "color": "#C98F3D",
+      "left": "orb",
+      "right": "blade"
+    },
+    {
+      "env": "quarry",
+      "place": "石坑",
+      "label": "ROCK",
+      "color": "#5A5F66",
+      "left": "petrify",
+      "right": "shield"
+    },
+    {
+      "env": "water",
+      "place": "水底",
+      "label": "SEA",
+      "color": "#1F5C7A",
+      "left": "bubble",
+      "right": "swirl"
+    }
+  ]
+}

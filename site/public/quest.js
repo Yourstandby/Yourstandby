@@ -21,19 +21,33 @@
     water: '#1F5C7A', waterDeep: '#0E2E3F', bubble: '#8FE3F0'
   };
 
-  /* ---------- 五组关卡：左=法师，右=战士，环境互为倒序 ---------- */
+  /* ---------- 五关：两侧同一环境（画面镜像对称），应对方式因职业而异 ---------- */
   var STAGES = [
-    { l: { env: 'snow',   act: 'icewall', place: '雪原',     tech: '法杖点地，冰墙挡住雪崩' },
-      r: { env: 'water',  act: 'swirl',   place: '水底',     tech: '大剑搅出涡流借力上浮' } },
-    { l: { env: 'forest', act: 'fire',    place: '原始森林', tech: '杖头迸火星，毒蛇退散' },
-      r: { env: 'quarry', act: 'shield',  place: '石坑',     tech: '盾面撞碎石人的膝盖' } },
-    { l: { env: 'desert', act: 'orb',     place: '沙漠',     tech: '凝出水球，拖着身子喝下去' },
-      r: { env: 'desert', act: 'blade',   place: '沙漠',     tech: '大剑插沙遮阴，反光找到绿洲' } },
-    { l: { env: 'quarry', act: 'petrify', place: '石坑',     tech: '石化咒把追兵定在原地' },
-      r: { env: 'forest', act: 'slash',   place: '原始森林', tech: '横扫一剑，藤蔓和蛇一起断' } },
-    { l: { env: 'water',  act: 'bubble',  place: '水底',     tech: '撑开呼吸法阵，气泡裹身' },
-      r: { env: 'snow',   act: 'charge',  place: '雪原',     tech: '盾当滑板，从雪崩底下冲过' } }
+    { env: 'snow', place: '雪原',
+      l: { act: 'icewall', tech: '法杖点地，冰墙挡住雪崩' },
+      r: { act: 'charge', tech: '盾当滑板，从雪崩底下冲过' } },
+    { env: 'forest', place: '原始森林',
+      l: { act: 'fire', tech: '杖头迸火星，毒蛇退散' },
+      r: { act: 'slash', tech: '横扫一剑，藤蔓和蛇一起断' } },
+    { env: 'desert', place: '沙漠',
+      l: { act: 'orb', tech: '凝出水球，拖着身子喝下去' },
+      r: { act: 'blade', tech: '大剑插沙遮阴，反光找到绿洲' } },
+    { env: 'quarry', place: '石坑',
+      l: { act: 'petrify', tech: '石化咒把追兵定在原地' },
+      r: { act: 'shield', tech: '盾面撞碎石人的膝盖' } },
+    { env: 'water', place: '水底',
+      l: { act: 'bubble', tech: '撑开呼吸法阵，气泡裹身' },
+      r: { act: 'swirl', tech: '大剑搅出涡流借力上浮' } }
   ];
+
+  // 技能文案：quest.json 只存动作名，文案留在这里
+  var TECH = {
+    icewall: '法杖点地，冰墙挡住雪崩', charge: '盾当滑板，从雪崩底下冲过',
+    fire: '杖头迸火星，毒蛇退散', slash: '横扫一剑，藤蔓和蛇一起断',
+    orb: '凝出水球，拖着身子喝下去', blade: '大剑插沙遮阴，反光找到绿洲',
+    petrify: '石化咒把追兵定在原地', shield: '盾面撞碎石人的膝盖',
+    bubble: '撑开呼吸法阵，气泡裹身', swirl: '大剑搅出涡流借力上浮'
+  };
 
   var SEG = { enter: 0.6, walk: 0.9, hazard: 1.2, act: 1.4, clear: 0.8, exit: 0.6 };
   var TOTAL = SEG.enter + SEG.walk + SEG.hazard + SEG.act + SEG.clear + SEG.exit;
@@ -44,7 +58,23 @@
     if (SPR) return Promise.resolve(SPR);
     return fetch(BASE + '/sprites.json', { cache: 'force-cache' })
       .then(function (r) { return r.json(); })
-      .then(function (d) { SPR = d; return d; });
+      .then(function (d) {
+        SPR = d;
+        // 关卡表以 design/quest.json 为准，缺失时保留内联兜底
+        return fetch(BASE + '/quest.json', { cache: 'force-cache' })
+          .then(function (r) { return r.json(); })
+          .then(function (q) {
+            if (q && q.stages && q.stages.length) {
+              STAGES = q.stages.map(function (s) {
+                return { env: s.env, place: s.place,
+                         l: { act: s.left, tech: TECH[s.left] || '' },
+                         r: { act: s.right, tech: TECH[s.right] || '' } };
+              });
+            }
+            return d;
+          })
+          .catch(function () { return d; });
+      });
   }
 
   var parts = [];
@@ -374,7 +404,7 @@
     if (state.meeting) return;
     var st = STAGES[state.k];
     if (elIdx) elIdx.textContent = ('0' + (state.k + 1)).slice(-2);
-    if (elPlace) elPlace.textContent = st.l.place + ' ↔ ' + st.r.place;
+    if (elPlace) elPlace.textContent = st.place;
     if (elTech) elTech.textContent = st.l.tech + ' / ' + st.r.tech;
     paintTrack();
   }
@@ -382,28 +412,29 @@
   /* ---------- 渲染 ---------- */
   var state = { k: 0, t: 0, meeting: false, mt: 0 };
 
-  function drawScreen(side, cfg, ph, t) {
+  function drawScreen(side, st, ph, t) {
     ctx.save();
     ctx.beginPath();
     ctx.rect(side * SW, 0, SW, H);
     ctx.clip();
     ctx.translate(side * SW, 0);
 
-    terrain(cfg.env, t);
+    // 两侧同一环境，右侧水平镜像，形成对称的双屏
+    terrain(st.env, t);
 
     var hz = 0;
     if (ph.n === 'hazard') hz = ph.p;
     else if (ph.n === 'act') hz = 1;
     else if (ph.n === 'clear') hz = 1 - ph.p * 0.7;
     else if (ph.n === 'exit') hz = 0.15;
-    hazard(cfg.env, hz, t, side === 0 ? 1 : -1);
+    hazard(st.env, hz, t, side === 0 ? 1 : -1);
 
     var hx = heroX(side, ph);
     drawHero(side === 0 ? 'mage' : 'knight', hx, 120, t,
              ph.n === 'walk' || ph.n === 'exit', side === 1);
 
     var ep = ph.n === 'act' ? ph.p : (ph.n === 'clear' ? 1 : 0);
-    effect(cfg.act, ep, t, hx, 120, side === 0 ? 1 : -1);
+    effect(side === 0 ? st.l.act : st.r.act, ep, t, hx, 120, side === 0 ? 1 : -1);
 
     ctx.restore();
   }
@@ -422,8 +453,8 @@
   function render(ph, t) {
     var st = STAGES[state.k];
     ctx.clearRect(0, 0, W, H);
-    drawScreen(0, st.l, ph, t);
-    drawScreen(1, st.r, ph, t);
+    drawScreen(0, st, ph, t);
+    drawScreen(1, st, ph, t);
     stepParts(1 / 60);
     drawParts();
     drawDivider(t, 0);
@@ -509,7 +540,7 @@
 
     if (!partsInit) {
       var st = STAGES[Math.min(state.k, STAGES.length - 1)];
-      seedParts(st.l.env, st.r.env);
+      seedParts(st.env, st.env);
       if (state.k < STAGES.length) syncHud();
       partsInit = true;
     }
@@ -530,8 +561,8 @@
   function drawStatic() {
     var st = STAGES[state.k % STAGES.length];
     ctx.clearRect(0, 0, W, H);
-    drawScreen(0, st.l, { n: 'act', p: 0.8 }, 0);
-    drawScreen(1, st.r, { n: 'act', p: 0.8 }, 0);
+    drawScreen(0, st, { n: 'act', p: 0.8 }, 0);
+    drawScreen(1, st, { n: 'act', p: 0.8 }, 0);
     drawDivider(0, 0);
     syncHud();
   }
@@ -548,7 +579,7 @@
       state.k = Math.min(Math.max(fixK, 0), STAGES.length - 1);
       var st = STAGES[state.k];
       syncHud();
-      seedParts(st.l.env, st.r.env);
+      seedParts(st.env, st.env);
       render(phaseOf(fixT), fixT);
       return;
     }

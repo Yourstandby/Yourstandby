@@ -2,14 +2,12 @@
 import { base } from '../data/site.ts';
 
 const SNOW = '#B8D8E8', FOREST = '#4CE06A', DESERT = '#C98F3D', QUARRY = '#8B929B', WATER = '#2BD9FF';
-const COLOR: Record<string, string> = { snow: SNOW, forest: FOREST, desert: DESERT, quarry: QUARRY, water: WATER };
-
 const STAGES = [
-  { l: { place: '雪原', env: 'snow' }, r: { place: '水底', env: 'water' } },
-  { l: { place: '原始森林', env: 'forest' }, r: { place: '石坑', env: 'quarry' } },
-  { l: { place: '沙漠', env: 'desert' }, r: { place: '沙漠', env: 'desert' } },
-  { l: { place: '石坑', env: 'quarry' }, r: { place: '原始森林', env: 'forest' } },
-  { l: { place: '水底', env: 'water' }, r: { place: '雪原', env: 'snow' } }
+  { place: '雪原', env: SNOW },
+  { place: '原始森林', env: FOREST },
+  { place: '沙漠', env: DESERT },
+  { place: '石坑', env: QUARRY },
+  { place: '水底', env: WATER }
 ];
 ---
 <section class="panel span-12" id="trials">
@@ -24,22 +22,21 @@ const STAGES = [
       width="640"
       height="180"
       data-base={base}
-      aria-label="双屏闯关动画：左侧鸡毛法师、右侧小白战士，各自通过五种环境，第五组后打破分屏线相遇"
+      aria-label="双屏闯关动画：左右两侧同一场景，鸡毛法师用法术、小白战士用剑盾，各自通过五种环境后在中央相遇"
     ></canvas>
   </div>
 
   <div class="stage__cap">
     <span class="stage__who is-mage">鸡毛法师</span>
-    <span class="stage__place" id="quest-place">雪原 ↔ 水底</span>
+    <span class="stage__place" id="quest-place">雪原</span>
     <span class="stage__who is-knight">小白战士</span>
-    <span class="stage__tech" id="quest-tech">法杖点地，冰墙挡住雪崩 / 大剑搅出涡流借力上浮</span>
+    <span class="stage__tech" id="quest-tech">法杖点地，冰墙挡住雪崩 / 盾当滑板，从雪崩底下冲过</span>
   </div>
 
   <ol class="trk" id="quest-track">
     {STAGES.map((s) => (
-      <li class="trk__dot">
-        <span class="trk__half is-l" style={`--env:${COLOR[s.l.env]}`}>{s.l.place}</span>
-        <span class="trk__half is-r" style={`--env:${COLOR[s.r.env]}`}>{s.r.place}</span>
+      <li class="trk__dot" style={`--env:${s.env}`}>
+        <span class="trk__name">{s.place}</span>
       </li>
     ))}
   </ol>
@@ -68,19 +65,12 @@ const STAGES = [
   .stage__tech { flex-basis: 100%; text-align: center; font-size: 12px; color: var(--ink-dim); }
 
   .trk { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-  .trk__dot { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--line); background: var(--bg); }
-  .trk__half {
-    display: block; padding: 4px 2px; text-align: center;
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: 0;
-    color: var(--ash); border-left: 2px solid var(--line);
+  .trk__dot {
+    border: 2px solid var(--line); background: var(--bg); padding: 5px 2px;
+    text-align: center; font-family: var(--font-mono); font-size: 10px;
+    color: var(--ash); transition: background var(--dur-press) var(--ease-step);
   }
-  .trk__half.is-l { border-left: 0; }
-  .trk__dot.is-done { border-color: var(--gold); }
-  .trk__dot.is-done .trk__half { background: color-mix(in srgb, var(--env) 26%, var(--bg)); color: var(--ink); }
-  .trk__dot.is-cur { border-color: var(--ember); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ember) 30%, transparent); }
-  .trk__dot.is-cur .trk__half { color: var(--ink); }
-  @media (max-width: 640px) {
-    .trk__half { font-size: 8px; padding: 2px 1px; }
-    .trk { grid-template-columns: repeat(5, 1fr); gap: 2px; }
-  }
+  .trk__dot.is-done { border-color: var(--gold); background: color-mix(in srgb, var(--env) 24%, var(--bg)); color: var(--ink); }
+  .trk__dot.is-cur { border-color: var(--ember); color: var(--ink); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ember) 30%, transparent); }
+  @media (max-width: 640px) { .trk__dot { font-size: 9px; padding: 3px 1px; } }
 </style>

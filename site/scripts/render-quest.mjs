@@ -13,6 +13,12 @@ const root = path.resolve(here, '..');
 const FPS = Number(process.argv[2] || 12);
 
 const SPR = JSON.parse(fs.readFileSync(path.join(root, 'public/sprites.json'), 'utf8'));
+// 关卡表可能还没被 sync 复制过（CI 里直接跑本脚本），先兜底复制一份
+const questPub = path.join(root, 'public/quest.json');
+if (!fs.existsSync(questPub)) {
+  fs.copyFileSync(path.join(root, '..', 'design', 'quest.json'), questPub);
+}
+const QUEST = JSON.parse(fs.readFileSync(questPub, 'utf8'));
 const src = fs.readFileSync(path.join(root, 'public/quest.js'), 'utf8');
 
 const canvas = createCanvas(640, 180);
@@ -29,7 +35,7 @@ const g = {
   document: { getElementById: (id) => (id === 'quest-canvas' ? canvasEl : null) },
   window: win,
   location: { search: '?k=0&t=0' },
-  fetch: () => Promise.resolve({ json: () => Promise.resolve(SPR) }),
+  fetch: (url) => Promise.resolve({ json: () => Promise.resolve(String(url).includes('quest.json') ? QUEST : SPR) }),
   requestAnimationFrame: () => {},
   URLSearchParams,
   IntersectionObserver: undefined

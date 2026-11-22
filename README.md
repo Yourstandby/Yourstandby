@@ -14,6 +14,15 @@
 </picture>
 </p>
 
+<p align="center">
+<a href="https://yourstandby.github.io/Yourstandby/">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/cta-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/cta-light.svg" alt="进入个人网站" width="320" />
+</picture>
+</a>
+</p>
+
 <h3 align="center">🔥 Yourstandby · 全栈建造中 · 像素与原子的混合体</h3>
 
 <p align="center"><em>把想法烧成可以跑起来的东西。代码、结构、好奇心。</em></p>

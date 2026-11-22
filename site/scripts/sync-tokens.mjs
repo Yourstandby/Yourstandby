@@ -23,6 +23,8 @@ const spritesSrc = resolve(here, '../../design/sprites.json');
 const spritesOut = resolve(here, '../src/data/sprites.generated.json');
 await writeFile(spritesOut, await readFile(spritesSrc, 'utf8'), 'utf8');
 await writeFile(resolve(here, '../public/sprites.json'), await readFile(spritesSrc, 'utf8'), 'utf8');
+const questSrc = resolve(here, '../../design/quest.json');
+await writeFile(resolve(here, '../public/quest.json'), await readFile(questSrc, 'utf8'), 'utf8');
 console.log('sprites synced:', spritesOut, '+ public/sprites.json');
 
 const playerSrc = resolve(here, '../../design/player.json');
