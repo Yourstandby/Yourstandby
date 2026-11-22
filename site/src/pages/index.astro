@@ -28,13 +28,8 @@ import { site, base } from '../data/site.ts';
   </section>
 
   <div class="wrap">
-    <section class="sec" data-dither id="trials-section">
-      <SecHead no="01" title="TEN TRIALS" id="trials" />
-      <QuestStage />
-    </section>
-
     <section class="sec" data-dither>
-      <SecHead no="02" title="DASHBOARD" id="dashboard" />
+      <SecHead no="01" title="DASHBOARD" id="dashboard" />
       <div class="dash">
         <PartyPanel />
         <PlayerPanel />
@@ -47,8 +42,13 @@ import { site, base } from '../data/site.ts';
     </section>
 
 
+    <section class="sec" data-dither id="trials-section">
+      <SecHead no="02" title="TEN TRIALS" id="trials" />
+      <QuestStage />
+    </section>
+
     <section class="sec" data-dither>
-      <SecHead no="02" title="STACK" id="stack" />
+      <SecHead no="03" title="STACK" id="stack" />
       <div class="stack-list">
         {site.stack.map((s) => (
           <div class="stack-row">
@@ -61,7 +61,7 @@ import { site, base } from '../data/site.ts';
     </section>
 
     <section class="sec" data-dither>
-      <SecHead no="03" title="PROJECTS" id="projects" />
+      <SecHead no="04" title="PROJECTS" id="projects" />
       <div class="grid-2">
         {site.projects.map((p) => (
           <a class="card" href={p.repo}>
