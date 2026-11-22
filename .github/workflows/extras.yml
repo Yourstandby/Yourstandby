@@ -9,6 +9,7 @@ on:
     paths:
       - weekly/**
       - .github/scripts/inject_weekly.py
+      - .github/scripts/update_activity.py
       - .github/workflows/extras.yml
 
 permissions:
@@ -37,6 +38,12 @@ jobs:
 
       - name: Inject latest weekly issue into README
         run: python .github/scripts/inject_weekly.py
+
+      - name: Update public activity feed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_LOGIN: ${{ github.repository_owner }}
+        run: python .github/scripts/update_activity.py
 
       - name: Commit README update
         run: |

@@ -179,10 +179,50 @@
 </p>
 <!-- CONTRIB:END -->
 
+<details open>
+<summary><strong>3D 贡献日历 / Contribution city</strong></summary>
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/contrib3d-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/contrib3d-light.svg" alt="3D 贡献日历：等距投影的立方体，高度代表当日提交数" width="760" />
+</picture>
+</p>
+
+</details>
+
+<details open>
+<summary><strong>最近公开动态 / Recent activity</strong></summary>
+
+<!-- ACTIVITY:START -->
+- 2026-11-22 · Pull request · merged · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-22 · Fork · [marmottajr/habblaud](https://github.com/marmottajr/habblaud)
+- 2026-11-22 · 关注项目 · [marmottajr/habblaud](https://github.com/marmottajr/habblaud)
+- 2026-11-22 · Pull request · opened · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-22 · 关注项目 · [shinyobjectz/raea](https://github.com/shinyobjectz/raea)
+- 2026-11-22 · Fork · [shinyobjectz/raea](https://github.com/shinyobjectz/raea)
+- 2026-11-19 · 更新代码 · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-19 · 新建仓库 · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+<!-- ACTIVITY:END -->
+
+</details>
+
 ---
 
 <a id="notes"></a>
-## 06 / 技术手账 · Notes
+<a id="coding"></a>
+## 06 / 编程节律 · Rhythm
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/rhythm-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/rhythm-light.svg" alt="提交节律：过去一年的月度贡献折线与周几分布" width="760" />
+</picture>
+</p>
+
+---
+
+## 07 / 技术手账 · Notes
 
 每周一篇，短、具体、只写自己真踩过的坑。
 
@@ -204,7 +244,7 @@
 ---
 
 <a id="life"></a>
-## 07 / 代码之外 · Off-screen
+## 08 / 代码之外 · Off-screen
 
 <p align="center">
 <picture>
@@ -216,7 +256,7 @@
 ---
 
 <a id="connect"></a>
-## 08 / 联系 · Connect
+## 09 / 联系 · Connect
 
 <p align="center">
 <picture>

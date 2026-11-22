@@ -101,6 +101,8 @@ def shell(w, h, t, body, title, desc):
         f'<title id="t">{title}</title><desc id="d">{desc}</desc>'
         f'<defs><style>.bar{{opacity:0;animation:on 6s steps(1,end) infinite}}'
         f'@keyframes on{{0%{{opacity:0}}6%{{opacity:1}}92%{{opacity:1}}97%{{opacity:0}}100%{{opacity:0}}}}'
+        f'.cube{{animation:rise .7s steps(4,end) both}}'
+        f'@keyframes rise{{from{{opacity:0;transform:translateY(10px)}}to{{opacity:1;transform:none}}}}'
         f'.cur{{animation:blink 1s steps(1,end) infinite}}'
         f'@keyframes blink{{0%,49.9%{{opacity:1}}50%,100%{{opacity:0}}}}'
         f'{RM}</style></defs>'
@@ -205,6 +207,102 @@ def render_streak(data, t):
     body.append(tag(24, 138, "KEEP THE FIRE ALIVE", t, 12, t["dim"]))
     return shell(720, 160, t, "".join(body), "连续提交",
                  f"当前连续 {now} 天，最长 {best} 天，今年共 {total} 次")
+
+
+WEEKDAY_CN = ["一", "二", "三", "四", "五", "六", "日"]
+
+
+def render_rhythm(data, t):
+    """提交节律：左边按月趋势折线，右边周几分布——没有 WakaTime 时的替代方案。"""
+    cal = data["contributionsCollection"]["contributionCalendar"]
+    months, weekday, wd_days = {}, [0] * 7, [0] * 7
+    for w in cal["weeks"]:
+        for d in w["contributionDays"]:
+            year, month, day = d["date"].split("-")
+            key = year[2:] + "/" + month
+            months[key] = months.get(key, 0) + d["contributionCount"]
+            idx = dt.date(int(year), int(month), int(day)).weekday()
+            weekday[idx] += d["contributionCount"]
+            wd_days[idx] += 1
+
+    keys = sorted(months)[-12:]
+    vals = [months[k] for k in keys]
+    peak = max(vals) or 1
+
+    body = [tag(24, 30, "CONTRIBUTION RHYTHM", t, 13)]
+    # 左：月度折线 + 面积
+    bx, by, bw, bh = 24, 60, 400, 96
+    pts = []
+    for i, v in enumerate(vals):
+        x = bx + (i / max(1, len(vals) - 1)) * bw
+        y = by + bh - (v / peak) * bh
+        pts.append((x, y))
+    area = " ".join(f"{x:.0f},{y:.0f}" for x, y in pts)
+    body.append(f'<polygon points="{bx},{by + bh} {area} {bx + bw},{by + bh}" fill="{t["ember"]}" opacity="0.16"/>')
+    body.append(f'<polyline points="{area}" fill="none" stroke="{t["ember"]}" stroke-width="2"/>')
+    for i, (x, y) in enumerate(pts):
+        body.append(f'<rect x="{x - 2:.0f}" y="{y - 2:.0f}" width="4" height="4" fill="{t["ember"]}"/>')
+        if i % 2 == 0:
+            body.append(tag(int(x) - 12, 176, keys[i], t, 9, t["ash"]))
+    body.append(tag(bx, 196, f"PEAK {peak} / MONTH", t, 10, t["ash"]))
+
+    # 右：周几柱状
+    wx, wy, ww = 470, 156, 30
+    body.append(tag(wx, 30, "BY WEEKDAY", t, 11, t["ash"]))
+    wmax = max(weekday) or 1
+    for i, v in enumerate(weekday):
+        h = (v / wmax) * 84
+        x = wx + i * 40
+        body.append(f'<rect x="{x}" y="{wy - h:.0f}" width="{ww}" height="{h:.0f}" fill="{t["cyan"]}" opacity="0.85"/>')
+        body.append(tag(x + 9, 176, WEEKDAY_CN[i], t, 10, t["ink"]))
+    body.append(tag(wx, 196, "TOTAL COMMITS", t, 10, t["ash"]))
+    return shell(760, 212, t, "".join(body), "提交节律",
+                 "过去一年的月度贡献折线与周几分布")
+
+
+def render_contrib3d(data, t):
+    """等距投影的 3D 贡献日历：53 周 x 7 天，每格一个立方体，高度按当日贡献数。"""
+    weeks = data["contributionsCollection"]["contributionCalendar"]["weeks"]
+    days = [(ci, ri, d["contributionCount"])
+            for ci, w in enumerate(weeks)
+            for ri, d in enumerate(w["contributionDays"])]
+    peak = max(c for _, _, c in days) or 1
+
+    TW, TH, MAXH = 8, 5, 30
+    dark = t["bg"] == PALETTE["dark"]["bg"]
+    ramp = (["#241110", "#5A1A10", t["deep"], t["ember"], t["flame"]] if dark
+            else ["#E7D3C6", "#F0B49A", "#E0704F", t["ember"], t["deep"]])
+    top_light = ["#3A1A16", "#7A2416", "#E23B18", "#FF6A4D", "#FFD27A"] if dark else \
+                ["#F2E4DA", "#FFD2BC", "#F58E70", "#D8340F", "#B88300"]
+
+    def lvl(c):
+        if c <= 0:
+            return 0
+        if c < 3:
+            return 1
+        if c < 6:
+            return 2
+        if c < 10:
+            return 3
+        return 4
+
+    body = [tag(24, 28, "CONTRIBUTION CITY", t, 13)]
+    ox, oy = 150, 96
+    # 远的先画（col+row 小的在后方）
+    for ci, ri, cnt in days:
+        x = ox + (ci - ri) * TW
+        y = oy + (ci + ri) * TH
+        h = 3 + (cnt / peak) * MAXH
+        k = lvl(cnt)
+        body.append(f'<g class="cube" style="animation-delay:{(ci * 0.012):.3f}s">')
+        body.append(f'<polygon points="{x},{y - h} {x + TW},{y - h + TH} {x},{y - h + 2 * TH} {x - TW},{y - h + TH}" fill="{top_light[k]}"/>')
+        body.append(f'<polygon points="{x - TW},{y - h + TH} {x},{y - h + 2 * TH} {x},{y + 2 * TH} {x - TW},{y + TH}" fill="{ramp[k]}"/>')
+        body.append(f'<polygon points="{x + TW},{y - h + TH} {x},{y - h + 2 * TH} {x},{y + 2 * TH} {x + TW},{y + TH}" fill="{ramp[k]}" opacity="0.72"/>')
+        body.append("</g>")
+    body.append(tag(24, 300, "53 WEEKS · 371 DAYS", t, 11, t["ash"]))
+    body.append(tag(470, 300, f"PEAK {peak}/DAY", t, 11, t["ash"]))
+    return shell(760, 318, t, "".join(body), "3D 贡献日历",
+                 "等距投影的每日贡献立方体，高度代表当日提交数")
 
 
 def render_contrib(data, t):
@@ -660,7 +758,8 @@ def main():
                "stack": render_stack, "player": render_player,
                "quests": render_quests, "inventory": render_inventory,
                "gear": render_gear, "log": render_log, "comms": render_contact,
-               "party": render_party, "trials": render_trials}
+               "party": render_party, "trials": render_trials,
+               "contrib3d": render_contrib3d, "rhythm": render_rhythm}
     pins = []
     for repo_name in PIN_REPOS:
         repo = gql(token, PIN_QUERY, {"owner": login, "name": repo_name}).get("repository")
