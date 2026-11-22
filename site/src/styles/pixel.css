@@ -1,3 +1,12 @@
+/* 中文像素字体：从 Fusion Pixel 12px（SIL OFL）子集化而来，498 字 → 16KB。
+   重新生成步骤见 site/README.md；绝对 URL 不会被 Astro 重写，所以带 base 前缀。 */
+@font-face {
+  font-family: 'Fusion Pixel';
+  src: url('/Yourstandby/fonts/fusion-pixel-12px-zh.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 400;
+}
+
 /* 火红像素站：布局与组件。色板与动效变量全部来自 tokens.css */
 
 * { box-sizing: border-box; }

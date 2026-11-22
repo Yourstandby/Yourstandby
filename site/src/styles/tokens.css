@@ -5,8 +5,9 @@
 :root {
   --font-display: "Press Start 2P", var(--font-pixel, monospace);
   /* 拉丁正文用 Silkscreen，中文回落到系统黑体（可选自托管 Fusion Pixel 12px 覆盖） */
-  --font-body: Silkscreen, ui-monospace, "Sarasa Mono SC", "Microsoft YaHei", system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;
+  /* Fusion Pixel 自带拉丁字形，中英混排高度才齐；Silkscreen 只做备用 */
+  --font-body: 'Fusion Pixel', Silkscreen, ui-monospace, "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: 'Fusion Pixel', ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;
 
   --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px; --fs-lg: 20px;
   --fs-xl: 28px; --fs-2xl: 40px; --fs-3xl: 56px;

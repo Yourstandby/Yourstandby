@@ -251,26 +251,39 @@ def load_player():
         return json.load(fh)
 
 
+# 24x24 网格的"像素小狗魔法师"：下垂耳 + 尖顶帽 + 法杖。
+# 全部整数格，unit=4 时正好 96px，放大到 192px 也不会糊。
+AVATAR_SHAPES = [
+        (11, 0, 2, 1, "cyan"),
+        (10, 1, 4, 1, "cyan"),
+        (9, 2, 6, 2, "cyan"),
+        (8, 4, 8, 2, "cyan"),
+        (7, 6, 10, 2, "cyan"),
+        (6, 8, 12, 1, "cyan"),
+        (15, 5, 2, 2, "gold"),
+        (7, 9, 10, 2, "ink"),
+        (6, 11, 12, 5, "ink"),
+        (7, 16, 10, 1, "ink"),
+        (4, 10, 2, 6, "ink"),
+        (18, 10, 2, 6, "ink"),
+        (9, 12, 2, 2, "bg"),
+        (14, 12, 2, 2, "bg"),
+        (12, 14, 2, 2, "bg"),
+        (8, 17, 8, 1, "ember"),
+        (8, 18, 8, 4, "ink"),
+        (8, 22, 2, 2, "ink"),
+        (14, 22, 2, 2, "ink"),
+        (21, 11, 1, 9, "gold"),
+        (20, 9, 3, 1, "gold"),
+        (21, 8, 1, 3, "gold"),
+]
+
+
 def pixel_avatar(t, x0=20, y0=52, unit=4):
-    """24x24 网格手绘角色：96px 见方，全部是整数格，放大也不糊。"""
-    rects = []
-
-    def px(gx, gy, w, h, fill):
-        rects.append(f'<rect x="{x0 + gx * unit}" y="{y0 + gy * unit}" '
-                     f'width="{w * unit}" height="{h * unit}" fill="{fill}"/>')
-
-    px(6, 2, 12, 2, t["ember"])        # 帽檐
-    px(7, 3, 10, 9, t["ink"])          # 头
-    px(9, 6, 2, 2, t["bg"])            # 左眼
-    px(14, 6, 2, 2, t["bg"])           # 右眼
-    px(11, 9, 3, 1, t["bg"])           # 嘴
-    px(7, 13, 10, 7, t["ember"])       # 身体
-    px(4, 14, 3, 5, t["ember"])        # 左臂
-    px(17, 14, 3, 5, t["ember"])       # 右臂
-    px(11, 14, 2, 4, t["flame"])       # 胸前火焰
-    px(8, 20, 3, 2, t["ember-deep"] if "ember-deep" in t else t["deep"])
-    px(13, 20, 3, 2, t["deep"])
-    return "".join(rects)
+    return "".join(
+        f'<rect x="{x0 + x * unit}" y="{y0 + y * unit}" '
+        f'width="{w * unit}" height="{h * unit}" fill="{t[c]}"/>'
+        for x, y, w, h, c in AVATAR_SHAPES)
 
 
 def render_player(_data, t):
