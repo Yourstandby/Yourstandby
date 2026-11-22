@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-<a href="https://yourstandby.github.io/Yourstandby/">
+<a href="https://yourstandby.github.io/Yourstandby/#trials">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/cta-dark.svg" />
   <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/cta-light.svg" alt="进入个人网站" width="320" />
