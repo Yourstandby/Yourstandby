@@ -37,16 +37,17 @@ class Grid {
   }
 }
 
-/** 描边：非空格向外膨胀 n 格涂 K */
+/** 描边：非空格向外膨胀 n 格涂 K（尺寸通用） */
 function outlineN(g, n = 2) {
-  const out = Array.from({ length: N }, () => Array(N).fill(null));
-  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+  const S = g.length;
+  const out = Array.from({ length: S }, () => Array(S).fill(null));
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
     if (g[y][x]) continue;
     let near = false;
     for (let dy = -n; dy <= n && !near; dy++) for (let dx = -n; dx <= n; dx++) {
       if (dx * dx + dy * dy > n * n + n) continue;
       const ny = y + dy, nx = x + dx;
-      if (ny >= 0 && ny < N && nx >= 0 && nx < N && g[ny][nx]) { near = true; break; }
+      if (ny >= 0 && ny < S && nx >= 0 && nx < S && g[ny][nx]) { near = true; break; }
     }
     if (near) out[y][x] = 'K';
   }
@@ -55,14 +56,15 @@ function outlineN(g, n = 2) {
 
 /** 网格 → 矩形（先按行合并同色连续段，再纵向合并相同跨度） */
 function toRects(grid) {
+  const S = grid.length;
   const spans = [];
-  for (let y = 0; y < N; y++) {
+  for (let y = 0; y < S; y++) {
     let x = 0;
-    while (x < N) {
+    while (x < S) {
       const k = grid[y][x];
       if (!k) { x++; continue; }
       let w = 1;
-      while (x + w < N && grid[y][x + w] === k) w++;
+      while (x + w < S && grid[y][x + w] === k) w++;
       spans.push({ x, y, w, k });
       x += w;
     }
@@ -87,8 +89,8 @@ function toRects(grid) {
   return merged;
 }
 
-function raster(rects) {
-  const g = Array.from({ length: N }, () => Array(N).fill(null));
+function raster(rects, size = N) {
+  const g = Array.from({ length: size }, () => Array(size).fill(null));
   for (const r of rects) for (let y = r[1]; y < r[1] + r[3]; y++) for (let x = r[0]; x < r[0] + r[2]; x++) g[y][x] = r[4];
   return g;
 }
@@ -176,6 +178,57 @@ function mage() {
   return g;
 }
 
+// ---------------- 16×16 图标版（跳跃动画里"刚好一格"用的） ----------------
+// 64 格美术缩到 16 格时，眼睛只占 3~6 个源像素，投票必输给毛色 —— 会变成没脸。
+// 所以这一版是**单独手绘**的 16×16，脸上直接 1px 眼睛 + 3px 嘴，1:1 渲染不走缩放。
+const ICON16 = {
+  mage: [
+    '..........HH....',
+    '........HHHHH...',
+    '......HHHHHHHH..',
+    '....HHHHHHHHHHH.',
+    '..hhhhhhhhhhhhh.',
+    '.HHHHHHHHHHHHHHH',
+    '..iiiiiiiiiiiii.',
+    '..fFFFFFFFFFFf..',
+    '.ffFFKFFFFFKFff.',
+    '.ffFFFFKKKFFFff.',
+    '..CCCCCGGCCCCC..',
+    '.CCCCCCGGGCCCCC.',
+    '.CCCCCCWCCCCCCC.',
+    '..FFCCCWCCCCFF..',
+    '...FFF....FFF...',
+    '................',
+  ],
+  knight: [
+    '................',
+    '..BB........BB..',
+    '.BBBB......BBBB.',
+    '.BBBBBBBBBBBBBB.',
+    '.BBBBKBBBBKBBBB.',
+    '.BBBBBKKKKBBBBB.',
+    '..BBBBBBBBBBBB..',
+    '..CCAAAAAAAAAA..',
+    '.WAAAAAAAAAAAA..',
+    '.AWAAAAAAAAAAA..',
+    '..AWWWAAAAAAT...',
+    '.AAABBBBBBBAAA..',
+    '...BBBBBBBBBB...',
+    '...BB.....BB....',
+    '...BB.....BB....',
+    '................',
+  ],
+};
+
+/** ASCII 行 → 网格（'.' 表示空） */
+function parseAscii(rows) {
+  const S = rows.length;
+  rows.forEach((r, y) => {
+    if (r.length !== S) throw new Error('图标行长度不对: 第 ' + y + ' 行是 ' + r.length + ' 列');
+  });
+  return rows.map((r) => r.split('').map((c) => (c === '.' ? null : c)));
+}
+
 const PALETTE = {
   K: '#1A1D23',
   B: '#F7F5F0', b: '#C9CFD8',          // 马尔济斯：纯白毛 / 冷灰阴影
@@ -193,7 +246,17 @@ function build(name, id, role, fn, outline = 2) {
   const rects = [...toRects(ol), ...toRects(art.g)];
   const back = raster(rects).map((row) => row.map((v) => v ?? ' ').join(''));
   const orig = art.g.map((row, y) => row.map((v, x) => v ?? ol[y][x] ?? ' ').join(''));
-  return { id, name, role, grid: N, unit: 2, rects, _ascii: back, _ok: back.join('') === orig.join('') };
+  // 16×16 图标版：1px 描边，整只占一格
+  const g16 = parseAscii(ICON16[id]);
+  const ol16 = outlineN(g16, 1);
+  const rects16 = [...toRects(ol16), ...toRects(g16)];
+  const back16 = raster(rects16, 16).map((row) => row.map((v) => v ?? ' ').join(''));
+  return {
+    id, name, role, grid: N, unit: 2, rects,
+    icon16: { grid: 16, rects: rects16 },
+    _ascii: back, _ok: back.join('') === orig.join(''),
+    _ascii16: back16,
+  };
 }
 
 const out = [
@@ -206,12 +269,14 @@ for (const s of out) {
   if (only && only !== s.id) continue;
   console.log('### ' + s.id + '  rects=' + s.rects.length + ' lossless=' + s._ok);
   console.log(s._ascii.join('\n'));
+  console.log('--- icon16（1:1，正好一格）');
+  console.log(s._ascii16.join('\n'));
 }
 
 const json = {
   note: '64×64 像素角色。rect = [x, y, w, h, 调色板键, 是否额外描边]。由 design/build-sprites.mjs 生成：图元绘画 → 自动 2px 描边 → 合并矩形。别手改，改脚本。',
   palette: PALETTE,
-  sprites: out.map(({ id, name, role, grid, unit, rects }) => ({ id, name, role, grid, unit, rects })),
+  sprites: out.map(({ id, name, role, grid, unit, rects, icon16 }) => ({ id, name, role, grid, unit, rects, icon16 })),
 };
 await writeFile(resolve(here, 'sprites.json'), JSON.stringify(json, null, 1) + '\n', 'utf8');
 console.log('\nwrote design/sprites.json');

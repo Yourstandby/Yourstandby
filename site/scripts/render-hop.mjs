@@ -130,6 +130,12 @@ for (const id of ['mage', 'knight']) {
   const oc = createCanvas(HERO, HERO);
   const octx = oc.getContext('2d');
   octx.imageSmoothingEnabled = false;
+  // 有手绘 16×16 图标版就 1:1 贴上去（眼睛是 1px，缩放必然丢脸），否则回落到投票下采样
+  if (sp.icon16 && sp.icon16.grid === HERO) {
+    for (const r of sp.icon16.rects) { octx.fillStyle = pal[r[4]]; octx.fillRect(r[0], r[1], r[2], r[3]); }
+    baked[id] = oc;
+    continue;
+  }
   for (let ty = 0; ty < HERO; ty++) for (let tx = 0; tx < HERO; tx++) {
     const x0 = Math.floor((tx * g) / HERO), x1 = Math.max(x0 + 1, Math.ceil(((tx + 1) * g) / HERO));
     const y0 = Math.floor((ty * g) / HERO), y1 = Math.max(y0 + 1, Math.ceil(((ty + 1) * g) / HERO));
@@ -143,6 +149,9 @@ for (const id of ['mage', 'knight']) {
     if (opaque / total < 0.5) continue;         // 半格以上是空的就留空，保住剪影
     let pick = 'K', best = 0;
     for (const [k, c] of votes) if (c > best) { best = c; pick = k; }
+    // 五官抢救：眼睛/嘴在 64→16 下只占 3~6 个源像素，投票必输给毛色，
+    // 结果就是「没脸」。整格都是实心的内部格子里只要有 3 个以上描边像素就压成 K。
+    if (opaque === total && (votes.get('K') || 0) >= 3) pick = 'K';
     octx.fillStyle = pal[pick];
     octx.fillRect(tx, ty, 1, 1);
   }
