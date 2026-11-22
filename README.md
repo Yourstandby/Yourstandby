@@ -32,7 +32,7 @@
 <p align="center">
 <!-- TODO(contact): 换成你的真实链接与账号 -->
 <a href="mailto:YOUR_EMAIL"><img src="https://img.shields.io/badge/Email-YOUR__EMAIL-C81E00?style=flat-square&logo=gmail&logoColor=fff" alt="Email" /></a>
-<a href="https://YOUR_SITE"><img src="https://img.shields.io/badge/Site-YOUR__SITE-1A0D0A?style=flat-square&logo=githubpages&logoColor=fff" alt="Website" /></a>
+<a href="https://yourstandby.github.io/Yourstandby/"><img src="https://img.shields.io/badge/Site-yourstandby.github.io-1A0D0A?style=flat-square&logo=githubpages&logoColor=fff" alt="Website" /></a>
 <img src="https://komarev.com/ghpvc/?username=Yourstandby&label=Views&color=C81E00&style=flat-square" alt="Views" />
 <a href="https://github.com/Yourstandby?tab=followers"><img src="https://img.shields.io/github/followers/Yourstandby?label=Following&style=flat-square&color=FF3B1F" alt="Followers" /></a>
 </p>
@@ -81,30 +81,30 @@ $ cat mission.txt
 ## 02 / 项目工作台 · Selected projects
 
 <p align="center">
-<a href="https://github.com/Yourstandby/YOUR_REPO_1"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-site-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-site-light.svg" alt="项目一卡片" width="400" />
+<a href="https://github.com/Yourstandby/PiForge"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-piforge-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-piforge-light.svg" alt="PiForge 项目卡片" width="400" />
 </picture></a>
-<a href="https://github.com/Yourstandby/YOUR_REPO_2"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-tool-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-tool-light.svg" alt="项目二卡片" width="400" />
+<a href="https://github.com/Yourstandby/raea"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-raea-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-raea-light.svg" alt="raea 项目卡片" width="400" />
 </picture></a>
 </p>
 <p align="center">
-<a href="https://github.com/Yourstandby/YOUR_REPO_3"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-vis-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-vis-light.svg" alt="项目三卡片" width="400" />
+<a href="https://github.com/Yourstandby/rust-anything"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-rust-anything-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-rust-anything-light.svg" alt="rust-anything 项目卡片" width="400" />
 </picture></a>
-<a href="https://github.com/Yourstandby/YOUR_REPO_4"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-lab-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-lab-light.svg" alt="项目四卡片" width="400" />
+<a href="https://github.com/Yourstandby/SAG-Wiki"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-sag-wiki-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/pin-sag-wiki-light.svg" alt="SAG-Wiki 项目卡片" width="400" />
 </picture></a>
 </p>
 
-- **[YOUR_PROJECT_1](https://github.com/Yourstandby/YOUR_REPO_1)** — 一句话说清它解决什么问题。
-- **[YOUR_PROJECT_2](https://github.com/Yourstandby/YOUR_REPO_2)** — 一句话说清它解决什么问题。
-- **[YOUR_PROJECT_3](https://github.com/Yourstandby/YOUR_REPO_3)** — 一句话说清它解决什么问题。
-- **[YOUR_PROJECT_4](https://github.com/Yourstandby/YOUR_REPO_4)** — 一句话说清它解决什么问题。
+- **[PiForge](https://github.com/Yourstandby/PiForge)** — 把 Pi Coding Agent 装进一张安静的三栏工作台：本地优先、多会话、缓存感知。
+- **[raea](https://github.com/Yourstandby/raea)** — Render Anything Engine：用 React + TypeScript 描述视频、动效、3D 与游戏，在自己的 GPU 上渲染。
+- **[rust-anything](https://github.com/Yourstandby/rust-anything)** — 一次一个模块地把整个应用改写成 Rust，每一步都对照原程序录制的行为验证。
+- **[SAG-Wiki](https://github.com/Yourstandby/SAG-Wiki)** — 面向人和 agent 的轻量知识库，索引极快、检索极准。
 
 ---
 
@@ -190,9 +190,9 @@ DESIGN      ██████████████░░░  像素风 / SVG
 | 渠道 | 地址 |
 |---|---|
 | Email | `YOUR_EMAIL` |
-| Website | `YOUR_SITE` |
+| Website | [yourstandby.github.io](https://yourstandby.github.io/Yourstandby/) |
 | GitHub | [@Yourstandby](https://github.com/Yourstandby) |
-| 其他 | `YOUR_HANDLE` |
+| 其他 | 见页面底部社交链接 |
 
 > 合作、提问、纠错都欢迎。给我一个可以复现问题的仓库链接，回复会快很多。
 

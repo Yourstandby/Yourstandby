@@ -18,8 +18,10 @@ export const site = {
     { label: "DESIGN", value: "像素风 / SVG / 动效", pct: 14, max: 18 }
   ],
   projects: [
-    { name: "YOUR_PROJECT_1", repo: "https://github.com/Yourstandby/YOUR_REPO_1", desc: "一句话说清它解决什么问题。", tag: "TODO" },
-    { name: "YOUR_PROJECT_2", repo: "https://github.com/Yourstandby/YOUR_REPO_2", desc: "一句话说清它解决什么问题。", tag: "TODO" }
+    { name: "PiForge", repo: "https://github.com/Yourstandby/PiForge", desc: "把 Pi Coding Agent 装进一张安静的三栏工作台：本地优先、多会话、缓存感知。", tag: "DESKTOP" },
+    { name: "raea", repo: "https://github.com/Yourstandby/raea", desc: "用 React + TypeScript 描述视频、动效、3D 与游戏，在自己的 GPU 上渲染。", tag: "RENDER" },
+    { name: "rust-anything", repo: "https://github.com/Yourstandby/rust-anything", desc: "一次一个模块地把整个应用改写成 Rust，每步都对照原程序录制的行为验证。", tag: "TOOLING" },
+    { name: "SAG-Wiki", repo: "https://github.com/Yourstandby/SAG-Wiki", desc: "面向人和 agent 的轻量知识库，索引极快、检索极准。", tag: "KNOWLEDGE" }
   ],
   nav: [
     { href: "/#about", label: "About" },

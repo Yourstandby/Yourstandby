@@ -56,8 +56,23 @@ def opener():
     return urllib.request.build_opener(handler)
 
 
-def gql(token, variables):
-    body = json.dumps({"query": QUERY, "variables": variables}).encode()
+PIN_QUERY = """
+query($owner:String!, $name:String!) {
+  repository(owner:$owner, name:$name) {
+    name description stargazerCount
+    primaryLanguage { name }
+  }
+}
+"""
+
+# 首页项目卡：改这里就行，逗号分隔；不配置环境变量时用这组默认值
+PIN_REPOS = [p.strip() for p in
+             os.environ.get("PIN_REPOS", "PiForge,raea,rust-anything,SAG-Wiki").split(",")
+             if p.strip()]
+
+
+def gql(token, query, variables):
+    body = json.dumps({"query": query, "variables": variables}).encode()
     req = urllib.request.Request(
         "https://api.github.com/graphql", data=body,
         headers={"Authorization": "Bearer " + token,
@@ -67,7 +82,11 @@ def gql(token, variables):
         payload = json.load(resp)
     if "errors" in payload:
         raise SystemExit("GraphQL error: " + json.dumps(payload["errors"])[:400])
-    return payload["data"]["user"]
+    return payload["data"]
+
+
+def esc(text):
+    return (text or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def shell(w, h, t, body, title, desc):
@@ -196,6 +215,30 @@ def render_contrib(data, t):
                  "贡献热力图", "过去一年的每日提交热力图，地牢配色")
 
 
+def render_pin(repo, t):
+    name = esc(repo["name"])[:24]
+    desc = esc(repo["description"] or "")
+    stars = repo["stargazerCount"]
+    lang = (repo["primaryLanguage"] or {}).get("name") or "—"
+    body = [
+        f'<rect x="6" y="6" width="8" height="8" fill="{t["ember"]}" class="cur"/>',
+        f'<text x="26" y="46" font-family="{MONO}" font-size="18" font-weight="700" '
+        f'letter-spacing="2" fill="{t["ink"]}">{name}</text>',
+        f'<text x="368" y="46" text-anchor="end" font-family="{MONO}" font-size="14" '
+        f'fill="{t["flame"]}">* {stars}</text>',
+        f'<rect x="16" y="62" width="368" height="2" fill="{t["line"]}"/>',
+    ]
+    for i in range(2):
+        line = desc[i * 30:(i + 1) * 30]
+        body.append(f'<text x="16" y="{88 + i * 20}" font-family="{MONO}" font-size="12" '
+                    f'letter-spacing="1" fill="{t["dim"]}">{line}</text>')
+    body.append(f'<rect x="16" y="150" width="8" height="8" fill="{t["ember"]}"/>')
+    body.append(f'<text x="32" y="159" font-family="{MONO}" font-size="12" letter-spacing="2" '
+                f'fill="{t["ash"]}">{esc(lang).upper()}</text>')
+    body.append(f'<rect x="16" y="170" width="{min(stars, 20) * 8 or 0}" height="4" fill="{t["ember"]}"/>')
+    return shell(400, 184, t, "".join(body), f"{repo['name']} 项目卡片", desc[:120])
+
+
 def main():
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     login = os.environ.get("GH_LOGIN", "Yourstandby")
@@ -203,18 +246,31 @@ def main():
         raise SystemExit("missing GITHUB_TOKEN")
     today = dt.date.today()
     start = today - dt.timedelta(days=364)
-    data = gql(token, {"login": login,
+    data = gql(token, QUERY, {"login": login,
                        "from": start.isoformat() + "T00:00:00Z",
-                       "to": today.isoformat() + "T23:59:59Z"})
+                       "to": today.isoformat() + "T23:59:59Z"})["user"]
     out = os.environ.get("OUT_DIR", ".build")
     os.makedirs(out, exist_ok=True)
     writers = {"stats": render_stats, "top-langs": render_langs,
                "streak": render_streak, "contrib": render_contrib}
+    pins = []
+    for repo_name in PIN_REPOS:
+        repo = gql(token, PIN_QUERY, {"owner": login, "name": repo_name}).get("repository")
+        if repo:
+            pins.append(repo)
+        else:
+            print("skip pin (not found):", repo_name)
+
     for scheme, t in PALETTE.items():
         for name, fn in writers.items():
             path = os.path.join(out, f"{name}-{scheme}.svg")
             with open(path, "w", encoding="utf-8", newline="\n") as fh:
                 fh.write(fn(data, t))
+            print("wrote", path)
+        for repo in pins:
+            path = os.path.join(out, f"pin-{repo['name'].lower()}-{scheme}.svg")
+            with open(path, "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(render_pin(repo, t))
             print("wrote", path)
 
 
