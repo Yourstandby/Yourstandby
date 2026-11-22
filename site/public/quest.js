@@ -312,7 +312,7 @@
   }
 
   /* ---------- 角色 ---------- */
-  function drawHero(who, x, y, t, moving) {
+  function drawHero(who, x, y, t, moving, flip) {
     if (!SPR) return;
     var sprite = null, i;
     for (i = 0; i < SPR.sprites.length; i++) if (SPR.sprites[i].id === who) sprite = SPR.sprites[i];
@@ -320,7 +320,9 @@
     var pal = SPR.palette, U = 1;
     var bob = moving ? Math.round(Math.sin(t * 9) * 1) : 0;
     ctx.save();
-    ctx.translate(Math.round(x), Math.round(y + bob));
+    // 镜像：右屏的战士水平翻转，剑朝向中心，两人严格对阵
+    if (flip) { ctx.translate(Math.round(x) + 32, Math.round(y + bob)); ctx.scale(-1, 1); }
+    else { ctx.translate(Math.round(x), Math.round(y + bob)); }
     var rs = sprite.rects, r;
     for (i = 0; i < rs.length; i++) {
       r = rs[i];
@@ -397,7 +399,8 @@
     hazard(cfg.env, hz, t, side === 0 ? 1 : -1);
 
     var hx = heroX(side, ph);
-    drawHero(side === 0 ? 'mage' : 'knight', hx, 120, t, ph.n === 'walk' || ph.n === 'exit');
+    drawHero(side === 0 ? 'mage' : 'knight', hx, 120, t,
+             ph.n === 'walk' || ph.n === 'exit', side === 1);
 
     var ep = ph.n === 'act' ? ph.p : (ph.n === 'clear' ? 1 : 0);
     effect(cfg.act, ep, t, hx, 120, side === 0 ? 1 : -1);
@@ -461,8 +464,9 @@
     // 法师终点 326（跨到右屏），战士终点 282（跨到左屏），中间留 12px 给篝火
     var mx = -34 + (SW + 40) * p;
     var kx = (W + 34) - ((W + 34) - (SW - 38)) * p;
-    drawHero('mage', Math.round(mx), 120, t, p < 1);
-    drawHero('knight', Math.round(kx), 120, t, p < 1);
+    // 相遇时法师在右、战士在左，隔着篝火相对
+    drawHero('mage', Math.round(mx), 120, t, p < 1, true);
+    drawHero('knight', Math.round(kx), 120, t, p < 1, false);
 
     if (t > 2.2) {
       for (var i = 0; i < 7; i++) {
