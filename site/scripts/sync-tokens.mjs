@@ -22,7 +22,8 @@ console.log('stack synced:', stackOut);
 const spritesSrc = resolve(here, '../../design/sprites.json');
 const spritesOut = resolve(here, '../src/data/sprites.generated.json');
 await writeFile(spritesOut, await readFile(spritesSrc, 'utf8'), 'utf8');
-console.log('sprites synced:', spritesOut);
+await writeFile(resolve(here, '../public/sprites.json'), await readFile(spritesSrc, 'utf8'), 'utf8');
+console.log('sprites synced:', spritesOut, '+ public/sprites.json');
 
 const playerSrc = resolve(here, '../../design/player.json');
 const playerOut = resolve(here, '../src/data/player.generated.json');

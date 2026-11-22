@@ -10,6 +10,7 @@ import LogPanel from '../components/LogPanel.astro';
 import CommsPanel from '../components/CommsPanel.astro';
 import ContribPanel from '../components/ContribPanel.astro';
 import PartyPanel from '../components/PartyPanel.astro';
+import QuestStage from '../components/QuestStage.astro';
 import { site, base } from '../data/site.ts';
 ---
 <Base>
@@ -38,6 +39,11 @@ import { site, base } from '../data/site.ts';
         <CommsPanel />
         <ContribPanel />
       </div>
+    </section>
+
+    <section class="sec" data-dither id="trials-section">
+      <SecHead no="02" title="TEN TRIALS" />
+      <QuestStage />
     </section>
 
     <section class="sec" data-dither>
