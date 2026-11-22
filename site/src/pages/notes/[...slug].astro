@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+import { base } from '../../data/site.ts';
 
 export async function getStaticPaths() {
   const notes = await getCollection('notes');
@@ -15,7 +16,7 @@ const { Content } = await render(note);
     <p class="card__kicker">ISSUE {String(note.data.issue).padStart(2, '0')} · {note.data.date.toISOString().slice(0, 10)}</p>
     <h1>{note.data.title}</h1>
     <Content />
-    <p><a href="/notes/">← 返回手账</a></p>
+    <p><a href={`${base}/notes/`}>← 返回手账</a></p>
   </article>
 </Base>
 

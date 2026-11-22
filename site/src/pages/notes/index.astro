@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import SecHead from '../../components/SecHead.astro';
 import { getCollection } from 'astro:content';
+import { base } from '../../data/site.ts';
 
 const notes = (await getCollection('notes'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -15,7 +16,7 @@ const notes = (await getCollection('notes'))
         {notes.map((n) => (
           <li class="card">
             <span class="card__kicker">ISSUE {String(n.data.issue).padStart(2, '0')} · {n.data.date.toISOString().slice(0, 10)}</span>
-            <h3 class="card__title"><a href={`/notes/${n.id}/`}>{n.data.title}</a></h3>
+            <h3 class="card__title"><a href={`${base}/notes/${n.id}/`}>{n.data.title}</a></h3>
             {n.data.summary && <p class="card__desc">{n.data.summary}</p>}
           </li>
         ))}

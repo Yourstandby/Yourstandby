@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import SecHead from '../components/SecHead.astro';
 import Ember from '../components/Ember.astro';
-import { site } from '../data/site.ts';
+import { site, base } from '../data/site.ts';
 import { getCollection } from 'astro:content';
 
 const notes = (await getCollection('notes'))
@@ -17,7 +17,7 @@ const notes = (await getCollection('notes'))
       <h1 class="hero__title">YOUR<br />STANDBY</h1>
       <p class="typed"><span class="typed__mask">{site.tagline}</span><span class="px-caret" aria-hidden="true"></span></p>
       <div class="hero__cta">
-        <a class="px-btn" href="/notes/">读手账</a>
+        <a class="px-btn" href={`${base}/notes/`}>读手账</a>
         <a class="px-btn" href={site.github}>GitHub ↗</a>
       </div>
     </div>
@@ -69,7 +69,7 @@ const notes = (await getCollection('notes'))
         <ul class="notes">
           {notes.map((n) => (
             <li>
-              <a href={`/notes/${n.id}/`}>
+              <a href={`${base}/notes/${n.id}/`}>
                 <span class="notes__date">{n.data.date.toISOString().slice(0, 10)}</span>
                 <span class="notes__title">{n.data.title}</span>
               </a>
@@ -77,7 +77,7 @@ const notes = (await getCollection('notes'))
           ))}
         </ul>
       )}
-      <p><a href="/notes/">全部手账 →</a></p>
+      <p><a href={`${base}/notes/`}>全部手账 →</a></p>
     </section>
 
     <section class="sec" data-dither>

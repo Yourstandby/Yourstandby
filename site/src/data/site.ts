@@ -1,3 +1,6 @@
+// 与 astro.config.mjs 的 base 保持一致（GitHub 项目页子路径）
+export const base = '/Yourstandby';
+
 export const site = {
   name: "Yourstandby",
   tagline: "把想法烧成可以跑起来的东西",

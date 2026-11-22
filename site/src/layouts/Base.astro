@@ -1,4 +1,5 @@
 ---
+import { base } from '../data/site.ts';
 import '../styles/tokens.css';
 import '../styles/pixel.css';
 import { site } from '../data/site.ts';
@@ -17,7 +18,7 @@ const full = title === site.name ? title : `${title} · ${site.name}`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{full}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <meta name="theme-color" content="#16090A" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,7 +34,7 @@ const full = title === site.name ? title : `${title} · ${site.name}`;
     <main id="main">{Astro.slots.has('default') && <slot />}</main>
     <Footer />
     <!-- 直接静态托管，不走打包：2.5KB，确定性优先 -->
-    <script is:inline defer src="/motion.js"></script>
+    <script is:inline defer src={`${base}/motion.js`}></script>
     <style>
       .skip { position: absolute; left: -9999px; }
       .skip:focus { left: 8px; top: 8px; background: var(--ember); color: var(--bg); padding: 8px; z-index: 99; }
