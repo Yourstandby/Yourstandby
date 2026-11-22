@@ -279,8 +279,9 @@ def render_player(_data, t):
         tag(140, 100, p["title"], t, 12, t["ash"]),
         f'<text x="140" y="132" font-family="{MONO}" font-size="16" letter-spacing="2" '
         f'fill="{t["flame"]}">LV.{p["level"]:02d}</text>',
-        gauge(200, 120, exp_ratio, t, cells=12, cw=14, ch=9, gap=5),
-        tag(370, 132, f'EXP {p["exp"]["current"]}/{p["exp"]["next"]}', t, 11, t["ash"]),
+        # 条的右边界 = 200 + 9*12 + 8*5 = 348，文字从 352 起，属性列从 452 起
+        gauge(200, 120, exp_ratio, t, cells=9, cw=12, ch=9, gap=5),
+        tag(358, 132, f'EXP {p["exp"]["current"]}/{p["exp"]["next"]}', t, 11, t["ash"]),
     ]
     for i, st in enumerate(p["stats"]):
         y = 76 + i * 30
@@ -307,8 +308,9 @@ def render_quests(_data, t):
         body.append(f'<text x="24" y="{y - 4}" font-family="{MONO}" font-size="12" '
                     f'fill="{color}">{QUEST_MARK[q["status"]]}</text>')
         body.append(tag(48, y, q["name"], t, 13, t["ink"] if q["status"] != "locked" else t["ash"]))
-        body.append(gauge(452, y - 11, q["progress"], t, cells=10, cw=12, ch=9, gap=4))
-        body.append(tag(590, y, q["status"].upper(), t, 11,
+        # 条的右边界 = 440 + 10*12 + 9*4 = 596，状态文字从 620 起
+        body.append(gauge(440, y - 11, q["progress"], t, cells=10, cw=12, ch=9, gap=4))
+        body.append(tag(620, y, q["status"].upper(), t, 11,
                         t["dim"] if q["status"] != "locked" else t["ash"]))
     cleared = sum(1 for q in quests if q["status"] == "cleared")
     body.append(tag(20, 62 + len(quests) * 36 + 6,
