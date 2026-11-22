@@ -9,6 +9,7 @@ import Inventory from '../components/Inventory.astro';
 import LogPanel from '../components/LogPanel.astro';
 import CommsPanel from '../components/CommsPanel.astro';
 import ContribPanel from '../components/ContribPanel.astro';
+import PartyPanel from '../components/PartyPanel.astro';
 import { site, base } from '../data/site.ts';
 ---
 <Base>
@@ -29,6 +30,7 @@ import { site, base } from '../data/site.ts';
     <section class="sec" data-dither>
       <SecHead no="01" title="DASHBOARD" id="dashboard" />
       <div class="dash">
+        <PartyPanel />
         <PlayerPanel />
         <QuestLog />
         <Inventory />

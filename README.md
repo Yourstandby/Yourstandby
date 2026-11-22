@@ -57,6 +57,13 @@
 
 <p align="center">
 <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/party-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/party-light.svg" alt="队伍：鸡毛法师（蓝色尖顶帽、青色宝石法杖）与小白战士（白毛、深蓝剑士服、背后大剑）" width="760" />
+</picture>
+</p>
+
+<p align="center">
+<picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-dark.svg" />
   <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-light.svg" alt="角色存档：YOURSTANDBY · FULL-STACK BUILDER · LV.03 · EXP 620/900 · 属性 CODE 8 / DESIGN 7 / SYSTEMS 6 / CURIOUS 9" width="760" />
 </picture>

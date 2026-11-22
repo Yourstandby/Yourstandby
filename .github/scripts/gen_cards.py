@@ -245,6 +245,56 @@ def draw_icon(kind, t, x0, y0, unit=3):
                    f'width="{w * unit}" height="{h * unit}" fill="{t[color]}"/>')
     return "".join(out)
 
+def load_sprites():
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "sprites.json")
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def draw_sprite(sprite, palette, x0, y0, unit=None):
+    """两遍绘制：先所有描边（外扩 1 格涂黑），再所有填充 → 漫画线稿感。"""
+    u = unit or sprite["unit"]
+    rects = sprite["rects"]
+    out = []
+    for r in rects:
+        if len(r) > 5 and r[5]:
+            out.append(f'<rect x="{x0 + (r[0] - 1) * u}" y="{y0 + (r[1] - 1) * u}" '
+                       f'width="{(r[2] + 2) * u}" height="{(r[3] + 2) * u}" '
+                       f'fill="{palette["K"]}"/>')
+    for r in rects:
+        out.append(f'<rect x="{x0 + r[0] * u}" y="{y0 + r[1] * u}" width="{r[2] * u}" '
+                   f'height="{r[3] * u}" fill="{palette[r[4]]}"/>')
+    return "".join(out)
+
+
+def render_party(_data, t):
+    sp = load_sprites()
+    pal = sp["palette"]
+    mage, knight = sp["sprites"][0], sp["sprites"][1]
+    u = 4
+    size = 32 * u
+    body = [
+        tag(20, 28, "PARTY", t, 13),
+        f'<rect x="24" y="44" width="{size + 16}" height="{size + 16}" fill="{t["surface"]}" '
+        f'stroke="{t["line"]}" stroke-width="2"/>',
+        draw_sprite(mage, pal, 32, 52),
+        f'<text x="32" y="{52 + size + 32}" font-family="{MONO}" font-size="14" '
+        f'letter-spacing="1" fill="{t["ink"]}">{mage["name"]}</text>',
+        tag(32, 52 + size + 50, mage["role"], t, 11, t["ash"]),
+        # 中间分隔：一条虚线加 VS
+        f'<rect x="378" y="52" width="2" height="{size + 8}" fill="{t["line"]}"/>',
+        tag(390, 52 + size // 2, "VS", t, 16, t["ember"]),
+        f'<rect x="{760 - 32 - size - 16}" y="44" width="{size + 16}" height="{size + 16}" '
+        f'fill="{t["surface"]}" stroke="{t["line"]}" stroke-width="2"/>',
+        draw_sprite(knight, pal, 760 - 32 - size, 52),
+        f'<text x="{760 - 32 - size}" y="{52 + size + 32}" font-family="{MONO}" '
+        f'font-size="14" letter-spacing="1" fill="{t["ink"]}">{knight["name"]}</text>',
+        tag(760 - 32 - size, 52 + size + 50, knight["role"], t, 11, t["ash"]),
+    ]
+    return shell(760, 52 + size + 60, t, "".join(body), "队伍",
+                 f'{mage["name"]} 与 {knight["name"]} 的像素立绘')
+
+
 def load_player():
     path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "player.json")
     with open(path, encoding="utf-8") as fh:
@@ -481,7 +531,8 @@ def main():
                "streak": render_streak, "contrib": render_contrib,
                "stack": render_stack, "player": render_player,
                "quests": render_quests, "inventory": render_inventory,
-               "gear": render_gear, "log": render_log, "comms": render_contact}
+               "gear": render_gear, "log": render_log, "comms": render_contact,
+               "party": render_party}
     pins = []
     for repo_name in PIN_REPOS:
         repo = gql(token, PIN_QUERY, {"owner": login, "name": repo_name}).get("repository")

@@ -1,0 +1,54 @@
+---
+import sprites from '../data/sprites.generated.json';
+
+const U = 4;
+const palette = sprites.palette as Record<string, string>;
+const heroes = sprites.sprites as {
+  id: string; name: string; role: string; rects: number[][];
+}[];
+
+/** 两遍：先所有描边（外扩 1 格），再所有填充 —— 与 gen_cards.py 完全一致的画法 */
+function cells(sprite: { rects: number[][] }) {
+  const out: { x: number; y: number; w: number; h: number; fill: string }[] = [];
+  for (const r of sprite.rects) {
+    if (r[5]) out.push({ x: (r[0] - 1) * U, y: (r[1] - 1) * U, w: (r[2] + 2) * U, h: (r[3] + 2) * U, fill: palette.K });
+  }
+  for (const r of sprite.rects) {
+    out.push({ x: r[0] * U, y: r[1] * U, w: r[2] * U, h: r[3] * U, fill: palette[r[4]] });
+  }
+  return out;
+}
+---
+<section class="panel span-12">
+  <div class="panel__head"><span class="panel__tag">PARTY</span></div>
+  <ul class="party">
+    {heroes.map((h) => (
+      <li class="party__slot">
+        <svg class="party__art" viewBox="0 0 128 128" width="128" height="128" shape-rendering="crispEdges" role="img" aria-label={h.name}>
+          {cells(h).map((c) => <rect x={c.x} y={c.y} width={c.w} height={c.h} fill={c.fill} />)}
+        </svg>
+        <span class="party__name">{h.name}</span>
+        <span class="party__role">{h.role}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .party {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);
+  }
+  .party__slot { display: grid; justify-items: center; gap: 6px; }
+  .party__art {
+    border: 2px solid var(--line); background: var(--bg);
+    transition: transform var(--dur-press) var(--ease-step);
+  }
+  .party__slot:hover .party__art { transform: translateY(-4px); }
+  .party__name { font-family: var(--font-mono); font-size: 13px; letter-spacing: 1px; color: var(--ink); }
+  .party__role { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--ash); }
+  @media (max-width: 420px) {
+    .party { grid-template-columns: 1fr; }
+    .party__art { width: 104px; height: 104px; }
+  }
+</style>
