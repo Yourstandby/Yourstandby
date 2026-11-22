@@ -35,11 +35,11 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
     <section class="sec" data-dither>
       <SecHead no="01" title="DASHBOARD" id="dashboard" />
       <div class="dash">
-        <PartyPanel />
-        <PlayerPanel />
-        <QuestLog />
-        <Inventory />
-        <CommsPanel />
+        <div class="slot slot--party"><PartyPanel /></div>
+        <div class="slot slot--player"><PlayerPanel /></div>
+        <div class="slot slot--quests"><QuestLog /></div>
+        <div class="slot slot--inv"><Inventory /></div>
+        <div class="slot slot--comms"><CommsPanel /></div>
       </div>
       <div class="dash-tail">
         <LogPanel />
@@ -138,6 +138,16 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
   }
   @media (min-width: 900px) { .dash-tail { grid-template-columns: 1fr 1fr; } }
 
+  /* 流式兜底：slot 顶替原来各面板自己的 span-* */
+  .slot { min-width: 0; grid-column: 1 / -1; }
+  @media (min-width: 900px) {
+    .slot--party { grid-column: span 12; }
+    .slot--player { grid-column: span 7; }
+    .slot--quests { grid-column: span 5; }
+    .slot--inv { grid-column: span 5; }
+    .slot--comms { grid-column: span 7; }
+  }
+
   @media (min-width: 1344px) {
     .dash {
       position: relative; left: 50%; transform: translateX(-50%);
@@ -147,14 +157,14 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
       grid-template-rows: repeat(22, 32px);
     }
     /* 第一带 384px：角色存档 + 双人队伍；第二带 320px：任务 / 装备 / 通讯 */
-    .dash > :nth-child(1) { grid-area: 1 / 17 / 13 / 41; }
-    .dash > :nth-child(2) { grid-area: 1 / 1 / 13 / 17; }
-    .dash > :nth-child(3) { grid-area: 13 / 1 / 23 / 15; }
-    .dash > :nth-child(4) { grid-area: 13 / 15 / 23 / 27; }
-    .dash > :nth-child(5) { grid-area: 13 / 27 / 23 / 41; }
-    .dash > * { min-width: 0; overflow: hidden; }
-    /* 画布内收紧内边距并关掉 hover 位移：位移会让面板越出自己的 tile 格 */
-    .dash :global(.panel) { padding: 16px; }
-    .dash :global(.panel:hover) { transform: none; box-shadow: var(--px-shadow); }
+    .slot { grid-column: auto; overflow: hidden; }
+    .slot--party { grid-area: 1 / 17 / 13 / 41; }
+    .slot--player { grid-area: 1 / 1 / 13 / 17; }
+    .slot--quests { grid-area: 13 / 1 / 23 / 15; }
+    .slot--inv { grid-area: 13 / 15 / 23 / 27; }
+    .slot--comms { grid-area: 13 / 27 / 23 / 41; }
+    /* 画布内收紧内边距、撑满 slot，并关掉 hover 位移（位移会越出自己的 tile 格） */
+    .slot :global(.panel) { padding: 16px; height: 100%; }
+    .slot :global(.panel:hover) { transform: none; box-shadow: var(--px-shadow); }
   }
 </style>
