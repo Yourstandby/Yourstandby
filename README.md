@@ -47,33 +47,27 @@
 ---
 
 <a id="about"></a>
-## 01 / 关于我 · About
+## 01 / 角色存档 · Player
 
-```text
-$ whoami
-> yourstandby — 全栈学徒 / 机械结构爱好者 / 像素画业余选手
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-light.svg" alt="角色存档：YOURSTANDBY · FULL-STACK BUILDER · LV.03 · EXP 620/900 · 属性 CODE 8 / DESIGN 7 / SYSTEMS 6 / CURIOUS 9" width="760" />
+</picture>
+</p>
 
-$ cat mission.txt
-> 喜欢把抽象的问题拆成结构清楚的小系统：
-> 一段代码、一个工具、一张图，或者一个能一直迭代下去的个人站。
-> 目标：把工程思维带到软件里，把软件的克制带到机械里。
-```
+<p align="center"><em>把抽象的问题拆成结构清楚的小系统：一段代码、一个工具、一张图，或者一个能一直迭代下去的个人站。<br />目标是把工程思维带进软件，把软件的克制带回机械。</em></p>
 
-- 🔧 在真实项目里练前端、后端与工具设计
-- 🧪 对可视化、自动化、AI Agent 的交叉地带着迷
-- 📝 用技术手账记录踩过的坑，而不是记录结论
-- 🌈 正在把「像素风」变成自己的表达方式
+### 任务日志 · Quest log
 
-<details>
-<summary><strong>🧭 学习地图 / Learning map</strong></summary>
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/quests-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/quests-light.svg" alt="任务日志：已通关 2/5，进行中 1 项，未解锁 2 项" width="760" />
+</picture>
+</p>
 
-- [x] 个人像素主题主页（README + 自托管卡片）
-- [x] 像素资产库：色板、8px 网格、精灵图
-- [ ] 用 Rust / Go 写一个真正顺手的 CLI 工具
-- [ ] 把可视化项目做成可以分享的作品
-- [ ] 系统的算法与数据结构复盘
-
-</details>
+<sub>状态只有三种：<code>cleared</code> / <code>active</code> / <code>locked</code>。数据源 <code>design/player.json</code>，改一处两边同步。</sub>
 
 ---
 

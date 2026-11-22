@@ -217,6 +217,85 @@ def render_contrib(data, t):
                  "贡献热力图", "过去一年的每日提交热力图，地牢配色")
 
 
+def load_player():
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "player.json")
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def pixel_avatar(t, x0=20, y0=52, unit=4):
+    """24x24 网格手绘角色：96px 见方，全部是整数格，放大也不糊。"""
+    rects = []
+
+    def px(gx, gy, w, h, fill):
+        rects.append(f'<rect x="{x0 + gx * unit}" y="{y0 + gy * unit}" '
+                     f'width="{w * unit}" height="{h * unit}" fill="{fill}"/>')
+
+    px(6, 2, 12, 2, t["ember"])        # 帽檐
+    px(7, 3, 10, 9, t["ink"])          # 头
+    px(9, 6, 2, 2, t["bg"])            # 左眼
+    px(14, 6, 2, 2, t["bg"])           # 右眼
+    px(11, 9, 3, 1, t["bg"])           # 嘴
+    px(7, 13, 10, 7, t["ember"])       # 身体
+    px(4, 14, 3, 5, t["ember"])        # 左臂
+    px(17, 14, 3, 5, t["ember"])       # 右臂
+    px(11, 14, 2, 4, t["flame"])       # 胸前火焰
+    px(8, 20, 3, 2, t["ember-deep"] if "ember-deep" in t else t["deep"])
+    px(13, 20, 3, 2, t["deep"])
+    return "".join(rects)
+
+
+def render_player(_data, t):
+    p = load_player()
+    exp_ratio = p["exp"]["current"] / p["exp"]["next"]
+    body = [
+        f'<rect x="16" y="48" width="104" height="104" fill="{t["surface"]}" '
+        f'stroke="{t["line"]}" stroke-width="2"/>',
+        pixel_avatar(t),
+        f'<text x="140" y="76" font-family="{MONO}" font-size="22" font-weight="700" '
+        f'letter-spacing="2" fill="{t["ink"]}">{p["name"]}</text>',
+        tag(140, 100, p["title"], t, 12, t["ash"]),
+        f'<text x="140" y="132" font-family="{MONO}" font-size="16" letter-spacing="2" '
+        f'fill="{t["flame"]}">LV.{p["level"]:02d}</text>',
+        gauge(200, 120, exp_ratio, t, cells=12, cw=14, ch=9, gap=5),
+        tag(370, 132, f'EXP {p["exp"]["current"]}/{p["exp"]["next"]}', t, 11, t["ash"]),
+    ]
+    for i, st in enumerate(p["stats"]):
+        y = 76 + i * 30
+        body.append(tag(452, y, st["key"], t, 12, t["ink"]))
+        body.append(gauge(544, y - 10, st["value"] / st["max"], t, cells=10, cw=12, ch=9, gap=4))
+        body.append(tag(714, y, f'{st["value"]}', t, 12, t["dim"]))
+    return shell(760, 176, t, "".join(body), "角色存档",
+                 f'{p["name"]} · {p["title"]} · LV.{p["level"]}')
+
+
+QUEST_MARK = {"cleared": "X", "active": ">", "locked": "-"}
+QUEST_COLOR = {"cleared": "ember", "active": "flame", "locked": "ash"}
+
+
+def render_quests(_data, t):
+    p = load_player()
+    quests = p["quests"]
+    body = [tag(20, 28, "QUEST LOG", t, 13)]
+    for i, q in enumerate(quests):
+        y = 62 + i * 36
+        color = t[QUEST_COLOR[q["status"]]] if q["status"] != "locked" else t["line"]
+        body.append(f'<rect x="20" y="{y - 16}" width="16" height="16" fill="none" '
+                    f'stroke="{color}" stroke-width="2"/>')
+        body.append(f'<text x="24" y="{y - 4}" font-family="{MONO}" font-size="12" '
+                    f'fill="{color}">{QUEST_MARK[q["status"]]}</text>')
+        body.append(tag(48, y, q["name"], t, 13, t["ink"] if q["status"] != "locked" else t["ash"]))
+        body.append(gauge(452, y - 11, q["progress"], t, cells=10, cw=12, ch=9, gap=4))
+        body.append(tag(590, y, q["status"].upper(), t, 11,
+                        t["dim"] if q["status"] != "locked" else t["ash"]))
+    cleared = sum(1 for q in quests if q["status"] == "cleared")
+    body.append(tag(20, 62 + len(quests) * 36 + 6,
+                    f"CLEARED {cleared}/{len(quests)}", t, 12, t["ash"]))
+    height = 62 + len(quests) * 36 + 20
+    return shell(760, height, t, "".join(body), "任务日志",
+                 f'已通关 {cleared}/{len(quests)}')
+
+
 def load_stack():
     path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "stack.json")
     with open(path, encoding="utf-8") as fh:
@@ -275,7 +354,8 @@ def main():
     os.makedirs(out, exist_ok=True)
     writers = {"stats": render_stats, "top-langs": render_langs,
                "streak": render_streak, "contrib": render_contrib,
-               "stack": render_stack}
+               "stack": render_stack, "player": render_player,
+               "quests": render_quests}
     pins = []
     for repo_name in PIN_REPOS:
         repo = gql(token, PIN_QUERY, {"owner": login, "name": repo_name}).get("repository")

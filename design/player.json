@@ -1,0 +1,58 @@
+{
+  "name": "YOURSTANDBY",
+  "title": "FULL-STACK BUILDER",
+  "level": 3,
+  "exp": {
+    "current": 620,
+    "next": 900
+  },
+  "stats": [
+    {
+      "key": "CODE",
+      "value": 8,
+      "max": 10
+    },
+    {
+      "key": "DESIGN",
+      "value": 7,
+      "max": 10
+    },
+    {
+      "key": "SYSTEMS",
+      "value": 6,
+      "max": 10
+    },
+    {
+      "key": "CURIOUS",
+      "value": 9,
+      "max": 10
+    }
+  ],
+  "quests": [
+    {
+      "name": "个人像素主题主页",
+      "status": "cleared",
+      "progress": 1
+    },
+    {
+      "name": "像素资产库：色板 / 网格 / 精灵",
+      "status": "cleared",
+      "progress": 1
+    },
+    {
+      "name": "用 Rust 或 Go 写一个顺手的 CLI",
+      "status": "active",
+      "progress": 0.4
+    },
+    {
+      "name": "把可视化项目做成可分享的作品",
+      "status": "locked",
+      "progress": 0
+    },
+    {
+      "name": "系统的算法与数据结构复盘",
+      "status": "locked",
+      "progress": 0
+    }
+  ]
+}
