@@ -209,14 +209,14 @@
 <summary><strong>最近公开动态 / Recent activity</strong></summary>
 
 <!-- ACTIVITY:START -->
-- 2026-11-22 · Pull request · merged · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-23 · 更新代码 · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-23 · Pull request · merged · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-23 · Pull request · opened · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-23 · Fork · [libracoder/kiri](https://github.com/libracoder/kiri)
+- 2026-11-23 · 关注项目 · [libracoder/kiri](https://github.com/libracoder/kiri)
+- 2026-11-23 · 关注项目 · [Yourstandby/opencode-skill-manager](https://github.com/Yourstandby/opencode-skill-manager)
 - 2026-11-22 · Fork · [marmottajr/habblaud](https://github.com/marmottajr/habblaud)
 - 2026-11-22 · 关注项目 · [marmottajr/habblaud](https://github.com/marmottajr/habblaud)
-- 2026-11-22 · Pull request · opened · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
-- 2026-11-22 · 关注项目 · [shinyobjectz/raea](https://github.com/shinyobjectz/raea)
-- 2026-11-22 · Fork · [shinyobjectz/raea](https://github.com/shinyobjectz/raea)
-- 2026-11-19 · 更新代码 · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
-- 2026-11-19 · 新建仓库 · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
 <!-- ACTIVITY:END -->
 
 </details>
