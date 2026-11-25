@@ -303,7 +303,7 @@ def render_contrib3d(data, t):
     W = len(weeks)
     D = max(len(w["contributionDays"]) for w in weeks)
     cells = [{"rx": (ci - ri) * TW, "ry": (ci + ri) * TH, "h": height(cnt) if cnt else 0,
-              "ci": ci, "cnt": cnt, "chk": (ci + ri) % 2} for ci, ri, cnt in days]
+              "ci": ci, "ri": ri, "cnt": cnt, "chk": (ci + ri) % 2} for ci, ri, cnt in days]
     gx0 = min(c["rx"] for c in cells) - TW
     gx1 = max(c["rx"] for c in cells) + TW
     gy0 = min(c["ry"] - c["h"] for c in cells) - TH
@@ -330,6 +330,26 @@ def render_contrib3d(data, t):
         body.append(f'<polygon points="{x},{y - TH} {x + TW},{y} {x},{y + TH} {x - TW},{y}" '
                     f'fill="{slot_a if c["chk"] else slot_b}"/>')
 
+    # 让它动起来：一道极淡的扫描带从后角滑到前角，楼顶小灯错开闪
+    # （.cube 的 rise 只在加载时播一次，单靠它看起来就是静止的）
+    dx, dy = (W - 5) * TW, (W - 5) * TH
+    body.append(
+        '<style>'
+        '.lip{opacity:0;animation:lip 3.6s steps(1,end) infinite}'
+        '@keyframes lip{0%{opacity:0}8%{opacity:1}26%{opacity:.25}40%{opacity:1}'
+        '58%{opacity:0}80%{opacity:.9}92%{opacity:0}100%{opacity:0}}'
+        '.sweep{animation:sweep 14s linear infinite}'
+        f'@keyframes sweep{{0%{{transform:translate(0px,0px);opacity:0}}'
+        f'6%{{opacity:1}}90%{{opacity:1}}'
+        f'100%{{transform:translate({dx:.1f}px,{dy:.1f}px);opacity:0}}}}'
+        '</style>')
+    q1 = E
+    q2 = (q1[0] + 5 * TW, q1[1] + 5 * TH)
+    q3 = (q2[0] - D * TW, q2[1] + D * TH)
+    q4 = (q1[0] - D * TW, q1[1] + D * TH)
+    body.append(f'<g class="sweep"><polygon points="{q1[0]},{q1[1]} {q2[0]},{q2[1]} '
+                f'{q3[0]},{q3[1]} {q4[0]},{q4[1]}" fill="{t["spark"]}" fill-opacity="0.12"/></g>')
+
     # 有贡献的日子：立塔。远的先画（ci+ri 小 = 屏幕上方 = 靠后），近的后画
     for c in sorted(cells, key=lambda c: c["ry"]):
         if not c["cnt"]:
@@ -342,6 +362,10 @@ def render_contrib3d(data, t):
         body.append(f'<polygon points="{x},{ty - BH} {x + BW},{ty} {x},{ty + BH} {x - BW},{ty}" fill="{top_light[k]}"{st}/>')
         body.append(f'<polygon points="{x - BW},{ty} {x},{ty + BH} {x},{y + BH} {x - BW},{y}" fill="{ramp[k]}"{st}/>')
         body.append(f'<polygon points="{x + BW},{ty} {x},{ty + BH} {x},{y + BH} {x + BW},{y}" fill="{ramp[k]}" opacity="0.72"{st}/>')
+        # 楼顶一颗小灯，延迟按格位错开，持续闪
+        lamp = (c["ci"] * 0.29 + c["ri"] * 0.13) % 3.6
+        body.append(f'<rect x="{x - 1.6:.1f}" y="{ty - 1.6:.1f}" width="3.2" height="3.2" '
+                    f'fill="{t["spark"]}" class="lip" style="animation-delay:{lamp:.2f}s"/>')
         body.append("</g>")
     body.append(tag(24, 300, f"{len(weeks)} WEEKS · {len(days)} DAYS · {sum(c['cnt'] > 0 for c in cells)} ACTIVE", t, 11, t["ash"]))
     return shell(760, 318, t, "".join(body), "3D 贡献日历",
