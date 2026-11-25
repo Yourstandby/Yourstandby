@@ -269,17 +269,22 @@ def render_contrib3d(data, t):
             for ri, d in enumerate(w["contributionDays"])]
     peak = max(c for _, _, c in days) or 1
 
-    # 扁一点的正等距网格：周轴近水平（斜率 TH/TW≈17°），不然 53 周会塌成一条斜板
-    TW, TH, MAXH = 11, 3.5, 28
+    # 扁等距网格：周轴近水平（斜率 TH/TW≈18°），53 周才拉得开而不会塌成斜板
+    TW, TH, PLATE, MAXH, MINH = 11, 3.5, 6, 30, 8
+    BW = TW * 0.72          # 建筑占地比格子小一圈，才露得出街道
+    BH = TH * 0.72
     dark = t["bg"] == PALETTE["dark"]["bg"]
     ramp = (["#241110", "#5A1A10", t["deep"], t["ember"], t["flame"]] if dark
             else ["#E7D3C6", "#F0B49A", "#E0704F", t["ember"], t["deep"]])
     top_light = ["#3A1A16", "#7A2416", "#E23B18", "#FF6A4D", "#FFD27A"] if dark else \
                 ["#F2E4DA", "#FFD2BC", "#F58E70", "#D8340F", "#B88300"]
+    ground = "#120707" if dark else "#DFC7B6"   # 地台边缘
+    slot_a = "#2E1A16" if dark else "#F8EFE8"   # 空白日的格位，AB 交替才有地面纹理
+    slot_b = "#26130F" if dark else "#F3E5DA"
+    skirt_l, skirt_r = ("#120706", "#0A0404") if dark else ("#C6AB9B", "#B29686")
+    edge = "#0B0505" if dark else t["line"]     # 塔的描边，稀疏的塔才立得住
 
     def lvl(c):
-        if c <= 0:
-            return 0
         if c < 3:
             return 1
         if c < 6:
@@ -288,34 +293,57 @@ def render_contrib3d(data, t):
             return 3
         return 4
 
+    def height(c):
+        # 幂律压扁长尾：85/天 的尖顶留到 30px，个位数贡献也立得起来
+        return MINH + (c / peak) ** 0.62 * (MAXH - MINH)
+
     body = [tag(24, 28, "CONTRIBUTION CITY", t, 13),
             tag(736, 28, f"PEAK {peak}/DAY", t, 11, t["ash"], anchor="end")]
 
-    # 先把所有格子摊到坐标上，再按包围盒把整座城居中（视野 760 内留 24 边距）
-    cells = []
-    for ci, ri, cnt in days:
-        cells.append({"gx": (ci - ri) * TW, "gy": (ci + ri) * TH,
-                      "h": 3 + (cnt / peak) * MAXH, "ci": ci, "ri": ri, "cnt": cnt})
-    gx0 = min(c["gx"] for c in cells) - TW
-    gx1 = max(c["gx"] for c in cells) + TW
-    gy0 = min(c["gy"] - c["h"] for c in cells) - TH   # 最高的顶面顶点
-    gy1 = max(c["gy"] for c in cells) + TH            # 最前的地面顶点
+    W = len(weeks)
+    D = max(len(w["contributionDays"]) for w in weeks)
+    cells = [{"rx": (ci - ri) * TW, "ry": (ci + ri) * TH, "h": height(cnt) if cnt else 0,
+              "ci": ci, "cnt": cnt, "chk": (ci + ri) % 2} for ci, ri, cnt in days]
+    gx0 = min(c["rx"] for c in cells) - TW
+    gx1 = max(c["rx"] for c in cells) + TW
+    gy0 = min(c["ry"] - c["h"] for c in cells) - TH
+    gy1 = max(c["ry"] for c in cells) + TH + PLATE
     ox = 24 + (760 - 48 - (gx1 - gx0)) / 2 - gx0
-    oy = 40 + (252 - (gy1 - gy0)) / 2 - gy0            # 在标题栏与页脚之间竖直居中
+    oy = 40 + (252 - (gy1 - gy0)) / 2 - gy0     # 标题栏与页脚之间竖直居中
 
-    # 远的先画（ci+ri 小 = 屏幕上方 = 靠后），近的后画，塔才不会盖错
-    for c in sorted(cells, key=lambda c: c["gy"]):
-        gx, gy, h, ci, ri, cnt = c["gx"], c["gy"], c["h"], c["ci"], c["ri"], c["cnt"]
-        # 等距投影：周沿 x 走（微降），天往左上退；地面菱形中心 (x, y)，塔顶再抬 h
-        x, y = ox + gx, oy + gy
+    # 地台：整个 53x7 网格投影后是一个平行四边形，一整块画完，不再叠 365 个薄片
+    A = (ox, oy - TH)                                    # 后角
+    B = (ox + W * TW, oy + (W - 1) * TH)                  # 右角
+    C = (ox + (W - D) * TW, oy + (W + D - 2) * TH + TH)   # 前角
+    E = (ox - D * TW, oy + (D - 1) * TH)                  # 左角
+    body.append(f'<polygon points="{E[0]},{E[1]} {C[0]},{C[1]} {C[0]},{C[1] + PLATE} {E[0]},{E[1] + PLATE}" '
+                f'fill="{skirt_l}"/>')   # 左前侧壁
+    body.append(f'<polygon points="{C[0]},{C[1]} {B[0]},{B[1]} {B[0]},{B[1] + PLATE} {C[0]},{C[1] + PLATE}" '
+                f'fill="{skirt_r}"/>')   # 右前侧壁
+    body.append(f'<polygon points="{A[0]},{A[1]} {B[0]},{B[1]} {C[0]},{C[1]} {E[0]},{E[1]}" fill="{ground}"/>')
+
+    # 空白日：地台上压一个浅菱形，保留日历格子感（不带动画，省体积）
+    for c in cells:
+        if c["cnt"]:
+            continue
+        x, y = ox + c["rx"], oy + c["ry"]
+        body.append(f'<polygon points="{x},{y - TH} {x + TW},{y} {x},{y + TH} {x - TW},{y}" '
+                    f'fill="{slot_a if c["chk"] else slot_b}"/>')
+
+    # 有贡献的日子：立塔。远的先画（ci+ri 小 = 屏幕上方 = 靠后），近的后画
+    for c in sorted(cells, key=lambda c: c["ry"]):
+        if not c["cnt"]:
+            continue
+        x, y, h = ox + c["rx"], oy + c["ry"], c["h"]
         ty = y - h
-        k = lvl(cnt)
-        body.append(f'<g class="cube" style="animation-delay:{(ci * 0.012):.3f}s">')
-        body.append(f'<polygon points="{x},{ty - TH} {x + TW},{ty} {x},{ty + TH} {x - TW},{ty}" fill="{top_light[k]}"/>')
-        body.append(f'<polygon points="{x - TW},{ty} {x},{ty + TH} {x},{y + TH} {x - TW},{y}" fill="{ramp[k]}"/>')
-        body.append(f'<polygon points="{x + TW},{ty} {x},{ty + TH} {x},{y + TH} {x + TW},{y}" fill="{ramp[k]}" opacity="0.72"/>')
+        k = lvl(c["cnt"])
+        body.append(f'<g class="cube" style="animation-delay:{(c["ci"] * 0.012):.3f}s">')
+        st = f' stroke="{edge}" stroke-width="0.8"'
+        body.append(f'<polygon points="{x},{ty - BH} {x + BW},{ty} {x},{ty + BH} {x - BW},{ty}" fill="{top_light[k]}"{st}/>')
+        body.append(f'<polygon points="{x - BW},{ty} {x},{ty + BH} {x},{y + BH} {x - BW},{y}" fill="{ramp[k]}"{st}/>')
+        body.append(f'<polygon points="{x + BW},{ty} {x},{ty + BH} {x},{y + BH} {x + BW},{y}" fill="{ramp[k]}" opacity="0.72"{st}/>')
         body.append("</g>")
-    body.append(tag(24, 300, f"{len(weeks)} WEEKS · {len(days)} DAYS", t, 11, t["ash"]))
+    body.append(tag(24, 300, f"{len(weeks)} WEEKS · {len(days)} DAYS · {sum(c['cnt'] > 0 for c in cells)} ACTIVE", t, 11, t["ash"]))
     return shell(760, 318, t, "".join(body), "3D 贡献日历",
                  "等距投影的每日贡献立方体，高度代表当日提交数")
 
