@@ -556,6 +556,26 @@ def level_from_xp(total, curve):
     return level, max(0, min(cur, nxt)), nxt
 
 
+def combat_stats(counts, leveling):
+    """HP/MP/ATK 这类属性也接数据：加权指标开平方映射到 0-10。没有配置就返回 None，保留手写值。"""
+    cfg = leveling.get("combat")
+    if not cfg:
+        return None
+    floor = int(cfg.get("floor", 1))
+    out = {}
+    for who, attrs in cfg.items():
+        if who == "floor":
+            continue
+        rows = []
+        for label, spec in attrs.items():
+            weighted = sum(counts.get(k, 0) * w for k, w in spec.get("from", {}).items())
+            ref = max(1.0, float(spec.get("ref", 1)))
+            val = int(round(10 * (weighted / ref) ** 0.5))
+            rows.append([label, max(floor, min(10, val))])
+        out[who] = rows
+    return out
+
+
 def party_levels(level, player, leveling):
     """队伍成员等级：主角等级 + 每个角色的 offset，同样只升不降。"""
     cap = int(leveling["curve"].get("max_level", 99))
@@ -585,9 +605,13 @@ def sync_player(data):
         cur = max(0, min(total - cum_xp(level, lv["curve"]), nxt))
 
     party = party_levels(level, p, lv)
+    combat = combat_stats({k: d["count"] for k, d in detail.items()}, lv)
     out = {}
     for k, v in p.items():
         if k in ("xp", "party_levels"):
+            continue
+        if k == "combat" and combat:
+            out["combat"] = combat
             continue
         if k == "level":
             out["level"] = level

@@ -18,5 +18,19 @@
   "party": {
     "mage": { "offset": 0 },
     "knight": { "offset": 2 }
+  },
+  "_combat_note": "属性值 = round(10 * sqrt(加权指标 / ref))，夹在 [floor, 10]。ref 是打满格需要的量，想让人物更强就调小。",
+  "combat": {
+    "floor": 1,
+    "mage": {
+      "HP": { "from": { "commits": 1 }, "ref": 1200 },
+      "MP": { "from": { "pull_requests": 1 }, "ref": 300 },
+      "INT": { "from": { "repos": 1, "stars": 3 }, "ref": 70 }
+    },
+    "knight": {
+      "HP": { "from": { "commits": 1, "pull_requests": 5 }, "ref": 1500 },
+      "ATK": { "from": { "pull_requests": 1 }, "ref": 200 },
+      "DEF": { "from": { "repos": 1 }, "ref": 25 }
+    }
   }
 }

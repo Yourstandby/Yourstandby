@@ -1,14 +1,49 @@
 {
   "name": "YOURSTANDBY",
   "title": "FULL-STACK BUILDER",
-  "level": 3,
+  "level": 5,
   "exp": {
-    "current": 620,
-    "next": 900
+    "current": 319,
+    "next": 2026
+  },
+  "xp": {
+    "total": 3744,
+    "metrics": {
+      "commits": {
+        "count": 467,
+        "weight": 2,
+        "xp": 934
+      },
+      "pull_requests": {
+        "count": 63,
+        "weight": 40,
+        "xp": 2520
+      },
+      "issues": {
+        "count": 0,
+        "weight": 15,
+        "xp": 0
+      },
+      "stars": {
+        "count": 4,
+        "weight": 25,
+        "xp": 100
+      },
+      "repos": {
+        "count": 4,
+        "weight": 40,
+        "xp": 160
+      },
+      "followers": {
+        "count": 1,
+        "weight": 30,
+        "xp": 30
+      }
+    }
   },
   "party_levels": {
-    "mage": 3,
-    "knight": 5
+    "mage": 5,
+    "knight": 7
   },
   "hp_max": 10,
   "stats": [
@@ -96,29 +131,29 @@
     "mage": [
       [
         "HP",
-        7
+        6
       ],
       [
         "MP",
-        9
+        5
       ],
       [
         "INT",
-        8
+        5
       ]
     ],
     "knight": [
       [
         "HP",
-        9
+        7
       ],
       [
         "ATK",
-        8
+        6
       ],
       [
         "DEF",
-        7
+        4
       ]
     ]
   }
