@@ -111,9 +111,10 @@ def shell(w, h, t, body, title, desc):
         + body + "</svg>\n")
 
 
-def tag(x, y, text, t, size=13, fill=None):
+def tag(x, y, text, t, size=13, fill=None, anchor=None):
     fill = fill or t["ash"]
-    return (f'<text x="{x}" y="{y}" font-family="{MONO}" font-size="{size}" '
+    a = f' text-anchor="{anchor}"' if anchor else ""
+    return (f'<text x="{x}" y="{y}"{a} font-family="{MONO}" font-size="{size}" '
             f'letter-spacing="2" fill="{fill}">{text}</text>')
 
 
@@ -268,7 +269,8 @@ def render_contrib3d(data, t):
             for ri, d in enumerate(w["contributionDays"])]
     peak = max(c for _, _, c in days) or 1
 
-    TW, TH, MAXH = 8, 5, 30
+    # 扁一点的正等距网格：周轴近水平（斜率 TH/TW≈17°），不然 53 周会塌成一条斜板
+    TW, TH, MAXH = 11, 3.5, 28
     dark = t["bg"] == PALETTE["dark"]["bg"]
     ramp = (["#241110", "#5A1A10", t["deep"], t["ember"], t["flame"]] if dark
             else ["#E7D3C6", "#F0B49A", "#E0704F", t["ember"], t["deep"]])
@@ -286,21 +288,34 @@ def render_contrib3d(data, t):
             return 3
         return 4
 
-    body = [tag(24, 28, "CONTRIBUTION CITY", t, 13)]
-    ox, oy = 150, 96
-    # 远的先画（col+row 小的在后方）
+    body = [tag(24, 28, "CONTRIBUTION CITY", t, 13),
+            tag(736, 28, f"PEAK {peak}/DAY", t, 11, t["ash"], anchor="end")]
+
+    # 先把所有格子摊到坐标上，再按包围盒把整座城居中（视野 760 内留 24 边距）
+    cells = []
     for ci, ri, cnt in days:
-        x = ox + (ci - ri) * TW
-        y = oy + (ci + ri) * TH
-        h = 3 + (cnt / peak) * MAXH
+        cells.append({"gx": (ci - ri) * TW, "gy": (ci + ri) * TH,
+                      "h": 3 + (cnt / peak) * MAXH, "ci": ci, "ri": ri, "cnt": cnt})
+    gx0 = min(c["gx"] for c in cells) - TW
+    gx1 = max(c["gx"] for c in cells) + TW
+    gy0 = min(c["gy"] - c["h"] for c in cells) - TH   # 最高的顶面顶点
+    gy1 = max(c["gy"] for c in cells) + TH            # 最前的地面顶点
+    ox = 24 + (760 - 48 - (gx1 - gx0)) / 2 - gx0
+    oy = 40 + (252 - (gy1 - gy0)) / 2 - gy0            # 在标题栏与页脚之间竖直居中
+
+    # 远的先画（ci+ri 小 = 屏幕上方 = 靠后），近的后画，塔才不会盖错
+    for c in sorted(cells, key=lambda c: c["gy"]):
+        gx, gy, h, ci, ri, cnt = c["gx"], c["gy"], c["h"], c["ci"], c["ri"], c["cnt"]
+        # 等距投影：周沿 x 走（微降），天往左上退；地面菱形中心 (x, y)，塔顶再抬 h
+        x, y = ox + gx, oy + gy
+        ty = y - h
         k = lvl(cnt)
         body.append(f'<g class="cube" style="animation-delay:{(ci * 0.012):.3f}s">')
-        body.append(f'<polygon points="{x},{y - h} {x + TW},{y - h + TH} {x},{y - h + 2 * TH} {x - TW},{y - h + TH}" fill="{top_light[k]}"/>')
-        body.append(f'<polygon points="{x - TW},{y - h + TH} {x},{y - h + 2 * TH} {x},{y + 2 * TH} {x - TW},{y + TH}" fill="{ramp[k]}"/>')
-        body.append(f'<polygon points="{x + TW},{y - h + TH} {x},{y - h + 2 * TH} {x},{y + 2 * TH} {x + TW},{y + TH}" fill="{ramp[k]}" opacity="0.72"/>')
+        body.append(f'<polygon points="{x},{ty - TH} {x + TW},{ty} {x},{ty + TH} {x - TW},{ty}" fill="{top_light[k]}"/>')
+        body.append(f'<polygon points="{x - TW},{ty} {x},{ty + TH} {x},{y + TH} {x - TW},{y}" fill="{ramp[k]}"/>')
+        body.append(f'<polygon points="{x + TW},{ty} {x},{ty + TH} {x},{y + TH} {x + TW},{y}" fill="{ramp[k]}" opacity="0.72"/>')
         body.append("</g>")
-    body.append(tag(24, 300, "53 WEEKS · 371 DAYS", t, 11, t["ash"]))
-    body.append(tag(470, 300, f"PEAK {peak}/DAY", t, 11, t["ash"]))
+    body.append(tag(24, 300, f"{len(weeks)} WEEKS · {len(days)} DAYS", t, 11, t["ash"]))
     return shell(760, 318, t, "".join(body), "3D 贡献日历",
                  "等距投影的每日贡献立方体，高度代表当日提交数")
 
