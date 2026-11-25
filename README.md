@@ -7,21 +7,7 @@
 </picture>
 </p>
 
-<p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/typing-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/typing-light.svg" alt="Keep building. Keep burning." width="760" />
-</picture>
-</p>
-
-<p align="center">
-<a href="https://yourstandby.github.io/Yourstandby/#trials">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/cta-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/cta-light.svg" alt="进入个人网站" width="320" />
-</picture>
-</a>
-</p>
+<p align="center"><a href="https://yourstandby.github.io/Yourstandby/"><strong>→ 进入个人网站</strong></a></p>
 
 <h3 align="center">🔥 Yourstandby · 全栈建造中 · AI 研究 × 亲手造东西</h3>
 
@@ -50,13 +36,6 @@
 <a href="mailto:YOUR_EMAIL">Email</a> ·
 <a href="https://yourstandby.github.io/Yourstandby/">Website</a> ·
 <a href="https://github.com/Yourstandby">GitHub</a>
-</p>
-
-<p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/overview-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/overview-light.svg" alt="公开仓库、Stars、主要语言与年度提交" width="100%" />
-</picture>
 </p>
 
 ---
