@@ -2,6 +2,8 @@
 export const base = '/Yourstandby';
 
 import stackData from './stack.generated.json';
+// 等级 / HP 只有一份真源：design/player.json，CI 每天按 GitHub 数据回写后同步到这里
+import playerData from './player.generated.json';
 
 export const site = {
   name: "Yourstandby",
@@ -9,8 +11,8 @@ export const site = {
   email: "YOUR_EMAIL",
   url: "https://yourstandby.github.io",
   github: "https://github.com/Yourstandby",
-  level: 3,
-  hp: 7,
+  level: playerData.level,
+  hp: Number(playerData.combat.mage[0][1]),
   hpMax: 10,
   stack: stackData,
   projects: [

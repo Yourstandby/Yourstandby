@@ -6,7 +6,12 @@ on:
     paths:
       - site/**
       - design/tokens.css
+      - design/player.json
       - .github/workflows/deploy.yml
+  # 卡片机器人（GITHUB_TOKEN）推的提交不会触发 push 事件，用 workflow_run 兜住
+  workflow_run:
+    workflows: ["Update profile cards"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -20,6 +25,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

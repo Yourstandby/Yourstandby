@@ -83,7 +83,7 @@
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-dark.svg?v=7" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-light.svg?v=7" alt="角色存档：YOURSTANDBY · FULL-STACK BUILDER · LV.03 · EXP 620/900 · 属性 CODE 8 / DESIGN 7 / SYSTEMS 6 / CURIOUS 9" width="760" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/player-light.svg?v=7" alt="角色存档：YOURSTANDBY · FULL-STACK BUILDER · 等级与 EXP 由 GitHub 数据每日自动换算" width="760" />
 </picture>
 </p>
 
@@ -288,7 +288,7 @@
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/footer-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/footer-light.svg" alt="LV.03 · BUILDER · HP 7/10" width="100%" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/footer-light.svg" alt="等级与 HP · BUILDER" width="100%" />
 </picture>
 </p>
 

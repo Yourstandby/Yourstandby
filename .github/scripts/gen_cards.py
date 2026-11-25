@@ -490,16 +490,97 @@ def render_party(_data, t):
                  f'{mage["name"]} 与 {knight["name"]} 的像素立绘')
 
 
+def player_path():
+    return os.path.join(os.path.dirname(__file__), "..", "..", "design", "player.json")
+
+
 def load_player():
-    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "player.json")
+    with open(player_path(), encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+# ---- 等级：从 GitHub 数据换算 XP，写回 design/player.json --------------------
+# 规则放在 design/leveling.json，改权重/曲线不用碰代码。
+
+def load_leveling():
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "leveling.json")
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
 
 
-def load_player():
-    path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "player.json")
-    with open(path, encoding="utf-8") as fh:
-        return json.load(fh)
+def xp_of(data, weights):
+    """把近一年的贡献 + 仓库体量折成 XP，并给出可核对的明细。"""
+    repos = data["repositories"]
+    cc = data["contributionsCollection"]
+    counts = {
+        "commits": cc["totalCommitContributions"],
+        "pull_requests": cc["totalPullRequestContributions"],
+        "issues": cc["totalIssueContributions"],
+        "stars": sum(r["stargazerCount"] for r in repos["nodes"]),
+        "repos": repos["totalCount"],
+        "followers": data["followers"]["totalCount"],
+    }
+    detail = {k: {"count": v, "weight": weights.get(k, 0), "xp": v * weights.get(k, 0)}
+              for k, v in counts.items()}
+    return sum(d["xp"] for d in detail.values()), detail
+
+
+def xp_needed(level, curve):
+    """从 level 升到 level+1 需要的 XP：base * level ** exponent。"""
+    return max(1, round(curve["base"] * level ** curve["exponent"]))
+
+
+def cum_xp(level, curve):
+    """到达 level 所需的累计 XP。"""
+    return sum(xp_needed(n, curve) for n in range(1, level))
+
+
+def level_from_xp(total, curve):
+    """纯函数：XP -> (等级, 当前级内进度, 下一级门槛)。"""
+    top = int(curve.get("max_level", 99))
+    level = 1
+    while level < top and cum_xp(level + 1, curve) <= total:
+        level += 1
+    nxt = xp_needed(level, curve)
+    cur = total - cum_xp(level, curve)
+    if level >= top:
+        cur = nxt
+    return level, max(0, min(cur, nxt)), nxt
+
+
+def sync_player(data):
+    """把算出来的 level/exp 落在 design/player.json 上；只改这三块，其它手写内容原样保留。"""
+    lv = load_leveling()
+    total, detail = xp_of(data, lv["weights"])
+    level, cur, nxt = level_from_xp(total, lv["curve"])
+
+    p = load_player()
+    prev = p.get("level", 1)
+    if lv.get("never_demote", True) and prev > level:
+        # 一年窗口里的提交会过期：只升不降，进度按当前等级重算，不为负
+        level = prev
+        nxt = xp_needed(level, lv["curve"])
+        cur = max(0, min(total - cum_xp(level, lv["curve"]), nxt))
+
+    out = {}
+    for k, v in p.items():
+        if k == "xp":
+            continue
+        if k == "level":
+            out["level"] = level
+            continue
+        if k == "exp":
+            out["exp"] = {"current": cur, "next": nxt}
+            out["xp"] = {"total": total, "metrics": detail}
+            continue
+        out[k] = v
+    if "xp" not in out:  # 第一次同步，player.json 还没有 xp 明细
+        out["xp"] = {"total": total, "metrics": detail}
+
+    with open(player_path(), "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(out, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
+    return prev, level, cur, nxt, total
 
 
 # 24x24 网格的"像素小狗魔法师"：下垂耳 + 尖顶帽 + 法杖。
@@ -796,6 +877,9 @@ def main():
     data = gql(token, QUERY, {"login": login,
                        "from": start.isoformat() + "T00:00:00Z",
                        "to": today.isoformat() + "T23:59:59Z"})["user"]
+    if os.environ.get("SYNC_PLAYER", "1") != "0":
+        prev, lv, cur, nxt, total = sync_player(data)
+        print(f"player level {prev} -> {lv}   exp {cur}/{nxt}   xp {total}")
     out = os.environ.get("OUT_DIR", ".build")
     os.makedirs(out, exist_ok=True)
     writers = {"stats": render_stats, "top-langs": render_langs,

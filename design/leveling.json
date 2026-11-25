@@ -1,0 +1,17 @@
+{
+  "_note": "等级曲线与 XP 权重。gen_cards.py 每次跑都会用它把 GitHub 数据换算成 level/exp，写回 design/player.json。改这里就能调快慢。",
+  "weights": {
+    "commits": 2,
+    "pull_requests": 40,
+    "issues": 15,
+    "stars": 25,
+    "repos": 40,
+    "followers": 30
+  },
+  "curve": {
+    "base": 250,
+    "exponent": 1.3,
+    "max_level": 99
+  },
+  "never_demote": true
+}
