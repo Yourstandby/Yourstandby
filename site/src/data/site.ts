@@ -7,7 +7,7 @@ import playerData from './player.generated.json';
 
 export const site = {
   name: "Yourstandby",
-  tagline: "把想法烧成可以跑起来的东西",
+  tagline: "把想法做成能跑的东西",
   email: "YOUR_EMAIL",
   url: "https://yourstandby.github.io",
   github: "https://github.com/Yourstandby",

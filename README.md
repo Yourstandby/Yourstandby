@@ -23,9 +23,9 @@
 </a>
 </p>
 
-<h3 align="center">🔥 Yourstandby · 全栈建造中 · 像素与原子的混合体</h3>
+<h3 align="center">🔥 Yourstandby · 全栈建造中 · 把想法做成能跑的东西</h3>
 
-<p align="center"><em>把想法烧成可以跑起来的东西。代码、结构、好奇心。</em></p>
+<p align="center"><em>代码、界面，以及把它们连起来的那部分。想到什么就先跑起来，再慢慢磨。</em></p>
 
 <p align="center">
 <a href="#user-content-about">关于</a> ·
@@ -87,7 +87,7 @@
 </picture>
 </p>
 
-<p align="center"><em>把抽象的问题拆成结构清楚的小系统：一段代码、一个工具、一张图，或者一个能一直迭代下去的个人站。<br />目标是把工程思维带进软件，把软件的克制带回机械。</em></p>
+<p align="center"><em>喜欢把抽象的问题拆成结构清楚的小系统：一段代码、一个工具、一张图，或者一个能一直迭代下去的个人站。<br />不太爱讲空话，更在意东西能不能真的跑起来、能不能一直改下去。</em></p>
 
 ### 任务日志 · Quest log
 
