@@ -7,7 +7,8 @@ import playerData from './player.generated.json';
 
 export const site = {
   name: "Yourstandby",
-  tagline: "把想法做成能跑的东西",
+  tagline: "把想法烧成可以跑起来的东西",
+  bio: "材料专业出身，现在做 AI 研究。习惯先搞清楚原理再动手：白天读论文，晚上把想法烧成能跑、能用的东西。",
   email: "YOUR_EMAIL",
   url: "https://yourstandby.github.io",
   github: "https://github.com/Yourstandby",

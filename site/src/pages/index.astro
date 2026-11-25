@@ -24,6 +24,7 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
       <p class="hero__kicker">BUILDING IN PUBLIC SINCE 2026</p>
       <h1 class="hero__title">YOUR<br />STANDBY</h1>
       <p class="typed"><span class="typed__mask">{site.tagline}</span><span class="px-caret" aria-hidden="true"></span></p>
+      <p class="hero__bio">{site.bio}</p>
       <div class="hero__cta">
         <a class="px-btn" href={`${base}/notes/`}>读手账</a>
         <a class="px-btn" href={site.github}>GitHub ↗</a>
@@ -104,6 +105,10 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
   .hero__kicker {
     font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 3px;
     color: var(--ash); margin: 0 0 var(--space-2);
+  }
+  .hero__bio {
+    font-family: var(--font-mono); font-size: var(--fs-xs); line-height: 1.9;
+    letter-spacing: 1px; color: var(--dim); margin: var(--space-3) 0 0; max-width: 46ch;
   }
   .hero__title {
     font-family: var(--font-display); font-size: var(--fs-2xl);

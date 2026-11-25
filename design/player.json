@@ -1,6 +1,6 @@
 {
   "name": "YOURSTANDBY",
-  "title": "FULL-STACK BUILDER",
+  "title": "AI RESEARCH × BUILDER",
   "level": 5,
   "exp": {
     "current": 319,
@@ -90,7 +90,7 @@
       "progress": 0
     },
     {
-      "name": "系统的算法与数据结构复盘",
+      "name": "把一篇论文的想法做成能跑的原型",
       "status": "locked",
       "progress": 0
     }
