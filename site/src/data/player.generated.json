@@ -6,6 +6,11 @@
     "current": 620,
     "next": 900
   },
+  "party_levels": {
+    "mage": 3,
+    "knight": 5
+  },
+  "hp_max": 10,
   "stats": [
     {
       "key": "CODE",

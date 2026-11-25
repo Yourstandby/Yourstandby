@@ -8,6 +8,9 @@ const heroes = sprites.sprites as { id: string; name: string; role: string; rect
 const mage = heroes[0];
 const knight = heroes[1];
 const combat = (player as { combat?: Record<string, [string, number][]> }).combat ?? {};
+// 等级只有一份真源：gen_cards.py 按 GitHub 数据算出后写进 design/player.json
+const levels = (player as { party_levels?: Record<string, number> }).party_levels ?? {};
+const lvTag = (id: string) => (levels[id] ? ` · LV.${String(levels[id]).padStart(2, '0')}` : '');
 
 function cells(sprite: { rects: number[][] }) {
   const out: { x: number; y: number; w: number; h: number; fill: string }[] = [];
@@ -30,7 +33,7 @@ function cells(sprite: { rects: number[][] }) {
         </svg>
         <figcaption>
           <span class="party__name">{h.name}</span>
-          <span class="party__role">{h.role}</span>
+          <span class="party__role">{h.role}{lvTag(h.id)}</span>
         </figcaption>
         <ul class="party__stats">
           {(combat[i === 0 ? 'mage' : 'knight'] ?? []).map(([label, val]) => (

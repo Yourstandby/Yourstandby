@@ -30,7 +30,7 @@
   {
    "id": "mage",
    "name": "鸡毛法师",
-   "role": "MAGE · LV.03",
+   "role": "MAGE",
    "grid": 64,
    "unit": 2,
    "rects": [
@@ -2532,7 +2532,7 @@
   {
    "id": "knight",
    "name": "小白战士",
-   "role": "KNIGHT · LV.05",
+   "role": "KNIGHT",
    "grid": 64,
    "unit": 2,
    "rects": [

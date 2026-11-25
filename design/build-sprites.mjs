@@ -260,8 +260,9 @@ function build(name, id, role, fn, outline = 2) {
 }
 
 const out = [
-  build('鸡毛法师', 'mage', 'MAGE · LV.03', mage),
-  build('小白战士', 'knight', 'KNIGHT · LV.05', knight),
+  // role 只写职业：等级由 gen_cards.py 按 GitHub 数据算出来，别在这里写死
+  build('鸡毛法师', 'mage', 'MAGE', mage),
+  build('小白战士', 'knight', 'KNIGHT', knight),
 ];
 
 const only = process.argv[2];

@@ -13,7 +13,7 @@ export const site = {
   github: "https://github.com/Yourstandby",
   level: playerData.level,
   hp: Number(playerData.combat.mage[0][1]),
-  hpMax: 10,
+  hpMax: Number(playerData.hp_max ?? 10),
   stack: stackData,
   projects: [
     { name: "PiForge", repo: "https://github.com/Yourstandby/PiForge", desc: "把 Pi Coding Agent 装进一张安静的三栏工作台：本地优先、多会话、缓存感知。", tag: "DESKTOP" },

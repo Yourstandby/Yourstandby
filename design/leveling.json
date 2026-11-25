@@ -13,5 +13,10 @@
     "exponent": 1.3,
     "max_level": 99
   },
-  "never_demote": true
+  "never_demote": true,
+  "_party_note": "队伍成员等级 = 主角等级 + offset，MAGE 与主角同级、KNIGHT 多练两年；卡片与站点都从这里取值。",
+  "party": {
+    "mage": { "offset": 0 },
+    "knight": { "offset": 2 }
+  }
 }

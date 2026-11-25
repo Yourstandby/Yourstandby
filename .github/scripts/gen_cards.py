@@ -436,6 +436,13 @@ def render_trials(_data, t):
                  "同一场景两侧并行：法师用法术、战士用剑盾")
 
 
+def party_role(entry, player):
+    """角色标签：role 字段只写职业，等级由 GitHub 数据算出，别在美术数据里写死。"""
+    lv = player.get("party_levels", {}).get(entry["id"])
+    role = entry["role"]
+    return f"{role} · LV.{lv:02d}" if isinstance(lv, int) else role
+
+
 def render_party(_data, t):
     sp = load_sprites()
     pal = sp["palette"]
@@ -448,6 +455,7 @@ def render_party(_data, t):
     box, pad = size + 16, 8
     name_y = 52 + size + 32
     role_y = name_y + 18
+    p = load_player()
     body = [
         tag(20, 28, "PARTY", t, 13),
         f'<rect x="24" y="44" width="{box}" height="{box}" fill="{t["surface"]}" '
@@ -455,7 +463,7 @@ def render_party(_data, t):
         draw_sprite(mage, pal, 24 + pad, 52),
         f'<text x="{24 + pad}" y="{name_y}" font-family="{MONO}" font-size="14" '
         f'letter-spacing="1" fill="{t["ink"]}">{mage["name"]}</text>',
-        tag(24 + pad, role_y, mage["role"], t, 11, t["ash"]),
+        tag(24 + pad, role_y, party_role(mage, p), t, 11, t["ash"]),
         # 中线严格居中：分屏线 x=379（中心 380），VS 文字 anchor=middle
         f'<rect x="379" y="52" width="2" height="{size + 8}" fill="{t["line"]}"/>',
         f'<text x="380" y="{60 + size // 2}" text-anchor="middle" font-family="{MONO}" '
@@ -466,10 +474,10 @@ def render_party(_data, t):
         f'<text x="{760 - 24 - pad}" y="{name_y}" text-anchor="end" font-family="{MONO}" '
         f'font-size="14" letter-spacing="1" fill="{t["ink"]}">{knight["name"]}</text>',
         f'<text x="{760 - 24 - pad}" y="{role_y}" text-anchor="end" font-family="{MONO}" '
-        f'font-size="11" letter-spacing="2" fill="{t["ash"]}">{knight["role"]}</text>',
+        f'font-size="11" letter-spacing="2" fill="{t["ash"]}">{party_role(knight, p)}</text>',
     ]
     # 中间空白处：两人的基础属性，右侧战士镜像排布
-    combat = load_player().get("combat", {})
+    combat = p.get("combat", {})
     for side, who in ((0, "mage"), (1, "knight")):
         for i, (label, val) in enumerate(combat.get(who, [])):
             y = 96 + i * 30
@@ -548,6 +556,20 @@ def level_from_xp(total, curve):
     return level, max(0, min(cur, nxt)), nxt
 
 
+def party_levels(level, player, leveling):
+    """队伍成员等级：主角等级 + 每个角色的 offset，同样只升不降。"""
+    cap = int(leveling["curve"].get("max_level", 99))
+    prev = player.get("party_levels", {})
+    floor = leveling.get("never_demote", True)
+    out = {}
+    for who, cfg in leveling.get("party", {}).items():
+        lvl = min(cap, level + int(cfg.get("offset", 0)))
+        if floor and isinstance(prev.get(who), int):
+            lvl = max(lvl, prev[who])
+        out[who] = max(1, lvl)
+    return out
+
+
 def sync_player(data):
     """把算出来的 level/exp 落在 design/player.json 上；只改这三块，其它手写内容原样保留。"""
     lv = load_leveling()
@@ -562,9 +584,10 @@ def sync_player(data):
         nxt = xp_needed(level, lv["curve"])
         cur = max(0, min(total - cum_xp(level, lv["curve"]), nxt))
 
+    party = party_levels(level, p, lv)
     out = {}
     for k, v in p.items():
-        if k == "xp":
+        if k in ("xp", "party_levels"):
             continue
         if k == "level":
             out["level"] = level
@@ -572,10 +595,13 @@ def sync_player(data):
         if k == "exp":
             out["exp"] = {"current": cur, "next": nxt}
             out["xp"] = {"total": total, "metrics": detail}
+            out["party_levels"] = party
             continue
         out[k] = v
     if "xp" not in out:  # 第一次同步，player.json 还没有 xp 明细
         out["xp"] = {"total": total, "metrics": detail}
+    if "party_levels" not in out:
+        out["party_levels"] = party
 
     with open(player_path(), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(out, fh, ensure_ascii=False, indent=2)
@@ -689,6 +715,61 @@ def render_inventory(_data, t):
         body.append(tag(x + 20, 158, it["desc"], t, 11, t["ash"]))
     return shell(760, 196, t, "".join(body), "物品栏",
                  "、".join(it["name"] for it in items))
+
+
+# 底部状态栏：等级 / HP 全部来自 player.json，跟着 GitHub 数据一起走
+HP_MAX_DEFAULT = 10
+
+
+def hp_of(p):
+    for entry in p.get("combat", {}).get("mage", []):
+        if entry[0] == "HP":
+            return int(entry[1]), int(p.get("hp_max", HP_MAX_DEFAULT))
+    return 0, int(p.get("hp_max", HP_MAX_DEFAULT))
+
+
+def render_footer(_data, t):
+    p = load_player()
+    hp, hp_max = hp_of(p)
+    body = [
+        f'<rect x="48" y="38" width="6" height="6" fill="{t["ember"]}" class="cur"/>',
+        tag(66, 50, f'LV.{p["level"]:02d} · BUILDER', t, 20, t["ink"]),
+        tag(330, 50, "HP", t, 20, t["ash"]),
+        f'<text x="980" y="50" font-family="{MONO}" font-size="20" letter-spacing="3" '
+        f'fill="{t["ash"]}">{hp} / {hp_max}</text>',
+    ]
+    for i in range(hp_max):
+        on = i < hp
+        cls = ' class="bar"' if on else ''
+        body.append(f'<rect x="{760 + i * 20}" y="44" width="14" height="14" '
+                    f'fill="{t["ember"] if on else t["line"]}"{cls}/>')
+    for i, tone in enumerate(("ember", "deep", "flame", "deep")):
+        body.append(f'<rect x="{i * 24}" y="78" width="16" height="8" '
+                    f'fill="{t[tone]}" class="cube"/>')
+    return shell(1200, 96, t, "".join(body), "状态栏",
+                 f'{p["name"]} · LV.{p["level"]} · HP {hp}/{hp_max} · 持续构建中')
+
+
+# banner 是手绘静态稿（火焰三帧、点阵底纹），没有生成器，
+# 只能就地把里面的 LV.xx 盖成当前等级，别的像素一律不动。
+LEGACY_LEVEL_CARDS = ("banner-dark.svg", "banner-light.svg")
+
+
+def stamp_legacy_levels(level):
+    root = os.path.join(os.path.dirname(__file__), "..", "..", "profile")
+    changed = []
+    for name in LEGACY_LEVEL_CARDS:
+        path = os.path.join(root, name)
+        if not os.path.exists(path):
+            continue
+        with open(path, encoding="utf-8") as fh:
+            raw = fh.read()
+        new = re.sub(r"LV\.\d{2}", f"LV.{level:02d}", raw)
+        if new != raw:
+            with open(path, "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(new)
+            changed.append(name)
+    return changed
 
 
 def render_gear(data, t):
@@ -880,6 +961,9 @@ def main():
     if os.environ.get("SYNC_PLAYER", "1") != "0":
         prev, lv, cur, nxt, total = sync_player(data)
         print(f"player level {prev} -> {lv}   exp {cur}/{nxt}   xp {total}")
+        stamped = stamp_legacy_levels(lv)
+        if stamped:
+            print("stamped level into:", ", ".join(stamped))
     out = os.environ.get("OUT_DIR", ".build")
     os.makedirs(out, exist_ok=True)
     writers = {"stats": render_stats, "top-langs": render_langs,
@@ -888,7 +972,8 @@ def main():
                "quests": render_quests, "inventory": render_inventory,
                "gear": render_gear, "log": render_log, "comms": render_contact,
                "party": render_party, "trials": render_trials,
-               "contrib3d": render_contrib3d, "rhythm": render_rhythm}
+               "contrib3d": render_contrib3d, "rhythm": render_rhythm,
+               "footer": render_footer}
     pins = []
     for repo_name in PIN_REPOS:
         repo = gql(token, PIN_QUERY, {"owner": login, "name": repo_name}).get("repository")
