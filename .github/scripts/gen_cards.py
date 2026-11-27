@@ -212,53 +212,80 @@ def render_streak(data, t):
 
 WEEKDAY_CN = ["一", "二", "三", "四", "五", "六", "日"]
 
+# 五线谱：5 条线 + 4 个间位 = 9 个音高槽，上下各留半格余量
+STAFF_LINES = (84, 96, 108, 120, 132)
+STAFF_TOP, STAFF_BOT, STAFF_STEP = STAFF_LINES[0], STAFF_LINES[-1], 6
+
+
+def staff_note(x, y, level, t, delay=0.0):
+    """第 x 列第 y 高度的一个音符。level 用音符时值编码当天强度：
+    0=休止符，1=四分，2=八分，3=十六分——贡献越多，音符越密。"""
+    if level == 0:
+        return (f'<rect x="{x - 6}" y="{y + 3}" width="12" height="3" rx="1" '
+                f'fill="{t["ash"]}" opacity="0.55"/>')
+    up = y >= 108                      # 中线以下符干朝上，以上朝下（记谱惯例）
+    sx = x + 5.5 if up else x - 5.5
+    sy = y - 1 if up else y + 1
+    ty = sy - 30 if up else sy + 30
+    fill = t["flame"] if level >= 3 else t["ember"]
+    parts = [
+        f'<ellipse cx="{x}" cy="{y}" rx="6.5" ry="4.8" fill="{fill}" '
+        f'transform="rotate(-16 {x} {y})"/>',
+        f'<rect x="{sx - 1.2:.1f}" y="{min(sy, ty):.1f}" width="2.4" '
+        f'height="{abs(ty - sy):.1f}" fill="{t["ink"]}"/>',
+    ]
+    for i in range(level - 1):         # 符尾：八分 1 条，十六分 2 条
+        fy = ty + (11 * i if up else -11 * i)
+        d = (f"M {sx:.1f},{fy:.1f} q 13,2 11,10 q -1,5 -4,7" if up
+             else f"M {sx:.1f},{fy:.1f} q 13,-2 11,-10 q -1,-5 -4,-7")
+        parts.append(f'<path d="{d}" fill="none" stroke="{t["ink"]}" stroke-width="2.6" '
+                     f'stroke-linecap="round"/>')
+    return (f'<g class="cube" style="animation-delay:{delay:.2f}s">'
+            + "".join(parts) + "</g>")
+
 
 def render_rhythm(data, t):
-    """提交节律：左边按月趋势折线，右边周几分布——没有 WakaTime 时的替代方案。"""
+    """周内节律画成五线谱：7 个音符 = 最近 7 天，音高与音符时值 = 当天贡献量。
+    滚动 7 天窗口，所以每跑一次卡就往前推一天（cards.yml 每日一次）。"""
     cal = data["contributionsCollection"]["contributionCalendar"]
-    months, weekday, wd_days = {}, [0] * 7, [0] * 7
-    for w in cal["weeks"]:
-        for d in w["contributionDays"]:
-            year, month, day = d["date"].split("-")
-            key = year[2:] + "/" + month
-            months[key] = months.get(key, 0) + d["contributionCount"]
-            idx = dt.date(int(year), int(month), int(day)).weekday()
-            weekday[idx] += d["contributionCount"]
-            wd_days[idx] += 1
+    days = sorted((d for w in cal["weeks"] for d in w["contributionDays"]),
+                  key=lambda d: d["date"])
+    today = dt.date.today()
+    days = [d for d in days if dt.date.fromisoformat(d["date"]) <= today][-7:]
+    counts = [d["contributionCount"] for d in days]
+    peak = max(counts) or 1
+    total = sum(counts)
 
-    keys = sorted(months)[-12:]
-    vals = [months[k] for k in keys]
-    peak = max(vals) or 1
+    body = [tag(24, 30, "CONTRIBUTION RHYTHM", t, 13),
+            tag(736, 30, "ONE BAR = ONE WEEK · 7/4", t, 11, t["ash"], anchor="end")]
+    x0, x1 = 120, 736
+    for y in STAFF_LINES:
+        body.append(f'<rect x="{x0}" y="{y}" width="{x1 - x0}" height="2" '
+                    f'fill="{t["line"]}" opacity="0.9"/>')
+    for x in (x0, x1):                 # 首尾小节线
+        body.append(f'<rect x="{x - 1}" y="{STAFF_TOP - 2}" width="3" height="52" fill="{t["line"]}"/>')
+    body.append(tag(x0 - 8, STAFF_TOP + 5, str(peak), t, 10, t["ash"], anchor="end"))
+    body.append(tag(x0 - 8, STAFF_BOT + 5, "0", t, 10, t["ash"], anchor="end"))
 
-    body = [tag(24, 30, "CONTRIBUTION RHYTHM", t, 13)]
-    # 左：月度折线 + 面积
-    bx, by, bw, bh = 24, 60, 400, 96
-    pts = []
-    for i, v in enumerate(vals):
-        x = bx + (i / max(1, len(vals) - 1)) * bw
-        y = by + bh - (v / peak) * bh
-        pts.append((x, y))
-    area = " ".join(f"{x:.0f},{y:.0f}" for x, y in pts)
-    body.append(f'<polygon points="{bx},{by + bh} {area} {bx + bw},{by + bh}" fill="{t["ember"]}" opacity="0.16"/>')
-    body.append(f'<polyline points="{area}" fill="none" stroke="{t["ember"]}" stroke-width="2"/>')
-    for i, (x, y) in enumerate(pts):
-        body.append(f'<rect x="{x - 2:.0f}" y="{y - 2:.0f}" width="4" height="4" fill="{t["ember"]}"/>')
-        if i % 2 == 0:
-            body.append(tag(int(x) - 12, 176, keys[i], t, 9, t["ash"]))
-    body.append(tag(bx, 196, f"PEAK {peak} / MONTH", t, 10, t["ash"]))
+    step = (x1 - 40 - 160) / 6 if len(days) > 1 else 0
+    for i, d in enumerate(days):
+        x = 160 + i * step
+        c = d["contributionCount"]
+        ratio = c / peak
+        idx = round((ratio ** 0.5) * 8)          # 开方压扁长尾，低量也立得起来
+        y = STAFF_BOT - idx * STAFF_STEP
+        level = 0 if c == 0 else (1 if ratio < 0.45 else 2 if ratio < 0.75 else 3)
+        body.append(staff_note(x, y, level, t, i * 0.09))
+        is_today = i == len(days) - 1
+        body.append(tag(int(x), 158, str(c), t, 11, t["ink"] if c else t["ash"], anchor="middle"))
+        body.append(tag(int(x), 180, WEEKDAY_CN[dt.date.fromisoformat(d["date"]).weekday()],
+                        t, 12, t["ember"] if is_today else t["ash"], anchor="middle"))
 
-    # 右：周几柱状
-    wx, wy, ww = 470, 156, 30
-    body.append(tag(wx, 30, "BY WEEKDAY", t, 11, t["ash"]))
-    wmax = max(weekday) or 1
-    for i, v in enumerate(weekday):
-        h = (v / wmax) * 84
-        x = wx + i * 40
-        body.append(f'<rect x="{x}" y="{wy - h:.0f}" width="{ww}" height="{h:.0f}" fill="{t["cyan"]}" opacity="0.85"/>')
-        body.append(tag(x + 9, 176, WEEKDAY_CN[i], t, 10, t["ink"]))
-    body.append(tag(wx, 196, "TOTAL COMMITS", t, 10, t["ash"]))
-    return shell(760, 212, t, "".join(body), "提交节律",
-                 "过去一年的月度贡献折线与周几分布")
+    body.append(tag(24, 200, f"PEAK {peak} / DAY · 1 NOTE = 1 DAY", t, 10, t["ash"]))
+    body.append(tag(736, 200, f"Σ {total} COMMITS / 7D · AVG {total / 7:.1f}", t, 10,
+                    t["ash"], anchor="end"))
+    return shell(760, 212, t, "".join(body), "提交节律 · 五线谱",
+                 f"最近 7 天画成一行五线谱：{max(counts)} 次为最高音，音符越密贡献越多")
 
 
 def render_contrib3d(data, t):

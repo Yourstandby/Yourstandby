@@ -209,7 +209,7 @@
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/rhythm-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/rhythm-light.svg" alt="提交节律：过去一年的月度贡献折线与周几分布" width="760" />
+  <img src="https://raw.githubusercontent.com/Yourstandby/Yourstandby/main/profile/rhythm-light.svg" alt="提交节律五线谱：最近 7 天各占一个音符，音高越高、符尾越多代表当天提交越多" width="760" />
 </picture>
 </p>
 
