@@ -46,7 +46,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_LOGIN: ${{ github.repository_owner }}
-          README_TARGETS: README.zh-CN.md
+          # 中文 README 进中文动词，英文 README 进英文动词
+          README_TARGETS: README.zh-CN.md:zh,README.md:en
         run: python .github/scripts/update_activity.py
 
       - name: Commit README update

@@ -188,7 +188,14 @@
 <summary><strong>Recent activity</strong></summary>
 
 <!-- ACTIVITY:START -->
-See the [activity feed](https://github.com/Yourstandby?tab=overview&from=2025-12-01) on the profile, or the Chinese README for the auto-injected list.
+- 2026-11-27 · Pull request · merged · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-27 · Pull request · opened · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-27 · Fork · [ccch1mneyyy/dsh-Go](https://github.com/ccch1mneyyy/dsh-Go)
+- 2026-11-25 · pushed code · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-25 · created a repo · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-25 · starred · [xerj-org/xerj](https://github.com/xerj-org/xerj)
+- 2026-11-25 · starred · [torvalds/linux](https://github.com/torvalds/linux)
+- 2026-11-24 · pushed code · [Yourstandby/rust-anything](https://github.com/Yourstandby/rust-anything)
 <!-- ACTIVITY:END -->
 
 </details>

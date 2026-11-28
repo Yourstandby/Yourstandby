@@ -190,14 +190,14 @@
 <summary><strong>最近公开动态 / Recent activity</strong></summary>
 
 <!-- ACTIVITY:START -->
-- 2026-11-23 · 更新代码 · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
-- 2026-11-23 · Pull request · merged · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
-- 2026-11-23 · Pull request · opened · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
-- 2026-11-23 · Fork · [libracoder/kiri](https://github.com/libracoder/kiri)
-- 2026-11-23 · 关注项目 · [libracoder/kiri](https://github.com/libracoder/kiri)
-- 2026-11-23 · 关注项目 · [Yourstandby/opencode-skill-manager](https://github.com/Yourstandby/opencode-skill-manager)
-- 2026-11-22 · Fork · [marmottajr/habblaud](https://github.com/marmottajr/habblaud)
-- 2026-11-22 · 关注项目 · [marmottajr/habblaud](https://github.com/marmottajr/habblaud)
+- 2026-11-27 · Pull request · merged · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-27 · Pull request · opened · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-27 · Fork · [ccch1mneyyy/dsh-Go](https://github.com/ccch1mneyyy/dsh-Go)
+- 2026-11-25 · 更新代码 · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-25 · 新建仓库 · [Yourstandby/PiForge](https://github.com/Yourstandby/PiForge)
+- 2026-11-25 · 关注项目 · [xerj-org/xerj](https://github.com/xerj-org/xerj)
+- 2026-11-25 · 关注项目 · [torvalds/linux](https://github.com/torvalds/linux)
+- 2026-11-24 · 更新代码 · [Yourstandby/rust-anything](https://github.com/Yourstandby/rust-anything)
 <!-- ACTIVITY:END -->
 
 </details>

@@ -10,10 +10,21 @@ import urllib.request
 
 URL = "https://api.github.com/users/{login}/events/public?per_page=100"
 START, END = "<!-- ACTIVITY:START -->", "<!-- ACTIVITY:END -->"
-# 动态条目是中文标签，默认只写中文 README；用 README_TARGETS 指定注入目标
-TARGETS = [p.strip() for p in os.environ.get("README_TARGETS", "README.zh-CN.md").split(",") if p.strip()]
+# README_TARGETS 形如 "README.zh-CN.md:zh,README.md:en"：冒号后是这一份 README 用的语言
+DEFAULT_TARGETS = "README.zh-CN.md:zh"
 
-KIND = {
+
+def targets():
+    out = []
+    for item in os.environ.get("README_TARGETS", DEFAULT_TARGETS).split(","):
+        path, _, lang = item.strip().partition(":")
+        if not path:
+            continue
+        lang = lang.strip().lower()
+        out.append((path, lang if lang in ("zh", "en") else "zh"))
+    return out
+
+KIND_ZH = {
     "PushEvent": "更新代码",
     "PullRequestEvent": "Pull request",
     "PullRequestReviewEvent": "评审代码",
@@ -25,6 +36,22 @@ KIND = {
     "ReleaseEvent": "发布版本",
     "PublicEvent": "开源仓库",
 }
+
+# 英文 README 用同一批事件、换一套动词。Pull request / Issue / Fork 本来就是英文，两边一致。
+KIND_EN = {
+    "PushEvent": "pushed code",
+    "PullRequestEvent": "Pull request",
+    "PullRequestReviewEvent": "reviewed code",
+    "IssuesEvent": "Issue",
+    "IssueCommentEvent": "joined a discussion",
+    "WatchEvent": "starred",
+    "ForkEvent": "Fork",
+    "CreateEvent": "created a repo",
+    "ReleaseEvent": "released a version",
+    "PublicEvent": "open-sourced a repo",
+}
+
+KIND = {"zh": KIND_ZH, "en": KIND_EN}
 
 
 def opener():
@@ -43,8 +70,8 @@ def fetch(login, token):
         return json.load(resp)
 
 
-def describe(event):
-    kind = KIND.get(event["type"])
+def describe(event, lang="zh"):
+    kind = KIND[lang].get(event["type"])
     if not kind:
         return None
     detail = ""
@@ -52,7 +79,7 @@ def describe(event):
     if event["type"] == "PushEvent":
         n = len(payload.get("commits", []))
         if n:
-            detail = " · " + str(n) + " commits"
+            detail = " · " + str(n) + (" 次提交" if lang == "zh" else " commits")
     elif event["type"] == "PullRequestEvent":
         action = payload.get("action", "")
         if action == "closed" and payload.get("pull_request", {}).get("merged"):
@@ -62,13 +89,13 @@ def describe(event):
     return kind + detail
 
 
-def render(events, login):
+def render(events, login, lang="zh"):
     rows, seen = [], set()
     for event in events:
         repo = event.get("repo", {}).get("name", "")
         if event["type"] == "PushEvent" and repo.lower() == (login + "/" + login).lower():
             continue  # 自动统计提交不算动态
-        label = describe(event)
+        label = describe(event, lang)
         if not label:
             continue
         key = (label, repo)
@@ -81,7 +108,9 @@ def render(events, login):
                     " · [" + repo + "](https://github.com/" + repo + ")")
         if len(rows) >= 8:
             break
-    return "\n".join(rows) if rows else "- 暂无公开动态。"
+    if rows:
+        return "\n".join(rows)
+    return "- 暂无公开动态。" if lang == "zh" else "- No public activity yet."
 
 
 def main():
@@ -89,9 +118,10 @@ def main():
     login = os.environ.get("GH_LOGIN", "Yourstandby")
     if not token:
         sys.exit("missing GITHUB_TOKEN")
-    block = render(fetch(login, token), login)
+    events = fetch(login, token)
     touched = 0
-    for target in TARGETS:
+    for target, lang in targets():
+        block = render(events, login, lang)
         if not os.path.exists(target):
             print("skip (missing):", target)
             continue
