@@ -120,6 +120,12 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
     line-height: 1.2; margin: 0 0 var(--space-3); letter-spacing: 2px;
     color: var(--ink); text-shadow: 4px 4px 0 var(--ember-deep);
   }
+  /* 窄屏：STANDBY 在 Press Start 2P 下按 fs-2xl 排会顶出视口，跟着视口宽度收 */
+  @media (max-width: 767px) {
+    .hero__title { font-size: clamp(28px, 11.5vw, var(--fs-2xl)); letter-spacing: 1px; }
+    /* 打字机是 nowrap 的，英文标签比中文长一半：给格栅项 min-width:0，别让 min-content 撑宽整列 */
+    .hero > * { min-width: 0; }
+  }
   .hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-4); }
   .stack-list { display: grid; gap: var(--space-3); }
   .stack-row { display: grid; grid-template-columns: 1fr; gap: 8px; }

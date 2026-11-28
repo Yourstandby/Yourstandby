@@ -76,6 +76,8 @@ a:focus-visible, button:focus-visible {
   font-family: var(--font-display); font-size: var(--fs-lg); letter-spacing: 1px;
   margin: 0; color: var(--ink);
 }
+/* Press Start 2P 的 DASHBOARD 在 390px 下比容器还宽：窄屏降到 fs-md，编号铭牌仍占得住 */
+@media (max-width: 720px) { .sec__title { font-size: var(--fs-md); letter-spacing: 0; } }
 .sec__rule { flex: 1; height: 4px; background: repeating-linear-gradient(90deg, var(--line) 0 16px, transparent 16px 32px); }
 
 /* ---------- 卡片 ---------- */
@@ -95,6 +97,8 @@ a:focus-visible, button:focus-visible {
 /* 格子整数尺寸即可锐利；24×16 让 8~10 格在 span-5 面板里不顶破栅格 */
 .gauge { display: flex; gap: 4px; align-items: center; }
 .gauge i { width: 24px; height: 16px; background: var(--line); display: block; }
+/* 窄屏：技术栈的 14 格仪表（14×24=336）在 390px 下比容器宽，格子降到 16px（整数格，仍锐利） */
+@media (max-width: 720px) { .gauge i { width: 16px; height: 12px; } }
 /* 语义分工：火红=热/血，青=数据，绿=已通关，金=进行中 */
 .gauge i.on { background: var(--ember); }
 .gauge i.on.cyan { background: var(--cyan); }
@@ -182,9 +186,13 @@ html[data-lang='zh'] .bi-block[data-for='en'] { display: none; }
 
 .typed { font-family: var(--font-mono); font-size: var(--fs-md); letter-spacing: 1px; }
 .typed__mask { display: inline-block; overflow: hidden; white-space: nowrap; vertical-align: bottom;
-  animation: typing 4s steps(var(--typed-steps, 28), end) 200ms both; }
+  max-width: 100%; animation: typing 4s steps(var(--typed-steps, 28), end) 200ms both; }
 @keyframes typing { from { width: 0 } to { width: 100% } }
 
 @media (prefers-reduced-motion: reduce) {
   .typed__mask { animation: none; width: auto; }
+}
+/* 窄屏：英文标签比中文长一半，nowrap 会被裁掉尾巴 —— 放弃逐字动画，改成正常折行 */
+@media (max-width: 720px) {
+  .typed, .typed__mask { white-space: normal; animation: none; width: auto; }
 }

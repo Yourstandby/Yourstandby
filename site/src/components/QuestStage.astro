@@ -95,5 +95,9 @@ const trials = copy.a11y.trials;
   }
   .trk__dot.is-done { border-color: var(--gold); background: color-mix(in srgb, var(--env) 24%, var(--bg)); color: var(--ink); }
   .trk__dot.is-cur { border-color: var(--ember); color: var(--ink); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ember) 30%, transparent); }
-  @media (max-width: 640px) { .trk__dot { font-size: 12px; padding: 8px 4px; } }
+  /* 窄屏：五格等分会把英文地名（Seafloor / Deep forest）挤出行外，改成按 64px 自动折行 */
+  @media (max-width: 640px) {
+    .trk { grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); }
+    .trk__dot { font-size: 11px; padding: 6px 2px; }
+  }
 </style>

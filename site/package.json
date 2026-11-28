@@ -10,7 +10,8 @@
     "prebuild": "npm run sync:tokens",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "check:layout": "node scripts/check-layout.mjs"
   },
   "dependencies": {
     "astro": "^5.6.0"
