@@ -1146,6 +1146,20 @@ def main():
         else:
             print("skip pin (not found):", repo_name)
 
+    # design/cards.json 是发布的唯一真相：不在清单里的卡片不生成，
+    # 免得天天渲染一张没人引用的 SVG（validate_readme.py 会拒绝孤儿卡片）。
+    publish_path = os.path.join(os.path.dirname(__file__), "..", "..", "design", "cards.json")
+    if os.path.exists(publish_path):
+        with open(publish_path, encoding="utf-8") as fh:
+            publish = set(json.load(fh).get("publish", []))
+        dropped = sorted(set(writers) - publish)
+        unknown = sorted(publish - set(writers))
+        if dropped:
+            print("skip (not in design/cards.json):", ", ".join(dropped))
+        if unknown:
+            print("warn: cards.json lists unknown cards:", ", ".join(unknown))
+        writers = {k: v for k, v in writers.items() if k in publish}
+
     for scheme, t in PALETTE.items():
         for name, fn in writers.items():
             path = os.path.join(out, f"{name}{SUFFIX}-{scheme}.svg")

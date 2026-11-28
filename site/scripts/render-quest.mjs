@@ -81,7 +81,9 @@ console.log('GIF   ', (gifBuf.length / 1024).toFixed(0) + ' KB', gifPath);
 
 // 动画 WebP：无损（像素画无损压缩率极高）与有损各出一份对比
 const losslessPath = path.join(root, '..', 'profile', 'quest.webp');
-const lossyPath = path.join(root, '..', 'profile', 'quest-lossy.webp');
+// 有损版只是给人看体积对比的中间产物，写到 .tmp/（已 gitignore），不进发布目录
+const lossyPath = path.join(root, '..', '.tmp', 'quest-lossy.webp');
+fs.mkdirSync(path.dirname(lossyPath), { recursive: true });
 await sharp(gifBuf, { animated: true }).webp({ lossless: true, effort: 6 }).toFile(losslessPath);
 await sharp(gifBuf, { animated: true }).webp({ quality: 88, effort: 6 }).toFile(lossyPath);
 const ls = fs.statSync(losslessPath).size, ly = fs.statSync(lossyPath).size;

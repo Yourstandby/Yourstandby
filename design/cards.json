@@ -1,0 +1,23 @@
+{
+  "_comment": "发布清单：只有列在这里的卡片会被 gen_cards.py 生成并发布。README 没引用的卡片不要留在这里（validate_readme.py 会把孤儿卡片判为不合格）。",
+  "publish": [
+    "stats",
+    "top-langs",
+    "streak",
+    "contrib",
+    "contrib3d",
+    "rhythm",
+    "stack",
+    "player",
+    "quests",
+    "inventory",
+    "gear",
+    "log",
+    "comms",
+    "party",
+    "footer"
+  ],
+  "retired": {
+    "trials": "README 已改成跳转站点 #trials，卡片不再被引用，保留渲染器但停止发布"
+  }
+}
