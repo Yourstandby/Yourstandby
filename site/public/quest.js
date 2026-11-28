@@ -423,8 +423,11 @@
     paintTrack();
   }
 
-  /* 切语言时把 HUD 重写一遍（这里写的是纯文本，会顶掉页面里的双语 span） */
-  document.addEventListener('langchange', function () { syncHud(); });
+  /* 切语言时把 HUD 重写一遍（这里写的是纯文本，会顶掉页面里的双语 span）。
+     CI 的离屏渲染脚本只有一个极简的 document 桩，没有 addEventListener —— 判一下再绑。 */
+  if (typeof document.addEventListener === 'function') {
+    document.addEventListener('langchange', function () { syncHud(); });
+  }
 
   /* ---------- 渲染 ---------- */
   var state = { k: 0, t: 0, meeting: false, mt: 0 };
