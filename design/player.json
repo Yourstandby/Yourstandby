@@ -3,16 +3,16 @@
   "title": "AI RESEARCH × BUILDER",
   "level": 5,
   "exp": {
-    "current": 777,
+    "current": 811,
     "next": 2026
   },
   "xp": {
-    "total": 4202,
+    "total": 4236,
     "metrics": {
       "commits": {
-        "count": 486,
+        "count": 488,
         "weight": 2,
-        "xp": 972
+        "xp": 976
       },
       "pull_requests": {
         "count": 66,
@@ -35,9 +35,9 @@
         "xp": 160
       },
       "followers": {
-        "count": 11,
+        "count": 12,
         "weight": 30,
-        "xp": 330
+        "xp": 360
       }
     }
   },
