@@ -5,16 +5,47 @@ import '../styles/pixel.css';
 import { site } from '../data/site.ts';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Bi from '../components/Bi.astro';
+import { pair } from '../i18n/lang.ts';
+import { copy } from '../i18n/copy.ts';
 import { ClientRouter } from 'astro:transitions';
 
-interface Props { title?: string; description?: string }
-const { title = site.name, description = site.tagline } = Astro.props;
+interface Props { title?: string; description?: string; titleZh?: string; descriptionZh?: string }
+const meta = copy.meta;
+const {
+  title = site.name,
+  description = meta.description.en,
+  titleZh = title,
+  descriptionZh = meta.description.zh
+} = Astro.props;
 const full = title === site.name ? title : `${title} · ${site.name}`;
+const fullZh = titleZh === site.name ? titleZh : `${titleZh} · ${site.name}`;
+// 默认英文：<title>/description 直接写英文，中文版挂在 <html> 上由 lang.js 换
+const skip = pair('a11y.skip');
 ---
 <!doctype html>
-<html lang="zh-CN">
+<html
+  lang="en"
+  data-lang="en"
+  data-title-en={full}
+  data-title-zh={fullZh}
+  data-desc-en={description}
+  data-desc-zh={descriptionZh}
+>
   <head>
     <meta charset="utf-8" />
+    <!-- 在首屏绘制前把记住的语言放回去，否则选了中文的人会先看到一帧英文 -->
+    <script is:inline>
+      (function () {
+        try {
+          var v = localStorage.getItem('ys.lang');
+          if (v === 'zh' || v === 'en') {
+            document.documentElement.setAttribute('data-lang', v);
+            document.documentElement.setAttribute('lang', v === 'zh' ? 'zh-CN' : 'en');
+          }
+        } catch (e) { /* 隐私模式：用默认英文 */ }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{full}</title>
     <meta name="description" content={description} />
@@ -30,13 +61,14 @@ const full = title === site.name ? title : `${title} · ${site.name}`;
     <ClientRouter />
   </head>
   <body>
-    <a class="skip" href="#main">跳到主内容</a>
+    <a class="skip" href="#main"><Bi {...skip} /></a>
     <Nav />
     <main id="main">{Astro.slots.has('default') && <slot />}</main>
     <Footer />
     <!-- 直接静态托管，不走打包：2.5KB，确定性优先 -->
     <script is:inline defer src={`${base}/motion.js`}></script>
     <script is:inline defer src={`${base}/quest.js`}></script>
+    <script is:inline defer src={`${base}/lang.js`}></script>
     <style>
       .skip { position: absolute; left: -9999px; }
       .skip:focus { left: 8px; top: 8px; background: var(--ember); color: var(--bg); padding: 8px; z-index: 99; }

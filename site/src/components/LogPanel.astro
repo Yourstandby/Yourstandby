@@ -1,25 +1,27 @@
 ---
 import { getCollection } from 'astro:content';
 import { base } from '../data/site.ts';
+import Bi from './Bi.astro';
+import { copy } from '../i18n/copy.ts';
 
 const notes = (await getCollection('notes'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 ---
 <section class="panel span-7">
-  <div class="panel__head"><span class="panel__tag">BATTLE LOG</span></div>
+  <div class="panel__head"><span class="panel__tag"><Bi {...copy.panels.battleLog} /></span></div>
   <ul class="log">
     {notes.map((n) => (
       <li>
         <a href={`${base}/notes/${n.id}/`}>
           <span class="log__issue">ISSUE-{String(n.data.issue).padStart(2, '0')}</span>
           <span class="log__date">{n.data.date.toISOString().slice(0, 10)}</span>
-          <span class="log__title">{n.data.title}</span>
+          <span class="log__title"><Bi en={n.data.titleEn ?? n.data.title} zh={n.data.title} /></span>
         </a>
       </li>
     ))}
   </ul>
-  <p class="panel__foot"><a href={`${base}/notes/`}>ALL LOGS →</a></p>
+  <p class="panel__foot"><a href={`${base}/notes/`}><Bi {...copy.panels.allLogs} /></a></p>
 </section>
 
 <style>

@@ -13,6 +13,11 @@ import PartyPanel from '../components/PartyPanel.astro';
 import QuestStage from '../components/QuestStage.astro';
 import { site, base } from '../data/site.ts';
 import iconData from '../data/icons.generated.json';
+import Bi from '../components/Bi.astro';
+import { copy } from '../i18n/copy.ts';
+
+const stackLabel = (label: string) =>
+  (copy.stackLabels as Record<string, { en: string; zh: string }>)[label] ?? { en: label, zh: label };
 
 // 模板里不能写 TS 类型断言，统一在 frontmatter 定型
 const ICONS = iconData as Record<string, { title: string; hex: string; path: string }>;
@@ -21,12 +26,12 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
   <section class="hero wrap">
     <div class="hero__art"><Ember size={120} /></div>
     <div class="hero__text">
-      <p class="hero__kicker">BUILDING IN PUBLIC SINCE 2026</p>
+      <p class="hero__kicker"><Bi {...copy.hero.kicker} /></p>
       <h1 class="hero__title">YOUR<br />STANDBY</h1>
-      <p class="typed"><span class="typed__mask">{site.tagline}</span><span class="px-caret" aria-hidden="true"></span></p>
-      <p class="hero__bio">{site.bio}</p>
+      <p class="typed"><span class="typed__mask" style={'--typed-steps:' + copy.hero.tagline.en.length}><Bi {...copy.hero.tagline} /></span><span class="px-caret" aria-hidden="true"></span></p>
+      <p class="hero__bio"><Bi {...copy.hero.bio} /></p>
       <div class="hero__cta">
-        <a class="px-btn" href={`${base}/notes/`}>读手账</a>
+        <a class="px-btn" href={`${base}/notes/`}><Bi {...copy.hero.readLog} /></a>
         <a class="px-btn" href={site.github}>GitHub ↗</a>
       </div>
     </div>
@@ -34,7 +39,7 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
 
   <div class="wrap">
     <section class="sec" data-dither>
-      <SecHead no="01" title="DASHBOARD" id="dashboard" />
+      <SecHead no="01" title="DASHBOARD" titleZh={copy.sections.dashboard.zh} id="dashboard" />
       <div class="dash">
         <div class="slot slot--party"><PartyPanel /></div>
         <div class="slot slot--player"><PlayerPanel /></div>
@@ -50,16 +55,16 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
 
 
     <section class="sec" data-dither id="trials-section">
-      <SecHead no="02" title="TEN TRIALS" id="trials" />
+      <SecHead no="02" title="TEN TRIALS" titleZh={copy.sections.trials.zh} id="trials" />
       <QuestStage />
     </section>
 
     <section class="sec" data-dither>
-      <SecHead no="03" title="STACK" id="stack" />
+      <SecHead no="03" title="STACK" titleZh={copy.sections.stack.zh} id="stack" />
       <div class="stack-list">
         {site.stack.map((s) => (
           <div class="stack-row">
-            <span class="gauge__label">{s.label}</span>
+            <span class="gauge__label"><Bi {...stackLabel(s.label)} /></span>
             <Gauge value={s.pct} max={s.max} cells={14} tone="cyan" label={`${s.label} ${s.pct}/${s.max}`} />
             <span class="stack-tiles">
               {s.items.map((slug) => {
@@ -80,13 +85,13 @@ const ICONS = iconData as Record<string, { title: string; hex: string; path: str
     </section>
 
     <section class="sec" data-dither>
-      <SecHead no="04" title="PROJECTS" id="projects" />
+      <SecHead no="04" title="PROJECTS" titleZh={copy.sections.projects.zh} id="projects" />
       <div class="grid-2">
-        {site.projects.map((p) => (
+        {copy.projects.map((p) => (
           <a class="card" href={p.repo}>
             <span class="card__kicker">{p.tag}</span>
             <h3 class="card__title">{p.name}</h3>
-            <p class="card__desc">{p.desc}</p>
+            <p class="card__desc"><Bi {...p.desc} /></p>
           </a>
         ))}
       </div>

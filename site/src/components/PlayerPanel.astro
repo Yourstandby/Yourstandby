@@ -1,6 +1,14 @@
 ---
 import Gauge from './Gauge.astro';
 import player from '../data/player.generated.json';
+import Bi from './Bi.astro';
+import { copy } from '../i18n/copy.ts';
+
+const who = copy.party.mage;
+const avatar = { en: `${who.en} avatar`, zh: `${who.zh}头像` };
+// 属性名在数据里是英文缩写，中文展示时映射回两字标签
+const statLabel = (key: string) =>
+  (copy.statsLabels as Record<string, { en: string; zh: string }>)[key] ?? { en: key, zh: key };
 import sprites from '../data/sprites.generated.json';
 
 const { name, title, level, exp, stats } = player;
@@ -22,10 +30,19 @@ function cells(sprite: { rects: number[][] }) {
 }
 ---
 <section class="panel span-7">
-  <div class="panel__head"><span class="panel__tag">PLAYER</span></div>
+  <div class="panel__head"><span class="panel__tag"><Bi {...copy.panels.player} /></span></div>
   <div class="player">
     <div class="player__avatar">
-      <svg viewBox="0 0 128 128" width="128" height="128" shape-rendering="crispEdges" role="img" aria-label="鸡毛法师头像">
+      <svg
+        viewBox="0 0 128 128"
+        width="128"
+        height="128"
+        shape-rendering="crispEdges"
+        role="img"
+        aria-label={avatar.en}
+        data-a11y-en={avatar.en}
+        data-a11y-zh={avatar.zh}
+      >
         {cells(mage).map((c) => <rect x={c.x} y={c.y} width={c.w} height={c.h} fill={c.fill} />)}
       </svg>
     </div>
@@ -42,7 +59,7 @@ function cells(sprite: { rects: number[][] }) {
   <ul class="player__stats">
     {stats.map((s) => (
       <li>
-        <span class="player__key">{s.key}</span>
+        <span class="player__key"><Bi {...statLabel(s.key)} /></span>
         <Gauge value={s.value} max={s.max} cells={10} tone="cyan" label={`${s.key} ${s.value}/${s.max}`} />
         <b class="player__val">{s.value}</b>
       </li>

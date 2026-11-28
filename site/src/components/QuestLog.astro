@@ -1,25 +1,32 @@
 ---
 import Gauge from './Gauge.astro';
 import player from '../data/player.generated.json';
+import Bi from './Bi.astro';
+import { copy } from '../i18n/copy.ts';
+import { pair } from '../i18n/lang.ts';
 
 const quests = player.quests;
+// 任务名在数据里是中文，英文版按同名下标从 i18n/copy.ts 取
+const questName = (i: number) => copy.questNames[i] ?? { en: quests[i].name, zh: quests[i].name };
+const statusWord = (status: string) =>
+  (copy.status as Record<string, { en: string; zh: string }>)[status] ?? { en: status.toUpperCase(), zh: status.toUpperCase() };
 const cleared = quests.filter((q) => q.status === 'cleared').length;
 const MARK = { cleared: 'X', active: '>', locked: '-' } as const;
 const TONE = { cleared: 'lime', active: 'gold', locked: 'ember' } as const;
 ---
 <section class="panel span-5">
-  <div class="panel__head"><span class="panel__tag">QUEST LOG</span></div>
+  <div class="panel__head"><span class="panel__tag"><Bi {...copy.panels.questLog} /></span></div>
   <ul class="quests">
-    {quests.map((q) => (
+    {quests.map((q, i) => (
       <li class={`quests__row is-${q.status}`}>
         <span class={`quests__mark is-${q.status}`} aria-hidden="true">{MARK[q.status as keyof typeof MARK]}</span>
-        <span class="quests__name">{q.name}</span>
-        <Gauge value={q.progress} max={1} cells={8} tone={TONE[q.status as keyof typeof TONE]} label={`进度 ${Math.round(q.progress * 100)}%`} />
-        <span class="quests__state">{q.status.toUpperCase()}</span>
+        <span class="quests__name"><Bi {...questName(i)} /></span>
+        <Gauge value={q.progress} max={1} cells={8} tone={TONE[q.status as keyof typeof TONE]} label={pair('a11y.progress', { pct: Math.round(q.progress * 100) }).en} />
+        <span class="quests__state"><Bi {...statusWord(q.status)} /></span>
       </li>
     ))}
   </ul>
-  <p class="panel__foot">CLEARED {cleared}/{quests.length}</p>
+  <p class="panel__foot"><Bi {...pair('questLog.clearedCount', { n: cleared, m: quests.length })} /></p>
 </section>
 
 <style>

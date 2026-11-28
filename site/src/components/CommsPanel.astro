@@ -1,16 +1,18 @@
 ---
 import player from '../data/player.generated.json';
+import Bi from './Bi.astro';
+import { copy } from '../i18n/copy.ts';
 const links = player.links;
 ---
 <section class="panel span-5">
-  <div class="panel__head"><span class="panel__tag">COMMS</span></div>
+  <div class="panel__head"><span class="panel__tag"><Bi {...copy.panels.comms} /></span></div>
   <ul class="comms">
     {links.map((l) => (
       <li>
         <span class="comms__live" aria-hidden="true"></span>
         <span class="comms__label">{l.label}</span>
         <span class="comms__value">{l.value}</span>
-        <span class="comms__state">ONLINE</span>
+        <span class="comms__state"><Bi {...copy.panels.online} /></span>
       </li>
     ))}
   </ul>

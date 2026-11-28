@@ -157,9 +157,32 @@ a:focus-visible, button:focus-visible {
 }
 
 /* ---------- 打字机 ---------- */
+/* ---------- 双语 ----------
+   构建期就把 en / zh 两份文本都写进 DOM，靠 html[data-lang] 显隐：
+   默认英文不依赖脚本，切中文零延迟，也不会在换语言时重排成空行。
+   --typed-steps 由页面按英文标签长度给出，否则打字机会和字符对不齐。 */
+.bi { display: inline; }
+html[data-lang='en'] .bi > .bi-zh,
+html[data-lang='zh'] .bi > .bi-en { display: none; }
+/* 整块内容双语（手账正文）：块级隐藏，避免行内 span 把段落切碎 */
+html[data-lang='en'] .bi-block[data-for='zh'] { display: none; }
+html[data-lang='zh'] .bi-block[data-for='en'] { display: none; }
+
+/* 语言开关：像两颗像素按钮，选中的那颗翻成火红 */
+.lang-switch { display: flex; gap: 4px; }
+.lang-switch button {
+  font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 2px;
+  color: var(--ash); background: var(--surface); border: var(--px-border) solid var(--line);
+  padding: 6px 8px; line-height: 1; cursor: pointer;
+}
+.lang-switch button:hover { color: var(--ember); border-color: var(--ember); }
+.lang-switch button[aria-pressed='true'] {
+  color: var(--bg); background: var(--ember); border-color: var(--ember);
+}
+
 .typed { font-family: var(--font-mono); font-size: var(--fs-md); letter-spacing: 1px; }
 .typed__mask { display: inline-block; overflow: hidden; white-space: nowrap; vertical-align: bottom;
-  animation: typing 4s steps(28, end) 200ms both; }
+  animation: typing 4s steps(var(--typed-steps, 28), end) 200ms both; }
 @keyframes typing { from { width: 0 } to { width: 100% } }
 
 @media (prefers-reduced-motion: reduce) {

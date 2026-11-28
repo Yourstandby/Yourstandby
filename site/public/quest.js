@@ -11,6 +11,16 @@
   var BASE = canvas.getAttribute('data-base') || '';
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* 语言：HUD 文案（地名 / 两侧解法）由页面按构建期字典塞进 data-i18n，两种语言各一份。
+     读不到就用下面内联的中文兜底。 */
+  var I18N = {};
+  try { I18N = JSON.parse(canvas.getAttribute('data-i18n') || '{}') || {}; } catch (e) { I18N = {}; }
+  function lang() { return document.documentElement.getAttribute('data-lang') === 'zh' ? 'zh' : 'en'; }
+  function stageText(env) {
+    var table = I18N[lang()];
+    return (table && table[env]) || null;
+  }
+
   var C = {
     ink: '#1A1D23', ember: '#FF3B1F', deep: '#C21B00', flame: '#FFB000', spark: '#FFE9A8',
     cyan: '#2BD9FF', lime: '#4CE06A', ash: '#8A6A64', white: '#FFFFFF',
@@ -406,11 +416,15 @@
   function syncHud() {
     if (state.meeting) return;
     var st = STAGES[state.k];
+    var cs = stageText(st.env);
     if (elIdx) elIdx.textContent = ('0' + (state.k + 1)).slice(-2);
-    if (elPlace) elPlace.textContent = st.place;
-    if (elTech) elTech.textContent = st.l.tech + ' / ' + st.r.tech;
+    if (elPlace) elPlace.textContent = (cs && cs.place) || st.place;
+    if (elTech) elTech.textContent = cs ? cs.l + ' / ' + cs.r : st.l.tech + ' / ' + st.r.tech;
     paintTrack();
   }
+
+  /* 切语言时把 HUD 重写一遍（这里写的是纯文本，会顶掉页面里的双语 span） */
+  document.addEventListener('langchange', function () { syncHud(); });
 
   /* ---------- 渲染 ---------- */
   var state = { k: 0, t: 0, meeting: false, mt: 0 };

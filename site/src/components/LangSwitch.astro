@@ -1,0 +1,15 @@
+---
+import { pair } from '../i18n/lang.ts';
+
+const label = pair('a11y.langSwitch');
+---
+<div
+  class="lang-switch"
+  role="group"
+  aria-label={label.en}
+  data-a11y-en={label.en}
+  data-a11y-zh={label.zh}
+>
+  <button type="button" data-lang-set="en" aria-pressed="true" lang="en">EN</button>
+  <button type="button" data-lang-set="zh" aria-pressed="false" lang="zh-CN">中文</button>
+</div>

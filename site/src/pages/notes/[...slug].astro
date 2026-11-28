@@ -2,6 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import { base } from '../../data/site.ts';
+import Bi from '../../components/Bi.astro';
+import { copy } from '../../i18n/copy.ts';
 
 export async function getStaticPaths() {
   const notes = await getCollection('notes');
@@ -10,13 +12,31 @@ export async function getStaticPaths() {
 
 const { note } = Astro.props;
 const { Content } = await render(note);
+// 英文正文是同一 issue 的另一份 markdown：有就两块都渲染，没有就只出中文
+const enEntry = (await getCollection('notesEn')).find((n) => n.id === note.id);
+const EnBody = enEntry ? (await render(enEntry)).Content : null;
 ---
-<Base title={note.data.title} description={note.data.summary}>
+<Base
+  title={note.data.titleEn ?? note.data.title}
+  titleZh={note.data.title}
+  description={note.data.summaryEn ?? note.data.summary}
+  descriptionZh={note.data.summary}
+>
   <article class="wrap note">
     <p class="card__kicker">ISSUE {String(note.data.issue).padStart(2, '0')} · {note.data.date.toISOString().slice(0, 10)}</p>
-    <h1>{note.data.title}</h1>
-    <Content />
-    <p><a href={`${base}/notes/`}>← 返回手账</a></p>
+    <h1><Bi en={note.data.titleEn ?? note.data.title} zh={note.data.title} /></h1>
+    {EnBody ? (
+      <>
+        <div class="bi-block" data-for="en"><EnBody /></div>
+        <div class="bi-block" data-for="zh"><Content /></div>
+      </>
+    ) : (
+      <>
+        <Content />
+        <p class="card__desc"><Bi {...copy.notes.untranslated} /></p>
+      </>
+    )}
+    <p><a href={`${base}/notes/`}><Bi {...copy.notes.back} /></a></p>
   </article>
 </Base>
 

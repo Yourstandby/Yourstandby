@@ -1,7 +1,11 @@
 ---
 import player from '../data/player.generated.json';
+import Bi from './Bi.astro';
+import { copy } from '../i18n/copy.ts';
 
 const items = player.inventory;
+// 物品名（GAME PAD / SPRITE BRUSH…）本来就是英文，只有描述要换
+const itemDesc = (i: number) => copy.inventoryDesc[i] ?? { en: items[i].desc, zh: items[i].desc };
 
 // 16×16 像素图标：矩形列表，全部整数格，4x（64px）渲染仍然锐利
 const ICONS: Record<string, { fill: string; rects: number[][] }[]> = {
@@ -27,9 +31,9 @@ const ICONS: Record<string, { fill: string; rects: number[][] }[]> = {
 };
 ---
 <section class="panel span-5">
-  <div class="panel__head"><span class="panel__tag">INVENTORY</span></div>
+  <div class="panel__head"><span class="panel__tag"><Bi {...copy.panels.inventory} /></span></div>
   <ul class="inv">
-    {items.map((it) => (
+    {items.map((it, i) => (
       <li class="inv__cell">
         <svg class="inv__slot" viewBox="0 0 16 16" width="64" height="64" aria-hidden="true">
           {(ICONS[it.icon] ?? []).map((group) => (
@@ -39,7 +43,7 @@ const ICONS: Record<string, { fill: string; rects: number[][] }[]> = {
           ))}
         </svg>
         <span class="inv__name">{it.name}</span>
-        <span class="inv__desc">{it.desc}</span>
+        <span class="inv__desc"><Bi {...itemDesc(i)} /></span>
       </li>
     ))}
   </ul>

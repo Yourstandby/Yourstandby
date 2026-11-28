@@ -1,9 +1,9 @@
 ---
-interface Props { no: string; title: string; id?: string }
-const { no, title, id } = Astro.props;
+interface Props { no: string; title: string; titleZh?: string; id?: string }
+const { no, title, titleZh = title, id } = Astro.props;
 ---
 <div class="sec__head" id={id}>
   <span class="sec__no">{no}</span>
-  <h2 class="sec__title">{title}</h2>
+  <h2 class="sec__title"><span class="bi"><span class="bi-en">{title}</span><span class="bi-zh">{titleZh}</span></span></h2>
   <span class="sec__rule" aria-hidden="true"></span>
 </div>

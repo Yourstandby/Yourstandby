@@ -1,15 +1,26 @@
 ---
 import { site, base } from '../data/site.ts';
+import Bi from './Bi.astro';
+import LangSwitch from './LangSwitch.astro';
+import { copy } from '../i18n/copy.ts';
+import { pair } from '../i18n/lang.ts';
 const path = Astro.url.pathname;
+const navLabel = pair('a11y.mainNav');
 ---
 <header class="nav">
   <div class="wrap nav__inner">
     <a class="brand" href={base + '/'}>YOUR<span>STANDBY</span></a>
-    <nav class="nav__links" aria-label="主导航">
-      {site.nav.map((item) => (
-        <a href={`${base}${item.href}`} aria-current={path === `${base}${item.href}` ? 'page' : undefined}>{item.label}</a>
+    <nav
+      class="nav__links"
+      aria-label={navLabel.en}
+      data-a11y-en={navLabel.en}
+      data-a11y-zh={navLabel.zh}
+    >
+      {copy.nav.map((item) => (
+        <a href={`${base}${item.href}`} aria-current={path === `${base}${item.href}` ? 'page' : undefined}><Bi {...item.label} /></a>
       ))}
     </nav>
+    <LangSwitch />
     <span class="nav__stat"><span class="live"></span> LV.{String(site.level).padStart(2, '0')}</span>
   </div>
   <style>

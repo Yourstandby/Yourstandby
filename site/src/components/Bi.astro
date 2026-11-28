@@ -1,0 +1,16 @@
+---
+/**
+ * 一条文案的双语内联渲染：两份文本同时进 HTML，由 html[data-lang] 显隐。
+ * 这样默认（英文）不依赖任何脚本，切换也是零延迟；代价只是 DOM 多一份文本。
+ */
+interface Props {
+  en: string;
+  zh: string;
+  /** 渲染成什么标签，默认 span */
+  tag?: string;
+  class?: string;
+}
+const { en, zh, tag = 'span', class: cls } = Astro.props;
+const Tag = tag;
+---
+<Tag class:list={['bi', cls]}><span class="bi-en">{en}</span><span class="bi-zh">{zh}</span></Tag>

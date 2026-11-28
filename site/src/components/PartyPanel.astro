@@ -1,6 +1,12 @@
 ---
 import sprites from '../data/sprites.generated.json';
 import player from '../data/player.generated.json';
+import Bi from './Bi.astro';
+import { copy } from '../i18n/copy.ts';
+
+// 站位名在数据里是中文（鸡毛法师 / 小白战士），英文版按 id 取
+const heroName = (id: string) =>
+  (copy.party as Record<string, { en: string; zh: string }>)[id] ?? { en: id, zh: id };
 
 const U = 4; // 64px 美术 × 4 = 256px，整数倍不糊
 const palette = sprites.palette as Record<string, string>;
@@ -24,15 +30,25 @@ function cells(sprite: { rects: number[][] }) {
 }
 ---
 <section class="panel span-12">
-  <div class="panel__head"><span class="panel__tag">PARTY</span></div>
+  <div class="panel__head"><span class="panel__tag"><Bi {...copy.panels.party} /></span></div>
   <div class="party">
     {[mage, knight].map((h, i) => (
       <figure class="party__slot">
-        <svg class="party__art" viewBox="0 0 256 256" width="256" height="256" shape-rendering="crispEdges" role="img" aria-label={h.name}>
+        <svg
+          class="party__art"
+          viewBox="0 0 256 256"
+          width="256"
+          height="256"
+          shape-rendering="crispEdges"
+          role="img"
+          aria-label={heroName(h.id).en}
+          data-a11y-en={heroName(h.id).en}
+          data-a11y-zh={heroName(h.id).zh}
+        >
           {cells(h).map((c) => <rect x={c.x} y={c.y} width={c.w} height={c.h} fill={c.fill} />)}
         </svg>
         <figcaption>
-          <span class="party__name">{h.name}</span>
+          <span class="party__name"><Bi {...heroName(h.id)} /></span>
           <span class="party__role">{h.role}{lvTag(h.id)}</span>
         </figcaption>
         <ul class="party__stats">
