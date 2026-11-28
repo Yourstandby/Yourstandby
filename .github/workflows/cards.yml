@@ -36,11 +36,23 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Generate cards into build dir
+      - name: Generate cards into build dir (zh, default)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_LOGIN: ${{ github.repository_owner }}
           OUT_DIR: .build
+          CARDS_LANG: zh
+          SYNC_PLAYER: '1'
+        run: python .github/scripts/gen_cards.py
+
+      # 英文版同一套渲染，只换文案：文件名带 -en 后缀，跟中文版并存
+      - name: Generate cards into build dir (en)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_LOGIN: ${{ github.repository_owner }}
+          OUT_DIR: .build
+          CARDS_LANG: en
+          SYNC_PLAYER: '0'
         run: python .github/scripts/gen_cards.py
 
       - name: Validate every card

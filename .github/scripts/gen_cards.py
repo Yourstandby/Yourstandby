@@ -12,6 +12,63 @@ import urllib.request
 MONO = "ui-monospace, SFMono-Regular, Consolas, Menlo, monospace"
 RM = "@media (prefers-reduced-motion: reduce){*{animation:none !important}}"
 
+# ---- 语言：默认中文（卡面不变），CARDS_LANG=en 出英文版 -------------------
+# 英文版文件名带 -en 后缀：stats-dark.svg / stats-en-dark.svg，两套并存在 profile/。
+LANG = os.environ.get("CARDS_LANG", "zh").strip().lower()
+if LANG not in ("zh", "en"):
+    LANG = "zh"
+SUFFIX = "" if LANG == "zh" else "-" + LANG
+
+# design/*.json 与 weekly/*.md 里手写的中文词条 → 英文。
+# 只列静态词条；带数字的说明文案走 T()。
+EN_TERMS = {
+    "个人像素主题主页": "Personal pixel-art homepage",
+    "像素资产库：色板 / 网格 / 精灵": "Pixel asset kit: palette / grid / sprites",
+    "用 Rust 或 Go 写一个顺手的 CLI": "A Rust or Go CLI I actually reach for",
+    "把可视化项目做成可分享的作品": "Make the visualization project shareable",
+    "把一篇论文的想法做成能跑的原型": "Turn a paper's idea into a running prototype",
+    "玩通了会做笔记": "Takes notes when a game clicks",
+    "16×16 精灵图": "16×16 sprite work",
+    "拆开看看原理": "Takes it apart to see why",
+    # 卡片格子窄，英文比中文宽：这里用短版（站内用的是完整句子）
+    "一杯手冲的时间": "One pour-over long",
+    "鸡毛法师": "Feather Mage",
+    "小白战士": "Snow Knight",
+    "雪原": "Snowfield",
+    "原始森林": "Deep forest",
+    "沙漠": "Desert",
+    "石坑": "Quarry",
+    "水底": "Seafloor",
+    "把主页做成像素工作台": "Putting the homepage on a pixel workbench",
+    # PiForge 的仓库简介本身就是中文（GitHub 上的 description），项目卡要跟着换
+    "把 Pi Coding Agent 装进一张安静的三栏工作台：本地优先、多会话、缓存感知。":
+        "Puts the Pi Coding Agent inside one quiet three-column workbench: "
+        "local-first, multi-session, cache-aware.",
+    "把 Pi Coding Agent 装进一张安静的三栏工作台": "Put Pi Coding Agent in one quiet workbench",
+    "已通关": "cleared",
+    "进行中": "in progress",
+    "未解锁": "locked",
+}
+
+
+def T(zh, en):
+    """卡面上的文案：默认中文，CARDS_LANG=en 时出英文。"""
+    return zh if LANG == "zh" else en
+
+
+def localize(svg):
+    """英文卡：把渲染结果里的中文词条按 EN_TERMS 换掉。
+    命中才替换；没覆盖到的中文会打印出来，方便补词表。"""
+    if LANG == "zh":
+        return svg
+    for zh, en in EN_TERMS.items():
+        if zh in svg:
+            svg = svg.replace(zh, en)
+    left = sorted(set(re.findall(r"[\u4e00-\u9fff]+", svg)))
+    if left:
+        print("  ! untouched Chinese:", " ".join(left[:8]))
+    return svg
+
 PALETTE = {
     "dark": dict(bg="#16090A", surface="#22100F", line="#3D1B16", ink="#FFE9D6",
                  dim="#FFB08A", ash="#8A6A64", ember="#FF3B1F", deep="#C21B00",
@@ -155,8 +212,10 @@ def render_stats(data, t):
         body.append(f'<text x="{cx}" y="{cy + 34}" font-family="{MONO}" font-size="30" '
                     f'font-weight="700" letter-spacing="1" fill="{t["ink"]}">{value}</text>')
         body.append(gauge(cx, cy + 44, ratio, t, cells=7, cw=16, ch=8, gap=6, color="cyan"))
-    return shell(476, 200, t, "".join(body), "GitHub 概况",
-                 f"仓库 {repos['totalCount']} 个、Stars {stars}、提交 {contrib['totalCommitContributions']} 次、语言 {len(langs)} 种")
+    return shell(476, 200, t, "".join(body), T("GitHub 概况", "GitHub snapshot"),
+                 T(f"仓库 {repos['totalCount']} 个、Stars {stars}、提交 {contrib['totalCommitContributions']} 次、语言 {len(langs)} 种",
+                   f"{repos['totalCount']} repos · {stars} stars · "
+                   f"{contrib['totalCommitContributions']} commits · {len(langs)} languages"))
 
 
 def render_langs(data, t):
@@ -173,7 +232,7 @@ def render_langs(data, t):
         body.append(tag(20, y, name.upper()[:13], t, 13, t["ink"]))
         body.append(gauge(158, y - 10, ratio, t, cells=12, cw=13, ch=9, gap=4, color="cyan"))
         body.append(tag(412, y, f"{ratio * 100:.0f}%", t, 12))
-    return shell(476, 208, t, "".join(body), "常用语言",
+    return shell(476, 208, t, "".join(body), T("常用语言", "Top languages"),
                  "、".join(n for n, _ in top))
 
 
@@ -198,7 +257,8 @@ def render_streak(data, t):
     now, best, total = streak_stats(data["contributionsCollection"]["contributionCalendar"])
     body = [tag(24, 34, "STREAK", t, 13)]
     for i, (name, value, unit) in enumerate(
-            [("CURRENT", now, "天"), ("LONGEST", best, "天"), ("THIS YEAR", total, "次")]):
+            [("CURRENT", now, T("天", "days")), ("LONGEST", best, T("天", "days")),
+             ("THIS YEAR", total, T("次", "commits"))]):
         x = 24 + i * 226
         body.append(tag(x, 64, name, t, 12))
         tone = [t["lime"], t["gold"], t["cyan"]][i]
@@ -206,11 +266,13 @@ def render_streak(data, t):
                     f'font-weight="700" fill="{tone}">{value}'
                     f'<tspan font-size="16" fill="{t["ash"]}"> {unit}</tspan></text>')
     body.append(tag(24, 138, "KEEP THE FIRE ALIVE", t, 12, t["dim"]))
-    return shell(720, 160, t, "".join(body), "连续提交",
-                 f"当前连续 {now} 天，最长 {best} 天，今年共 {total} 次")
+    return shell(720, 160, t, "".join(body), T("连续提交", "Commit streak"),
+                 T(f"当前连续 {now} 天，最长 {best} 天，今年共 {total} 次",
+                   f"{now} days current · {best} days longest · {total} commits this year"))
 
 
-WEEKDAY_CN = ["一", "二", "三", "四", "五", "六", "日"]
+WEEKDAY_CN = ["一", "二", "三", "四", "五", "六", "日"] if LANG == "zh" else \
+    ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
 
 # 五线谱：5 条线 + 4 个间位 = 9 个音高槽，上下各留半格余量
 STAFF_LINES = (84, 96, 108, 120, 132)
@@ -284,8 +346,10 @@ def render_rhythm(data, t):
     body.append(tag(24, 200, f"PEAK {peak} / DAY · 1 NOTE = 1 DAY", t, 10, t["ash"]))
     body.append(tag(736, 200, f"Σ {total} COMMITS / 7D · AVG {total / 7:.1f}", t, 10,
                     t["ash"], anchor="end"))
-    return shell(760, 212, t, "".join(body), "提交节律 · 五线谱",
-                 f"最近 7 天画成一行五线谱：{max(counts)} 次为最高音，音符越密贡献越多")
+    return shell(760, 212, t, "".join(body), T("提交节律 · 五线谱", "Commit rhythm · staff"),
+                 T(f"最近 7 天画成一行五线谱：{max(counts)} 次为最高音，音符越密贡献越多",
+                   f"The last 7 days as one line of staff: {max(counts)} commits is the top note; "
+                   "the more flags, the more commits"))
 
 
 def render_contrib3d(data, t):
@@ -395,8 +459,9 @@ def render_contrib3d(data, t):
                     f'fill="{t["spark"]}" class="lip" style="animation-delay:{lamp:.2f}s"/>')
         body.append("</g>")
     body.append(tag(24, 300, f"{len(weeks)} WEEKS · {len(days)} DAYS · {sum(c['cnt'] > 0 for c in cells)} ACTIVE", t, 11, t["ash"]))
-    return shell(760, 318, t, "".join(body), "3D 贡献日历",
-                 "等距投影的每日贡献立方体，高度代表当日提交数")
+    return shell(760, 318, t, "".join(body), T("3D 贡献日历", "3D contribution city"),
+                 T("等距投影的每日贡献立方体，高度代表当日提交数",
+                   "Isometric cubes for each day, height = that day's commits"))
 
 
 def render_contrib(data, t):
@@ -415,7 +480,9 @@ def render_contrib(data, t):
                         f'width="{cell}" height="{cell}" fill="{ramp[lvl]}"/>')
     w = 16 + len(weeks) * (cell + gap) + 16
     return shell(w, 24 + 7 * (cell + gap) + 20, t, "".join(body),
-                 "贡献热力图", "过去一年的每日提交热力图，地牢配色")
+                 T("贡献热力图", "Contribution heatmap"),
+                 T("过去一年的每日提交热力图，地牢配色",
+                   "Daily commit heatmap for the past year, dungeon palette"))
 
 
 
@@ -483,8 +550,9 @@ def render_trials(_data, t):
         body.append(f'<rect x="{x}" y="58" width="16" height="16" fill="{st["color"]}" '
                     f'stroke="{t["line"]}" stroke-width="2"/>')
         body.append(tag(x - 4, 92, st["label"], t, 9, t["ash"]))
-    return shell(760, 118, t, "".join(body), "五关赛程",
-                 "同一场景两侧并行：法师用法术、战士用剑盾")
+    return shell(760, 118, t, "".join(body), T("五关赛程", "Trial route"),
+                 T("同一场景两侧并行：法师用法术、战士用剑盾",
+                   "Same scene on both sides: the mage casts, the knight uses sword and shield"))
 
 
 def party_role(entry, player):
@@ -545,8 +613,9 @@ def render_party(_data, t):
                 body.append(gauge(458, y - 9, val / 10, t, cells=6, cw=10, ch=8, gap=4, color=tone))
                 body.append(f'<text x="548" y="{y}" font-family="{MONO}" font-size="11" '
                             f'fill="{t["ink"]}">{val}</text>')
-    return shell(760, 52 + size + 60, t, "".join(body), "队伍",
-                 f'{mage["name"]} 与 {knight["name"]} 的像素立绘')
+    return shell(760, 52 + size + 60, t, "".join(body), T("队伍", "Party"),
+                 T(f'{mage["name"]} 与 {knight["name"]} 的像素立绘',
+                   f'{mage["name"]} and {knight["name"]} pixel portraits'))
 
 
 def player_path():
@@ -742,7 +811,7 @@ def render_player(_data, t):
         body.append(tag(452, y, st["key"], t, 12, t["ink"]))
         body.append(gauge(544, y - 10, st["value"] / st["max"], t, cells=10, cw=12, ch=9, gap=4, color="cyan"))
         body.append(tag(714, y, f'{st["value"]}', t, 12, t["dim"]))
-    return shell(760, 176, t, "".join(body), "角色存档",
+    return shell(760, 176, t, "".join(body), T("角色存档", "Player"),
                  f'{p["name"]} · {p["title"]} · LV.{p["level"]}')
 
 
@@ -771,8 +840,8 @@ def render_quests(_data, t):
     body.append(tag(20, 62 + len(quests) * 36 + 6,
                     f"CLEARED {cleared}/{len(quests)}", t, 12, t["ash"]))
     height = 62 + len(quests) * 36 + 20
-    return shell(760, height, t, "".join(body), "任务日志",
-                 f'已通关 {cleared}/{len(quests)}')
+    return shell(760, height, t, "".join(body), T("任务日志", "Quest log"),
+                 T(f'已通关 {cleared}/{len(quests)}', f'{cleared}/{len(quests)} cleared'))
 
 
 def render_inventory(_data, t):
@@ -788,7 +857,7 @@ def render_inventory(_data, t):
         body.append(draw_icon(it["icon"], t, x + 26, 64))
         body.append(tag(x + 20, 136, it["name"], t, 12, t["ink"]))
         body.append(tag(x + 20, 158, it["desc"], t, 11, t["ash"]))
-    return shell(760, 196, t, "".join(body), "物品栏",
+    return shell(760, 196, t, "".join(body), T("物品栏", "Inventory"),
                  "、".join(it["name"] for it in items))
 
 
@@ -821,8 +890,9 @@ def render_footer(_data, t):
     for i, tone in enumerate(("ember", "deep", "flame", "deep")):
         body.append(f'<rect x="{i * 24}" y="78" width="16" height="8" '
                     f'fill="{t[tone]}" class="cube"/>')
-    return shell(1200, 96, t, "".join(body), "状态栏",
-                 f'{p["name"]} · LV.{p["level"]} · HP {hp}/{hp_max} · 持续构建中')
+    return shell(1200, 96, t, "".join(body), T("状态栏", "Status bar"),
+                 T(f'{p["name"]} · LV.{p["level"]} · HP {hp}/{hp_max} · 持续构建中',
+                   f'{p["name"]} · LV.{p["level"]} · HP {hp}/{hp_max} · still building'))
 
 
 # banner 是手绘静态稿（火焰三帧、点阵底纹），没有生成器，
@@ -865,7 +935,7 @@ def render_gear(data, t):
         body.append(tag(x + 26, 30, label, t, 11, t["ash"]))
         body.append(f'<text x="{x + 12}" y="56" font-family="{MONO}" font-size="22" '
                     f'font-weight="700" fill="{t["cyan"]}">{value}</text>')
-    return shell(760, 76, t, "".join(body), "状态栏",
+    return shell(760, 76, t, "".join(body), T("状态栏", "Status bar"),
                  "、".join(f"{l} {v}" for l, v in cells))
 
 
@@ -893,8 +963,8 @@ def render_log(_data, t):
         body.append(tag(112, y, r["date"], t, 12, t["ash"]))
         body.append(tag(216, y, r["title"][:24], t, 13, t["ink"]))
     height = 62 + max(len(rows), 1) * 34 + 14
-    return shell(760, height, t, "".join(body), "战报日志",
-                 f"最近 {len(rows)} 期手账")
+    return shell(760, height, t, "".join(body), T("战报日志", "Battle log"),
+                 T(f"最近 {len(rows)} 期手账", f"Latest {len(rows)} issues"))
 
 
 def render_contact(_data, t):
@@ -907,7 +977,7 @@ def render_contact(_data, t):
         body.append(tag(160, y, link["value"], t, 13, t["ink"]))
         body.append(tag(640, y, "ONLINE", t, 11, t["dim"]))
     height = 64 + len(p["links"]) * 34 + 12
-    return shell(760, height, t, "".join(body), "通讯面板",
+    return shell(760, height, t, "".join(body), T("通讯面板", "Comms"),
                  "、".join(link["label"] for link in p["links"]))
 
 
@@ -995,7 +1065,7 @@ def render_stack(_data, t):
         for j, slug in enumerate(it.get("items", [])):
             body.append(tech_tile(slug, icons, 372 + j * 32, y - 18, size=26))
     height = 72 + len(items) * 44 + 8
-    return shell(760, height, t, "".join(body), "技术栈",
+    return shell(760, height, t, "".join(body), T("技术栈", "Stack"),
                  "、".join(icons[s]["title"] for it in items for s in it.get("items", []) if s in icons))
 
 
@@ -1020,7 +1090,8 @@ def render_pin(repo, t):
     body.append(f'<text x="32" y="159" font-family="{MONO}" font-size="12" letter-spacing="2" '
                 f'fill="{t["ash"]}">{esc(lang).upper()}</text>')
     body.append(f'<rect x="16" y="170" width="{min(stars, 20) * 8 or 0}" height="4" fill="{t["ember"]}"/>')
-    return shell(400, 184, t, "".join(body), f"{repo['name']} 项目卡片", desc[:120])
+    return shell(400, 184, t, "".join(body),
+                 T(f"{repo['name']} 项目卡片", f"{repo['name']} project card"), desc[:120])
 
 
 def main():
@@ -1059,14 +1130,14 @@ def main():
 
     for scheme, t in PALETTE.items():
         for name, fn in writers.items():
-            path = os.path.join(out, f"{name}-{scheme}.svg")
+            path = os.path.join(out, f"{name}{SUFFIX}-{scheme}.svg")
             with open(path, "w", encoding="utf-8", newline="\n") as fh:
-                fh.write(fn(data, t))
+                fh.write(localize(fn(data, t)))
             print("wrote", path)
         for repo in pins:
-            path = os.path.join(out, f"pin-{repo['name'].lower()}-{scheme}.svg")
+            path = os.path.join(out, f"pin-{repo['name'].lower()}{SUFFIX}-{scheme}.svg")
             with open(path, "w", encoding="utf-8", newline="\n") as fh:
-                fh.write(render_pin(repo, t))
+                fh.write(localize(render_pin(repo, t)))
             print("wrote", path)
 
 

@@ -10,6 +10,8 @@ import urllib.request
 
 URL = "https://api.github.com/users/{login}/events/public?per_page=100"
 START, END = "<!-- ACTIVITY:START -->", "<!-- ACTIVITY:END -->"
+# 动态条目是中文标签，默认只写中文 README；用 README_TARGETS 指定注入目标
+TARGETS = [p.strip() for p in os.environ.get("README_TARGETS", "README.zh-CN.md").split(",") if p.strip()]
 
 KIND = {
     "PushEvent": "更新代码",
@@ -88,15 +90,25 @@ def main():
     if not token:
         sys.exit("missing GITHUB_TOKEN")
     block = render(fetch(login, token), login)
-    readme = open("README.md", encoding="utf-8").read()
-    if START not in readme or END not in readme:
-        sys.exit("activity markers missing in README.md")
-    new = re.sub(re.escape(START) + r".*?" + re.escape(END),
-                 START + "\n" + block + "\n" + END, readme, flags=re.S)
-    if new == readme:
-        print("activity unchanged")
-        return
-    open("README.md", "w", encoding="utf-8", newline="\n").write(new)
+    touched = 0
+    for target in TARGETS:
+        if not os.path.exists(target):
+            print("skip (missing):", target)
+            continue
+        readme = open(target, encoding="utf-8").read()
+        if START not in readme or END not in readme:
+            print("skip (no markers):", target)
+            continue
+        new = re.sub(re.escape(START) + r".*?" + re.escape(END),
+                     START + "\n" + block + "\n" + END, readme, flags=re.S)
+        if new == readme:
+            print(target, "unchanged")
+            continue
+        open(target, "w", encoding="utf-8", newline="\n").write(new)
+        touched += 1
+        print("activity ->", target)
+    if not touched:
+        print("nothing to update")
     print("activity updated:", block.count(chr(10)) + 1, "rows")
 
 

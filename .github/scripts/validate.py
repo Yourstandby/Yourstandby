@@ -19,7 +19,12 @@ def main():
     files = sorted(glob.glob(os.path.join(root, "*.svg")))
     if not files:
         fail("no svg in " + root)
-    names = {os.path.basename(f).rsplit("-", 1)[0] for f in files}
+    def stem(f):
+        # 英文版是 stats-en-dark.svg：先去掉配色，再去掉 -en 后缀
+        base = os.path.basename(f).rsplit("-", 1)[0]
+        return base[:-3] if base.endswith("-en") else base
+
+    names = {stem(f) for f in files}
     for need in REQUIRED:
         if need not in names:
             fail("missing card: " + need)
