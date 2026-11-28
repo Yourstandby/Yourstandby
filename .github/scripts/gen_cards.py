@@ -22,16 +22,17 @@ SUFFIX = "" if LANG == "zh" else "-" + LANG
 # design/*.json 与 weekly/*.md 里手写的中文词条 → 英文。
 # 只列静态词条；带数字的说明文案走 T()。
 EN_TERMS = {
+    # 任务日志一行只有 384px（约 39 个半角字符）
     "个人像素主题主页": "Personal pixel-art homepage",
-    "像素资产库：色板 / 网格 / 精灵": "Pixel asset kit: palette / grid / sprites",
+    "像素资产库：色板 / 网格 / 精灵": "Pixel kit: palette, grid, sprites",
     "用 Rust 或 Go 写一个顺手的 CLI": "A Rust or Go CLI I actually reach for",
-    "把可视化项目做成可分享的作品": "Make the visualization project shareable",
-    "把一篇论文的想法做成能跑的原型": "Turn a paper's idea into a running prototype",
-    "玩通了会做笔记": "Takes notes when a game clicks",
-    "16×16 精灵图": "16×16 sprite work",
-    "拆开看看原理": "Takes it apart to see why",
-    # 卡片格子窄，英文比中文宽：这里用短版（站内用的是完整句子）
-    "一杯手冲的时间": "One pour-over long",
+    "把可视化项目做成可分享的作品": "Shareable visualization project",
+    "把一篇论文的想法做成能跑的原型": "Paper idea → running prototype",
+    # 物品栏格子只有 132px（约 15 个半角字符），英文用短版；站内文案比这里长
+    "玩通了会做笔记": "Notes when done",
+    "16×16 精灵图": "16×16 sprites",
+    "拆开看看原理": "Takes it apart",
+    "一杯手冲的时间": "One pour-over",
     "鸡毛法师": "Feather Mage",
     "小白战士": "Snow Knight",
     "雪原": "Snowfield",
@@ -49,6 +50,22 @@ EN_TERMS = {
     "进行中": "in progress",
     "未解锁": "locked",
 }
+
+
+def fit(text, max_px, size, track=2):
+    """把一行字裁进 max_px（等宽像素字的近似宽度）。
+    卡片格子是硬边界，英文比中文宽，宁可截断收尾也不让它压到隔壁格。"""
+    def width(s):
+        return sum((size if "\u4e00" <= ch <= "\u9fff" else size * 0.6) + track for ch in s)
+
+    if width(text) <= max_px:
+        return text
+    out = ""
+    for ch in text:
+        if width(out + ch) + width("...") > max_px:
+            break
+        out += ch
+    return out.rstrip(" ,·-/") + "..."
 
 
 def T(zh, en):
@@ -830,7 +847,8 @@ def render_quests(_data, t):
                     f'stroke="{color}" stroke-width="2"/>')
         body.append(f'<text x="24" y="{y - 4}" font-family="{MONO}" font-size="12" '
                     f'fill="{color}">{QUEST_MARK[q["status"]]}</text>')
-        body.append(tag(48, y, q["name"], t, 13, t["ink"] if q["status"] != "locked" else t["ash"]))
+        body.append(tag(48, y, fit(q["name"], 384, 13), t, 13,
+                        t["ink"] if q["status"] != "locked" else t["ash"]))
         # 条的右边界 = 440 + 10*12 + 9*4 = 596，状态文字从 620 起
         tone = t["lime"] if q["status"] == "cleared" else (t["gold"] if q["status"] == "active" else None)
         body.append(gauge(440, y - 11, q["progress"], t, cells=10, cw=12, ch=9, gap=4, color=tone))
@@ -855,8 +873,8 @@ def render_inventory(_data, t):
         body.append(f'<rect x="{x + 20}" y="60" width="52" height="52" fill="{t["bg"]}" '
                     f'stroke="{t["line"]}" stroke-width="2"/>')
         body.append(draw_icon(it["icon"], t, x + 26, 64))
-        body.append(tag(x + 20, 136, it["name"], t, 12, t["ink"]))
-        body.append(tag(x + 20, 158, it["desc"], t, 11, t["ash"]))
+        body.append(tag(x + 20, 136, fit(it["name"], 132, 12), t, 12, t["ink"]))
+        body.append(tag(x + 20, 158, fit(it["desc"], 132, 11), t, 11, t["ash"]))
     return shell(760, 196, t, "".join(body), T("物品栏", "Inventory"),
                  "、".join(it["name"] for it in items))
 
