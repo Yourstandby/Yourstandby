@@ -61,6 +61,10 @@ jobs:
       - name: Publish atomically
         run: bash .github/scripts/publish.sh .build profile
 
+      # 发布后才有的东西：孤儿卡片、README 引用不到的卡片、总量预算
+      - name: Lint README against published cards
+        run: python .github/scripts/validate_readme.py
+
       - name: Commit changed cards
         run: |
           git config user.name  "github-actions[bot]"

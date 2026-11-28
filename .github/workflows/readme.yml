@@ -1,0 +1,38 @@
+name: Lint profile README
+
+# 卡片有 validate.py 守，README 自己也得有人守：
+# 占位符、相对路径大小写、锚点、<picture> 明暗成对、标签闭合、孤儿卡片、体积预算。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'README*.md'
+      - 'profile/**'
+      - 'site/src/data/site.ts'
+      - '.github/scripts/validate_readme.py'
+      - '.github/workflows/readme.yml'
+  pull_request:
+    paths:
+      - 'README*.md'
+      - 'profile/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: readme-lint
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      # 等 YOUR_EMAIL 换成真邮箱后，给这行加 --strict（WARN 也拦）
+      - name: Lint README
+        run: python .github/scripts/validate_readme.py
